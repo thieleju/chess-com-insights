@@ -1,4 +1,4 @@
-const foreground_script = "chess-opponent-insights.js";
+const foreground_script = "chess-com-insights.js";
 
 chrome.runtime.onInstalled.addListener(() => {
   // default state goes here

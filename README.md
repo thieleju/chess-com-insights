@@ -1,4 +1,4 @@
-# chess-opponent-insights
+# chess-com-insights
 
 > **Warning** <br>
 > This addon is still in development and bugs might occur. If that happens, reload the site and it should work again. <br>
