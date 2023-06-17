@@ -1,5 +1,5 @@
 {
-  "name": "Chess Opponent Insights",
+  "name": "Chess.com Insights",
   "description": "Chrome extension that shows your current opponent's stats on chess.com",
   "author": "thieleju",
   "manifest_version": 3,
@@ -11,7 +11,7 @@
   "host_permissions": ["https://*.chess.com/*"],
   "action": {
     "default_locale": "en",
-    "default_title": "Chess Opponent Insights",
+    "default_title": "Chess.com Insights",
     "default_popup": "popup.html"
   },
   "icons": {
