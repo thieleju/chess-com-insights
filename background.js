@@ -9,12 +9,9 @@ chrome.runtime.onInstalled.addListener(() => {
 chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
   // check if the tab has finished loading
   if (changeInfo.status === "complete" && /^http/.test(tab.url)) {
-    // inject the script and catch errors
-    try {
-      await inject_script(tabId, foreground_script);
-    } catch (err) {
-      console.log(err);
-    }
+    // inject script if a chess.com game
+    if (/chess.com/.test(tab.url))
+      inject_script(tabId, foreground_script).catch((err) => console.log(err));
   }
 });
 
@@ -28,11 +25,31 @@ async function inject_script(tabId, script_name) {
     target: { tabId: tabId },
     files: [`./${script_name}`],
   });
+
   // get title and print it to the console
   const tab_title = await get_tab_title(tabId);
   console.log(
     `Injected ${script_name} into tab '${tab_title}' with id '${tabId}'`
   );
+
+  coi_settings = {
+    tabId,
+    game_modes: ["rapid", "blitz", "bullet"],
+    games_max: 20,
+  };
+
+  // check if settings object exists
+  chrome.storage.local.get(["coi_settings"], (result) => {
+    if (result.coi_settings) {
+      console.log("Read settings from storage");
+      coi_settings = result.coi_settings;
+    }
+  });
+
+  // set settings
+  chrome.storage.local.set({ coi_settings }).then(() => {
+    console.log("Settings set to", coi_settings);
+  });
 }
 
 /**

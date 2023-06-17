@@ -3,11 +3,20 @@
   "description": "Chrome extension that shows your current opponent's stats on chess.com",
   "author": "thieleju",
   "manifest_version": 3,
-  "version": "1.0",
-  "action": {},
+  "version": "1.1",
   "background": {
     "service_worker": "background.js"
   },
-  "permissions": ["activeTab", "scripting", "webRequest"],
-  "host_permissions": ["https://www.chess.com/*"]
+  "permissions": ["activeTab", "scripting", "webRequest", "storage"],
+  "host_permissions": ["https://www.chess.com/*"],
+  "action": {
+    "default_locale": "en",
+    "default_title": "Chess Opponent Insights",
+    "default_popup": "popup.html"
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
 }
