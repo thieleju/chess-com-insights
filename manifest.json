@@ -8,6 +8,7 @@
     "service_worker": "background.js"
   },
   "permissions": ["activeTab", "scripting", "webRequest", "storage"],
+  "host_permissions": ["https://*.chess.com/*"],
   "action": {
     "default_locale": "en",
     "default_title": "Chess Opponent Insights",
