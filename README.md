@@ -26,6 +26,6 @@ Manual installation:
 - Select the folder you just unzipped
 - Reload the chess.com page 
 
-## 🪲 Known bugs
+## 🪲 Bugs
 
-- If you flip the board, the stats don't flip with it.
+If you find any bugs, please open an issue [here](https://github.com/thieleju/chess-com-insights/issues)
