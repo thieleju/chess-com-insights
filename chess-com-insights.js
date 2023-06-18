@@ -46,16 +46,16 @@ function update_stats() {
   // if error occurs, remove elements from DOM and update again
   get_chess_data(player_el_1.innerText)
     .then((data) => update_element(info_el_1, data))
-    .catch(() => {
+    .catch((err) => {
       info_el_1.remove();
-      update_stats();
+      setTimeout(update_stats, 1000);
     });
 
   get_chess_data(player_el_2.innerText)
     .then((data) => update_element(info_el_2, data))
-    .catch(() => {
+    .catch((err) => {
       info_el_2.remove();
-      update_stats();
+      setTimeout(update_stats, 1000);
     });
 }
 
@@ -66,7 +66,7 @@ function update_stats() {
  */
 function update_element(el, stats) {
   let str = `${stats.wld.wins}/${stats.wld.loses}/${stats.wld.draws}`;
-  if (stats.accuracy.avg !== 0) str += ` (${stats.accuracy.avg}%)`;
+  if (stats.accuracy.avg != 0) str += ` (${stats.accuracy.avg}%)`;
   el.innerText = str;
 }
 
@@ -103,45 +103,31 @@ async function get_chess_data(username) {
  * @returns {Object} - The calculated statistics.
  */
 function get_stats(games, username) {
-  // count wld stats and sum up accuracy
-  let accuracy_sum = 0;
   let stats = {
     wld: { wins: 0, loses: 0, draws: 0, games: games.length },
     accuracy: { avg: 0, games: games.length },
   };
-  games.forEach((game) => {
-    // get which side the player is playing on
-    let color = "";
-    if (game.white.username.toLowerCase() === username.toLowerCase())
-      color = "white";
-    else color = "black";
 
-    // sum up the accuracy and check if the accuracy is available
-    if (game.accuracies) accuracy_sum += game.accuracies[color];
+  games.forEach((game) => {
+    const color =
+      game.white.username.toLowerCase() === username.toLowerCase()
+        ? "white"
+        : "black";
+    const accuracies = game.accuracies;
+
+    if (accuracies) stats.accuracy.avg += accuracies[color] || 0;
     else stats.accuracy.games--;
 
-    // get the result for wld
     const result = transform_result(game[color].result);
-    switch (result) {
-      case "win":
-        stats.wld.wins++;
-        break;
-      case "lose":
-        stats.wld.loses++;
-        break;
-      case "draw":
-        stats.wld.draws++;
-        break;
-      default:
-        console.log(`Unknown result: ${game[color].result}`);
-    }
+    stats.wld[result + "s"]++;
   });
-  // calculate average accuracy and round to 2 decimal places
-  stats.accuracy.avg = parseFloat(accuracy_sum / stats.accuracy.games).toFixed(
-    2
-  );
-  // if accuracy is NaN, set it to 0
+
+  // calculate average accuracy, round to 2 decimals and return 0 if something went wrong
+  stats.accuracy.avg = parseFloat(
+    stats.accuracy.avg / stats.accuracy.games
+  ).toFixed(2);
   if (isNaN(stats.accuracy.avg)) stats.accuracy.avg = 0;
+
   return stats;
 }
 
@@ -155,14 +141,11 @@ function filter_games(games, settings) {
   // set defaults if settings are not available
   if (!settings.max_games || !settings.game_modes)
     settings = {
-      max_games: 20,
       game_modes: ["blitz", "rapid", "bullet"],
+      time_interval: "last 12 hours",
     };
 
-  // Sort games by end time in descending order
-  games.sort((a, b) => b.end_time - a.end_time);
-
-  // Filter games by game mode and limit the count to max_games
+  // Filter games by game mode and time_interval
   return games
     .filter((game) => {
       return (
@@ -171,7 +154,42 @@ function filter_games(games, settings) {
         game.time_class === settings.game_modes
       );
     })
-    .slice(0, settings.max_games);
+    .filter((game) => {
+      return check_time_interval(game.end_time, settings.time_interval);
+    });
+}
+
+/**
+ * Checks if the given end time falls within the specified time interval.
+ * @param {number} end_time - The end time of the game (in seconds).
+ * @param {string} time_interval - The time interval to check against.
+ * @returns {boolean} Returns true if the end time is within the specified time interval, otherwise false.
+ */
+function check_time_interval(end_time, time_interval) {
+  const current_date = Math.floor(Date.now() / 1000);
+  const time_intervals = {
+    "last 1 hour": 3600,
+    "last 6 hours": 21600,
+    "last 12 hours": 43200,
+    "last 24 hours": 86400,
+  };
+
+  if (end_time > current_date) return false;
+
+  if (time_interval in time_intervals)
+    return end_time > current_date - time_intervals[time_interval];
+
+  if (time_interval === "today") {
+    const current_day_seconds =
+      new Date().getHours() * 3600 +
+      new Date().getMinutes() * 60 +
+      new Date().getSeconds();
+    return end_time > current_date - current_day_seconds;
+  }
+
+  if (time_interval === "this month") return true;
+
+  return false;
 }
 
 /**
@@ -213,10 +231,10 @@ function transform_result(result) {
  */
 async function getSettingsFromStorage() {
   return new Promise((resolve) => {
-    chrome.storage.local.get(["coi_settings"], (result) => {
-      let coi_settings = {};
-      if (result.coi_settings) coi_settings = result.coi_settings;
-      resolve(coi_settings);
+    chrome.storage.local.get(["settings"], (result) => {
+      let settings = {};
+      if (result.settings) settings = result.settings;
+      resolve(settings);
     });
   });
 }
@@ -224,15 +242,17 @@ async function getSettingsFromStorage() {
 // add eventlistener to flip board button
 const flip_board_btn = document.getElementById("board-controls-flip");
 
-// when flip board button is clicked, flip the info elements
-flip_board_btn.addEventListener("click", () => {
-  // get content of info elements
-  const info1 = document.getElementById("info-el-1").innerHTML;
-  const info2 = document.getElementById("info-el-2").innerHTML;
-  // swap content of info elements
-  document.getElementById("info-el-1").innerHTML = info2;
-  document.getElementById("info-el-2").innerHTML = info1;
-});
+if (flip_board_btn) {
+  // when flip board button is clicked, flip the info elements
+  flip_board_btn.addEventListener("click", () => {
+    // get content of info elements
+    const info1 = document.getElementById("info-el-1").innerHTML;
+    const info2 = document.getElementById("info-el-2").innerHTML;
+    // swap content of info elements
+    document.getElementById("info-el-1").innerHTML = info2;
+    document.getElementById("info-el-2").innerHTML = info1;
+  });
+}
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   if (request.action === "updateStats") {
