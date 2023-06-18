@@ -12,7 +12,7 @@ This extension works only on chrome based browsers and is only for chess.com at 
   - Accuracy is only available on games which were reveiwed
 - All stats are based on the games of a user in the last 12 hours
 
-![preview](preview.png)
+![preview](images/preview.png)
 
 ## ⚙️ Installation
 
