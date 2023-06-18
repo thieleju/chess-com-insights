@@ -16,7 +16,8 @@ This extension works only on chrome based browsers and is only for chess.com at 
 
 ## ⚙️ Installation
 
-Chrome Web Store link coming soon
+Add the extension to your browser:
+[Chrome Web Store](https://chrome.google.com/webstore/detail/chesscom-insights/mobpnhbkmljienoleojnhbfhkhodpffe)
 
 Manual installation:
 - Download the project [here](https://github.com/thieleju/chess-com-insights/archive/refs/heads/main.zip)
