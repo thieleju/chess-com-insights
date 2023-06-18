@@ -3,50 +3,58 @@
  * It gets data from the public chess.com API and updates the DOM.
  */
 function update_stats() {
-  // get both chess players from the DOM
-  const player_top_el = document.querySelector(
+  // get player elements from dom
+  const player_el_1 = document.querySelector(
     ".board-layout-top .user-tagline-username"
   );
-  const player_bottom_el = document.querySelector(
+  const player_el_2 = document.querySelector(
     ".board-layout-bottom .user-tagline-username"
   );
 
-  if (!player_top_el || !player_bottom_el) return;
+  if (!player_el_1 || !player_el_2) return;
 
-  // if elements with class flag-bottom and flag-top exist, remove them
-  const flag_top = document.querySelector(".flag-top");
-  const flag_bottom = document.querySelector(".flag-bottom");
+  // in case the ui elements are not updated yet, try again after 1 second
+  if (
+    player_el_1.innerText.toLowerCase() === "opponent" ||
+    player_el_2.innerText.toLowerCase() === "opponent"
+  ) {
+    setTimeout(update_stats, 1000);
+    return;
+  }
 
-  if (flag_top) flag_top.remove();
-  if (flag_bottom) flag_bottom.remove();
+  // if elements with class flag-2 and flag-1 exist, remove them
+  const flag_1 = document.querySelector(".flag-1");
+  const flag_2 = document.querySelector(".flag-2");
 
-  // create new elements and append them to the DOM
-  el_top = document.createElement("div");
-  el_top.classList.add("user-tagline-rating", "flag-top");
-  el_top.style.marginLeft = "10px";
-  player_top_el.parentElement.appendChild(el_top);
+  // if elements with class flag-2 and flag-1 exist, remove them
+  if (flag_1) flag_1.remove();
+  if (flag_2) flag_2.remove();
 
-  el_bottom = document.createElement("div");
-  el_bottom.classList.add("user-tagline-rating", "flag-bottom");
-  el_bottom.style.marginLeft = "10px";
-  player_bottom_el.parentElement.appendChild(el_bottom);
+  let info_el_1 = document.createElement("div");
+  info_el_1.classList.add("user-tagline-rating", "flag-1");
+  info_el_1.id = "info-el-1";
+  info_el_1.style.marginLeft = "10px";
+  player_el_1.parentElement.appendChild(info_el_1);
 
-  // el_top.innerText = "Updating...";
-  // el_bottom.innerText = "Updating...";
+  let info_el_2 = document.createElement("div");
+  info_el_2.classList.add("user-tagline-rating", "flag-2");
+  info_el_2.id = "info-el-2";
+  info_el_2.style.marginLeft = "10px";
+  player_el_2.parentElement.appendChild(info_el_2);
 
   // get stats for players and update ui elements
   // if error occurs, remove elements from DOM and update again
-  get_chess_data(player_top_el.innerText)
-    .then((data) => update_element(el_top, data))
+  get_chess_data(player_el_1.innerText)
+    .then((data) => update_element(info_el_1, data))
     .catch(() => {
-      el_top.remove();
+      info_el_1.remove();
       update_stats();
     });
 
-  get_chess_data(player_bottom_el.innerText)
-    .then((data) => update_element(el_bottom, data))
+  get_chess_data(player_el_2.innerText)
+    .then((data) => update_element(info_el_2, data))
     .catch(() => {
-      el_bottom.remove();
+      info_el_2.remove();
       update_stats();
     });
 }
@@ -213,5 +221,28 @@ async function getSettingsFromStorage() {
   });
 }
 
-// initial run after 2 seconds to make sure the elements are loaded
-setTimeout(update_stats, 2000);
+// add eventlistener to flip board button
+const flip_board_btn = document.getElementById("board-controls-flip");
+
+// when flip board button is clicked, flip the info elements
+flip_board_btn.addEventListener("click", () => {
+  // get content of info elements
+  const info1 = document.getElementById("info-el-1").innerHTML;
+  const info2 = document.getElementById("info-el-2").innerHTML;
+  // swap content of info elements
+  document.getElementById("info-el-1").innerHTML = info2;
+  document.getElementById("info-el-2").innerHTML = info1;
+});
+
+chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+  if (request.action === "updateStats") {
+    // clear current stats if available
+    const info1 = document.getElementById("info-el-1");
+    const info2 = document.getElementById("info-el-2");
+    if (info1) info1.innerHTML = "";
+    if (info2) info2.innerHTML = "";
+
+    // wait 1.5 seconds for site to load usernames
+    setTimeout(update_stats, 1500);
+  }
+});
