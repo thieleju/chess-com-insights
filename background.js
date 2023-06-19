@@ -9,14 +9,15 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
     // Check if the URL has changed
     if (changeInfo.status !== "complete") return;
 
-    // check if active tab is a chess.com game
-    if (!/chess\.com/.test(tab.url)) return;
+    // Exit if tab has no url, means it's not a host_permissions website
+    if (!tab.url) return;
 
     // Get the active tab
     const tabs = await chrome.tabs.query({
       active: true,
       lastFocusedWindow: true,
     });
+
     // Send update message to content script
     chrome.tabs.sendMessage(tabs[0].id, {
       action: "updateStats",
