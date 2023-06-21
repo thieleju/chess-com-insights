@@ -24,7 +24,7 @@ const timeIntervals = ref([
 const timeInterval = ref("last 12 hours");
 const snackbar = ref(false);
 const snackbar_timeout = ref(1500);
-const snackbar_text = ref("Settings saved");
+const snackbar_text = ref("Updated settings");
 
 watch(
   () => darkmode.value,
@@ -55,6 +55,8 @@ async function saveSettingsToStorage(): Promise<void> {
   };
   await chrome.storage.local.set({ settings });
   console.log("saved settings to local storage", settings);
+  snackbar_text.value = "Updated settings";
+  snackbar_timeout.value = 1500;
   snackbar.value = true;
 }
 
@@ -72,6 +74,12 @@ function updateUI() {
 function savePressed() {
   updateUI();
   saveSettingsToStorage();
+}
+
+function showComingSoon() {
+  snackbar_text.value = "Coming soon";
+  snackbar_timeout.value = 500;
+  snackbar.value = true;
 }
 
 onMounted(async () => {
@@ -144,6 +152,7 @@ onMounted(async () => {
               label="Color highlighting"
               color="primary"
               hide-details
+              @click="showComingSoon"
             ></v-switch>
           </v-col>
           <v-col cols="6">
