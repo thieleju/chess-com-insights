@@ -29,4 +29,7 @@ Manual installation:
 
 ## 🪲 Bugs
 
-If you find any bugs, please open an issue [here](https://github.com/thieleju/chess-com-insights/issues)
+- If the board is flipped before the stats are loaded, the stats will be switched
+  - If that happens, reload the site
+
+If you find any other bugs, please open an issue [here](https://github.com/thieleju/chess-com-insights/issues)
