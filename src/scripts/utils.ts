@@ -10,9 +10,14 @@ export const default_settings: Settings = {
   color_highlighting: false,
 };
 
-export const updateElement = (el: HTMLElement, stats: Stats): void => {
+export const updateElement = (
+  el: HTMLElement,
+  stats: Stats,
+  showAccuracy: boolean
+): void => {
   let str = `${stats.wld.wins}/${stats.wld.loses}/${stats.wld.draws}`;
-  if (stats.accuracy.avg != 0) str += ` (${stats.accuracy.avg}%)`;
+  if (stats.accuracy.avg != 0 && showAccuracy)
+    str += ` (${stats.accuracy.avg}%)`;
   el.innerText = str;
 };
 
