@@ -30,6 +30,6 @@ Manual installation:
 ## 🪲 Bugs
 
 - If the board is flipped before the stats are loaded, the stats will be switched
-  - If that happens, reload the site
+- When watching a user and the user is playing a rematch where the colors switch, the stats will not be switched 
 
 If you find any other bugs, please open an issue [here](https://github.com/thieleju/chess-com-insights/issues)
