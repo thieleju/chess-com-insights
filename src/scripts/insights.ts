@@ -1,4 +1,3 @@
-// import functions from utils.ts
 import {
   updateElement,
   getChessData,
@@ -11,6 +10,8 @@ import { Settings } from "../types/stats";
 let settings: Settings;
 
 async function update_stats() {
+  if (!settings.show_stats) return;
+
   const player_el_1 = document.querySelector(
     ".board-layout-top .user-tagline-username"
   ) as HTMLElement;
@@ -20,6 +21,7 @@ async function update_stats() {
 
   if (!player_el_1 || !player_el_2) return;
 
+  // If ui hasn't finished loading, wait 1 second and try again
   if (
     player_el_1.innerText.toLowerCase() === "opponent" ||
     player_el_2.innerText.toLowerCase() === "opponent"
@@ -45,17 +47,20 @@ async function update_stats() {
   getChessData(player_el_1.innerText, settings)
     .then((data) => {
       // console.log("data p1", data);
-      updateElement(info_el_1, data);
+      updateElement(info_el_1, data, settings.show_accuracy);
     })
     .catch((_err) => {
       info_el_1.remove();
       setTimeout(update_stats, 1000);
     });
 
+  // disable bottom element if hide own stats is on
+  if (settings.hide_own_stats) return;
+
   getChessData(player_el_2.innerText, settings)
     .then((data) => {
       // console.log("data p2", data);
-      updateElement(info_el_2, data);
+      updateElement(info_el_2, data, settings.show_accuracy);
     })
     .catch((_err) => {
       info_el_2.remove();
