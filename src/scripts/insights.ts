@@ -47,7 +47,12 @@ async function update_stats() {
   getChessData(player_el_1.innerText, settings)
     .then((data) => {
       // console.log("data p1", data);
-      updateElement(info_el_1, data, settings.show_accuracy);
+      updateElement(
+        info_el_1,
+        data,
+        settings.show_accuracy,
+        settings.color_highlighting
+      );
     })
     .catch((_err) => {
       info_el_1.remove();
@@ -60,7 +65,12 @@ async function update_stats() {
   getChessData(player_el_2.innerText, settings)
     .then((data) => {
       // console.log("data p2", data);
-      updateElement(info_el_2, data, settings.show_accuracy);
+      updateElement(
+        info_el_2,
+        data,
+        settings.show_accuracy,
+        settings.color_highlighting
+      );
     })
     .catch((_err) => {
       info_el_2.remove();

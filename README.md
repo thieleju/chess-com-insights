@@ -10,7 +10,6 @@ This extension works only on chrome based browsers and is only for chess.com at 
 - First three numbers are the wins/loses/draws of the player 
 - Percentage in brackets is the average accuracy of the player
   - Accuracy is only available on games which were reviewed (sometimes the api takes a while until the accuracy is available)
-- All stats are based on the games of a user in the last 12 hours
 
 ### Preview
 ![preview](images/preview.png)

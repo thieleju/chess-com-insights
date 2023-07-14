@@ -1,5 +1,9 @@
 import { Wld, Stats, Settings } from "../types/stats";
 
+const color_wins = "#6b9438";
+const color_loses = "#bc403a";
+const color_draws = "#b38235";
+
 export const default_settings: Settings = {
   game_modes: ["blitz", "rapid", "bullet"],
   time_interval: "last 12 hours",
@@ -13,12 +17,25 @@ export const default_settings: Settings = {
 export const updateElement = (
   el: HTMLElement,
   stats: Stats,
-  showAccuracy: boolean
+  showAccuracy: boolean,
+  colorHighlighting: boolean
 ): void => {
-  let str = `${stats.wld.wins}/${stats.wld.loses}/${stats.wld.draws}`;
+  let str;
+
+  if (colorHighlighting) {
+    str =
+      `<strong>` +
+      `<span style="color: ${color_wins}">${stats.wld.wins}</span>/` +
+      `<span style="color: ${color_loses}">${stats.wld.loses}</span>/` +
+      `<span style="color: ${color_draws}">${stats.wld.draws}</span>` +
+      `</strong>`;
+  } else {
+    str = `${stats.wld.wins}/${stats.wld.loses}/${stats.wld.draws}`;
+  }
+
   if (stats.accuracy.avg != 0 && showAccuracy)
     str += ` (${stats.accuracy.avg}%)`;
-  el.innerText = str;
+  el.innerHTML = str;
 };
 
 export const getChessData = async (

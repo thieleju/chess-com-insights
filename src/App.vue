@@ -76,11 +76,11 @@ function savePressed() {
   saveSettingsToStorage();
 }
 
-function showComingSoon() {
-  snackbar_text.value = "Coming soon";
-  snackbar_timeout.value = 500;
-  snackbar.value = true;
-}
+// function showComingSoon() {
+//   snackbar_text.value = "Coming soon";
+//   snackbar_timeout.value = 500;
+//   snackbar.value = true;
+// }
 
 onMounted(async () => {
   const settings: Settings = await getSettingsFromStorage();
@@ -151,7 +151,6 @@ onMounted(async () => {
             label="Color highlighting"
             color="primary"
             hide-details
-            @click="showComingSoon"
           ></v-switch>
         </v-col>
         <v-col cols="6">
