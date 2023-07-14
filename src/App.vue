@@ -97,92 +97,90 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="container">
-    <v-card style="border-radius: 0px">
-      <!-- Title -->
-      <v-card-title>
-        <v-row align="center">
-          <v-col cols="auto" style="padding-right: 2px">
-            <v-img src="@/assets/icon48.png" width="24"></v-img>
-          </v-col>
-          <v-col cols="auto" style="padding-left: 2px">
-            <span class="title">Chess.com Insights</span>
-          </v-col>
-          <v-spacer></v-spacer>
-          <v-col cols="auto">
-            <v-icon @click="darkmode = !darkmode">
-              {{ darkmode ? "mdi-brightness-4" : "mdi-brightness-5" }}
-            </v-icon>
-          </v-col>
-        </v-row>
-      </v-card-title>
-      <!-- Subtitle -->
-      <v-card-subtitle>Modify your chess.com insights</v-card-subtitle>
-      <!-- Content -->
-      <v-card-text>
-        <!-- Settings -->
-        <v-row>
-          <v-col cols="6">
-            <v-switch
-              v-model="showStats"
-              label="Show stats"
-              color="primary"
-              hide-details
-            ></v-switch>
-          </v-col>
-          <v-col cols="6">
-            <v-switch
-              v-model="showAccuracy"
-              label="Show average accuracy"
-              color="primary"
-              hide-details
-            ></v-switch>
-          </v-col>
-          <v-col cols="6">
-            <v-switch
-              v-model="hideOwnStats"
-              label="Hide own stats"
-              color="primary"
-              hide-details
-            ></v-switch>
-          </v-col>
-          <v-col cols="6">
-            <v-switch
-              v-model="showColorHighlighting"
-              label="Color highlighting"
-              color="primary"
-              hide-details
-              @click="showComingSoon"
-            ></v-switch>
-          </v-col>
-          <v-col cols="6">
-            <v-combobox
-              v-model="showModes"
-              :items="modeStats"
-              label="Modes included in stats"
-              variant="underlined"
-              multiple
-              hide-details
-            ></v-combobox>
-          </v-col>
-          <v-col cols="6">
-            <v-combobox
-              v-model="timeInterval"
-              :items="timeIntervals"
-              label="Time interval"
-              variant="underlined"
-              hide-details
-            ></v-combobox>
-          </v-col>
-        </v-row>
-      </v-card-text>
-      <!-- Actions -->
-      <v-card-actions>
+  <v-card style="border-radius: 0px" class="container">
+    <!-- Title -->
+    <v-card-title>
+      <v-row align="center">
+        <v-col cols="auto" style="padding-right: 2px">
+          <v-img src="@/assets/icon48.png" width="24"></v-img>
+        </v-col>
+        <v-col cols="auto" style="padding-left: 2px">
+          <span class="title">Chess.com Insights</span>
+        </v-col>
         <v-spacer></v-spacer>
-        <v-btn color="primary" variant="text" @click="savePressed">save</v-btn>
-      </v-card-actions>
-    </v-card>
-  </div>
+        <v-col cols="auto">
+          <v-icon @click="darkmode = !darkmode">
+            {{ darkmode ? "mdi-brightness-4" : "mdi-brightness-5" }}
+          </v-icon>
+        </v-col>
+      </v-row>
+    </v-card-title>
+    <!-- Subtitle -->
+    <v-card-subtitle>Modify your chess.com insights</v-card-subtitle>
+    <!-- Content -->
+    <v-card-text>
+      <!-- Settings -->
+      <v-row>
+        <v-col cols="6">
+          <v-switch
+            v-model="showStats"
+            label="Show stats"
+            color="primary"
+            hide-details
+          ></v-switch>
+        </v-col>
+        <v-col cols="6">
+          <v-switch
+            v-model="showAccuracy"
+            label="Show average accuracy"
+            color="primary"
+            hide-details
+          ></v-switch>
+        </v-col>
+        <v-col cols="6">
+          <v-switch
+            v-model="hideOwnStats"
+            label="Hide own stats"
+            color="primary"
+            hide-details
+          ></v-switch>
+        </v-col>
+        <v-col cols="6">
+          <v-switch
+            v-model="showColorHighlighting"
+            label="Color highlighting"
+            color="primary"
+            hide-details
+            @click="showComingSoon"
+          ></v-switch>
+        </v-col>
+        <v-col cols="6">
+          <v-combobox
+            v-model="showModes"
+            :items="modeStats"
+            label="Modes included in stats"
+            variant="underlined"
+            multiple
+            hide-details
+          ></v-combobox>
+        </v-col>
+        <v-col cols="6">
+          <v-combobox
+            v-model="timeInterval"
+            :items="timeIntervals"
+            label="Time interval"
+            variant="underlined"
+            hide-details
+          ></v-combobox>
+        </v-col>
+      </v-row>
+    </v-card-text>
+    <!-- Actions -->
+    <v-card-actions>
+      <v-spacer></v-spacer>
+      <v-btn color="primary" variant="text" @click="savePressed">save</v-btn>
+    </v-card-actions>
+  </v-card>
   <v-snackbar
     v-model="snackbar"
     :timeout="snackbar_timeout"
