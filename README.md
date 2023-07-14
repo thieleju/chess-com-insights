@@ -5,14 +5,19 @@
 
 ## 🚀 How it works
 
-This extension works only on chrome based browsers and is only for chess.com at the moment. It shows stats for both players. 
+This extension works only on chrome based browsers and is only for chess.com at the moment. It shows stats for both players. Adjust your settings by clicking the extension icon in the top right corner of your browser.
 
 - First three numbers are the wins/loses/draws of the player 
 - Percentage in brackets is the average accuracy of the player
   - Accuracy is only available on games which were reviewed
 - All stats are based on the games of a user in the last 12 hours
 
+### Preview
 ![preview](images/preview.png)
+
+### Options
+
+![options](images/options-small.png)
 
 ## ⚙️ Installation
 
