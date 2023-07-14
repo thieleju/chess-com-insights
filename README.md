@@ -5,14 +5,19 @@
 
 ## 🚀 How it works
 
-This extension works only on chrome based browsers and is only for chess.com at the moment. It shows stats for both players. 
+This extension works only on chrome based browsers and is only for chess.com at the moment. It shows stats for both players. Adjust your settings by clicking the extension icon in the top right corner of your browser.
 
 - First three numbers are the wins/loses/draws of the player 
 - Percentage in brackets is the average accuracy of the player
   - Accuracy is only available on games which were reviewed
 - All stats are based on the games of a user in the last 12 hours
 
+### Preview
 ![preview](images/preview.png)
+
+### Options
+
+![options](images/options-small.png)
 
 ## ⚙️ Installation
 
@@ -31,5 +36,6 @@ Manual installation:
 
 - If the board is flipped before the stats are loaded, the stats will be switched
 - When watching a user and the user is playing a rematch where the colors switch, the stats will not be switched 
+- Hiding your own stats only hides the bottom stats, currently not depending on the username
 
 If you find any other bugs, please open an issue [here](https://github.com/thieleju/chess-com-insights/issues)
