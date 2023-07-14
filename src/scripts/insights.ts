@@ -3,11 +3,14 @@ import {
   updateElement,
   getChessData,
   createInfoElement,
-  // getSettingsFromStorage,
-  // saveSettingsToStorage,
+  getSettingsFromStorage,
 } from "./utils";
 
-function update_stats(): void {
+import { Settings } from "../types/stats";
+
+let settings: Settings;
+
+async function update_stats() {
   const player_el_1 = document.querySelector(
     ".board-layout-top .user-tagline-username"
   ) as HTMLElement;
@@ -39,7 +42,7 @@ function update_stats(): void {
 
   // get stats for players and update ui elements
   // if error occurs, remove elements from DOM and update again
-  getChessData(player_el_1.innerText)
+  getChessData(player_el_1.innerText, settings)
     .then((data) => {
       // console.log("data p1", data);
       updateElement(info_el_1, data);
@@ -49,7 +52,7 @@ function update_stats(): void {
       setTimeout(update_stats, 1000);
     });
 
-  getChessData(player_el_2.innerText)
+  getChessData(player_el_2.innerText, settings)
     .then((data) => {
       // console.log("data p2", data);
       updateElement(info_el_2, data);
@@ -76,7 +79,7 @@ if (flip_board_btn) {
 }
 
 // receive update events from background script
-chrome.runtime.onMessage.addListener(function (
+chrome.runtime.onMessage.addListener(async function (
   request: { action: string },
   _sender: chrome.runtime.MessageSender,
   _sendResponse: (arg0: any) => void
@@ -89,19 +92,10 @@ chrome.runtime.onMessage.addListener(function (
   if (info1) info1.innerHTML = "";
   if (info2) info2.innerHTML = "";
 
+  // get settings from extension local storage
+  let s: Settings = await getSettingsFromStorage();
+  settings = s;
+
   // wait 1.5 seconds for site to load usernames
   setTimeout(update_stats, 1500);
 });
-
-// saveSettingsToStorage({
-//   game_modes: ["blitz", "rapid", "bullet"],
-//   time_interval: "last 12 hours",
-// });
-
-// getSettingsFromStorage()
-//   .then((settings) => {
-//     console.log("settings", settings);
-//   })
-//   .catch((err) => {
-//     console.log("error", err);
-//   });

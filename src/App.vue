@@ -1,26 +1,193 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
+import { useTheme } from "vuetify";
+
 import { Settings } from "./types/stats";
+
+const theme = useTheme();
+const darkmode = ref<boolean>(true);
+
+const modeStats = ref(["blitz", "rapid", "bullet", "daily"]);
+const showModes = ref(["blitz", "rapid", "bullet"]);
+const showStats = ref(true);
+const showAccuracy = ref(true);
+const hideOwnStats = ref(false);
+const showColorHighlighting = ref(false);
+const timeIntervals = ref([
+  "last hour",
+  "last 6 hours",
+  "last 12 hours",
+  "last day",
+  "last 3 days",
+  "last week",
+]);
+const timeInterval = ref("last 12 hours");
+const snackbar = ref(false);
+const snackbar_timeout = ref(1500);
+const snackbar_text = ref("Settings saved");
+
+watch(
+  () => darkmode.value,
+  (newVal) => {
+    if (newVal) theme.global.name.value = "dark";
+    else theme.global.name.value = "light";
+  }
+);
 
 // get settings from local storage
 async function getSettingsFromStorage(): Promise<Settings> {
-  return await chrome.storage.local
+  const settings = await chrome.storage.local
     .get(["settings"])
     .then((result) => result.settings);
+  return settings;
 }
 
-const settings = ref<Settings | null>(null);
+// save settings to local storage
+async function saveSettingsToStorage(): Promise<void> {
+  let settings = {
+    show_stats: showStats.value,
+    show_accuracy: showAccuracy.value,
+    hide_own_stats: hideOwnStats.value,
+    game_modes: Array.from(showModes.value),
+    time_interval: timeInterval.value,
+    color_highlighting: showColorHighlighting.value,
+    popup_darkmode: darkmode.value,
+  };
+  await chrome.storage.local.set({ settings });
+  console.log("saved settings to local storage", settings);
+  snackbar.value = true;
+}
+
+function updateUI() {
+  chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+    const activeTab = tabs[0];
+    if (activeTab) {
+      chrome.tabs.sendMessage(activeTab.id!, {
+        action: "updateStats",
+      });
+    }
+  });
+}
+
+function savePressed() {
+  updateUI();
+  saveSettingsToStorage();
+}
 
 onMounted(async () => {
-  const retrievedSettings: Settings = await getSettingsFromStorage();
-  settings.value = retrievedSettings;
-  console.log("settings from ls", retrievedSettings);
+  const settings: Settings = await getSettingsFromStorage();
+  // set ui elements according to settings
+  showModes.value = settings.game_modes;
+  showStats.value = settings.show_stats;
+  showAccuracy.value = settings.show_accuracy;
+  hideOwnStats.value = settings.hide_own_stats;
+  showColorHighlighting.value = settings.color_highlighting;
+  timeInterval.value = settings.time_interval;
+  darkmode.value = settings.popup_darkmode;
+  console.log("read settings from local storage", settings);
 });
 </script>
 
 <template>
-  <h1>Hello</h1>
-  {{ settings }}
+  <div class="container">
+    <v-card style="border-radius: 0px">
+      <!-- Title -->
+      <v-card-title>
+        <v-row align="center">
+          <v-col cols="auto" style="padding-right: 2px">
+            <v-img src="@/assets/icon48.png" width="24"></v-img>
+          </v-col>
+          <v-col cols="auto" style="padding-left: 2px">
+            <span class="title">Chess.com Insights</span>
+          </v-col>
+          <v-spacer></v-spacer>
+          <v-col cols="auto">
+            <v-icon @click="darkmode = !darkmode">
+              {{ darkmode ? "mdi-brightness-4" : "mdi-brightness-5" }}
+            </v-icon>
+          </v-col>
+        </v-row>
+      </v-card-title>
+      <!-- Subtitle -->
+      <v-card-subtitle>Modify your chess.com insights</v-card-subtitle>
+      <!-- Content -->
+      <v-card-text>
+        <!-- Settings -->
+        <v-row>
+          <v-col cols="6">
+            <v-switch
+              v-model="showStats"
+              label="Show stats"
+              color="primary"
+              hide-details
+            ></v-switch>
+          </v-col>
+          <v-col cols="6">
+            <v-switch
+              v-model="showAccuracy"
+              label="Show average accuracy"
+              color="primary"
+              hide-details
+            ></v-switch>
+          </v-col>
+          <v-col cols="6">
+            <v-switch
+              v-model="hideOwnStats"
+              label="Hide own stats"
+              color="primary"
+              hide-details
+            ></v-switch>
+          </v-col>
+          <v-col cols="6">
+            <v-switch
+              v-model="showColorHighlighting"
+              label="Color highlighting"
+              color="primary"
+              hide-details
+            ></v-switch>
+          </v-col>
+          <v-col cols="6">
+            <v-combobox
+              v-model="showModes"
+              :items="modeStats"
+              label="Modes included in stats"
+              variant="underlined"
+              multiple
+              hide-details
+            ></v-combobox>
+          </v-col>
+          <v-col cols="6">
+            <v-combobox
+              v-model="timeInterval"
+              :items="timeIntervals"
+              label="Time interval"
+              variant="underlined"
+              hide-details
+            ></v-combobox>
+          </v-col>
+        </v-row>
+      </v-card-text>
+      <!-- Actions -->
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn color="primary" variant="text" @click="savePressed">save</v-btn>
+      </v-card-actions>
+    </v-card>
+  </div>
+  <v-snackbar
+    v-model="snackbar"
+    :timeout="snackbar_timeout"
+    variant="outlined"
+    color="primary"
+  >
+    <v-icon left>mdi-check-circle-outline</v-icon>
+    {{ snackbar_text }}
+  </v-snackbar>
 </template>
 
-<style scoped></style>
+<style>
+.container {
+  min-width: 510px;
+  max-width: 510px;
+}
+</style>
