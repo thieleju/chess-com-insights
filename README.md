@@ -9,7 +9,7 @@ This extension works only on chrome based browsers and is only for chess.com at 
 
 - First three numbers are the wins/loses/draws of the player 
 - Percentage in brackets is the average accuracy of the player
-  - Accuracy is only available on games which were reviewed
+  - Accuracy is only available on games which were reviewed (sometimes the api takes a while until the accuracy is available)
 - All stats are based on the games of a user in the last 12 hours
 
 ### Preview
@@ -39,3 +39,11 @@ Manual installation:
 - Hiding your own stats only hides the bottom stats, currently not depending on the username
 
 If you find any other bugs, please open an issue [here](https://github.com/thieleju/chess-com-insights/issues)
+
+## Run locally
+
+- Clone/fork/download the project
+- run `npm install` to install all dependencies
+- run `npm run build` to build the extension
+  - Files will be exported to the `dist` folder
+- do the manual installation steps above and select the `dist` folder
