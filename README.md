@@ -1,35 +1,18 @@
-# chess-com-insights
+# Vue 3 + TypeScript + Vite
 
-> **Warning** <br>
-> This addon is still in development and bugs might occur. If that happens, try to reload the site. <br>
+This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
 
-## 🚀 How it works
+## Recommended IDE Setup
 
-This extension works only on chrome based browsers and is only for chess.com at the moment. It shows stats for both players. 
+- [VS Code](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
 
-- First three numbers are the wins/loses/draws of the player 
-- Percentage in brackets is the average accuracy of the player
-  - Accuracy is only available on games which were reviewed
-- All stats are based on the games of a user in the last 12 hours
+## Type Support For `.vue` Imports in TS
 
-![preview](images/preview.png)
+TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin) to make the TypeScript language service aware of `.vue` types.
 
-## ⚙️ Installation
+If the standalone TypeScript plugin doesn't feel fast enough to you, Volar has also implemented a [Take Over Mode](https://github.com/johnsoncodehk/volar/discussions/471#discussioncomment-1361669) that is more performant. You can enable it by the following steps:
 
-Add the extension to your browser:
-[Chrome Web Store](https://chrome.google.com/webstore/detail/chesscom-insights/mobpnhbkmljienoleojnhbfhkhodpffe)
-
-Manual installation:
-- Download the project [here](https://github.com/thieleju/chess-com-insights/archive/refs/heads/main.zip)
-- Unzip the file
-- Go to your browser and type `chrome://extensions/` in the search bar
-- Enable developer mode and click on `Load unpacked`
-- Select the folder you just unzipped
-- Reload the chess.com page 
-
-## 🪲 Bugs
-
-- If the board is flipped before the stats are loaded, the stats will be switched
-- When watching a user and the user is playing a rematch where the colors switch, the stats will not be switched 
-
-If you find any other bugs, please open an issue [here](https://github.com/thieleju/chess-com-insights/issues)
+1. Disable the built-in TypeScript Extension
+   1. Run `Extensions: Show Built-in Extensions` from VSCode's command palette
+   2. Find `TypeScript and JavaScript Language Features`, right click and select `Disable (Workspace)`
+2. Reload the VSCode window by running `Developer: Reload Window` from the command palette.
