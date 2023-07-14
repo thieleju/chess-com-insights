@@ -1,30 +1,26 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
+import { ref, onMounted } from "vue";
+import { Settings } from "./types/stats";
+
+// get settings from local storage
+async function getSettingsFromStorage(): Promise<Settings> {
+  return await chrome.storage.local
+    .get(["settings"])
+    .then((result) => result.settings);
+}
+
+const settings = ref<Settings | null>(null);
+
+onMounted(async () => {
+  const retrievedSettings: Settings = await getSettingsFromStorage();
+  settings.value = retrievedSettings;
+  console.log("settings from ls", retrievedSettings);
+});
 </script>
 
 <template>
-  <div>
-    <a href="https://vitejs.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
-  </div>
-  <HelloWorld msg="Vite + Vue" />
+  <h1>Hello</h1>
+  {{ settings }}
 </template>
 
-<style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
-}
-</style>
+<style scoped></style>
