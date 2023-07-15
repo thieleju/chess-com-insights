@@ -5,7 +5,7 @@
 
 ## 🚀 How it works
 
-This extension shows chess game statistics of the currently shown players. 
+This extension shows statistics for chess.com games. 
 Use the icon in the top right corner to adjust the settings.
 
 - First three numbers are the wins/loses/draws of the player
@@ -18,7 +18,7 @@ Use the icon in the top right corner to adjust the settings.
 
 ### Options
 
-![options](images/options-small.png)
+![options](images/options-small2.png)
 
 ## ⚙️ Installation
 
@@ -41,10 +41,19 @@ Manual installation:
 
 If you find any other bugs, please open an issue [here](https://github.com/thieleju/chess-com-insights/issues)
 
-## Run locally
+## 💻 Run locally
+
+Prequisites:
+
+- Node.js version 17 or higher 
+
+<br>
+
+Instructions:
 
 - Clone/fork/download the project
 - run `npm install` to install all dependencies
 - run `npm run build` to build the extension
   - Files will be exported to the `dist` folder
+  - You can also run `npm run dev` to start the vite dev server to view the options page, but some things f.e. reading the settings will not work
 - do the manual installation steps above and select the `dist` folder
