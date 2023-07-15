@@ -5,11 +5,12 @@
 
 ## 🚀 How it works
 
-This extension works only on chrome based browsers and is only for chess.com at the moment. It shows stats for both players. Adjust your settings by clicking the extension icon in the top right corner of your browser.
+This extension shows chess game statistics of the currently shown players. 
+Use the icon in the top right corner to adjust the settings.
 
-- First three numbers are the wins/loses/draws of the player 
+- First three numbers are the wins/loses/draws of the player
 - Percentage in brackets is the average accuracy of the player
-  - Accuracy is only available on games which were reviewed (sometimes the api takes a while until the accuracy is available)
+    - Accuracy is only available on games which were reviewed
 
 ### Preview
 ![preview](images/preview.png)
