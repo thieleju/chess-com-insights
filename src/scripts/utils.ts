@@ -168,12 +168,12 @@ export const getSettingsFromStorage = async (): Promise<any> => {
     .then((result) => result.settings);
   // check if current settings are valid
   if (
-    !isValidBoolean(settings.popup_darkmode) ||
-    !isValidBoolean(settings.show_accuracy) ||
-    !isValidBoolean(settings.color_highlighting) ||
-    !isValidBoolean(settings.show_stats) ||
-    !isValidString(settings.time_interval) ||
-    !isValidGameModes(settings.game_modes)
+    !isValidBoolean(settings?.popup_darkmode) ||
+    !isValidBoolean(settings?.show_accuracy) ||
+    !isValidBoolean(settings?.color_highlighting) ||
+    !isValidBoolean(settings?.show_stats) ||
+    !isValidString(settings?.time_interval) ||
+    !isValidGameModes(settings?.game_modes)
   ) {
     // console.log("Invalid settings, setting to default", settings);
     saveSettingsToStorage(default_settings);

@@ -3,6 +3,10 @@ import { ref, onMounted, watch } from "vue";
 import { useTheme } from "vuetify";
 
 import { Settings } from "../types/stats";
+import {
+  getSettingsFromStorage,
+  saveSettingsToStorage,
+} from "../scripts/utils";
 
 const theme = useTheme();
 const darkmode = ref<boolean>(true);
@@ -34,26 +38,23 @@ watch(
   }
 );
 
-// get settings from local storage
-async function getSettingsFromStorage(): Promise<Settings> {
-  const settings = await chrome.storage.local
-    .get(["settings"])
-    .then((result) => result.settings);
-  return settings;
-}
-
 // save settings to local storage
-async function saveSettingsToStorage(): Promise<void> {
-  let settings = {
+async function saveSettings(): Promise<void> {
+  let settings: Settings = {
     show_stats: showStats.value,
     show_accuracy: showAccuracy.value,
     hide_own_stats: hideOwnStats.value,
-    game_modes: Array.from(showModes.value),
+    game_modes: Array.from(showModes.value) as (
+      | "blitz"
+      | "rapid"
+      | "bullet"
+      | "daily"
+    )[],
     time_interval: timeInterval.value,
     color_highlighting: showColorHighlighting.value,
     popup_darkmode: darkmode.value,
   };
-  await chrome.storage.local.set({ settings });
+  await saveSettingsToStorage(settings);
   console.log("saved settings to local storage", settings);
   snackbar_text.value = "Updated settings";
   snackbar_timeout.value = 1500;
@@ -73,7 +74,7 @@ function updateUI() {
 
 function savePressed() {
   updateUI();
-  saveSettingsToStorage();
+  saveSettings();
 }
 
 // function showComingSoon() {
@@ -85,13 +86,13 @@ function savePressed() {
 onMounted(async () => {
   const settings: Settings = await getSettingsFromStorage();
   // set ui elements according to settings
-  showModes.value = settings.game_modes;
-  showStats.value = settings.show_stats;
-  showAccuracy.value = settings.show_accuracy;
-  hideOwnStats.value = settings.hide_own_stats;
-  showColorHighlighting.value = settings.color_highlighting;
-  timeInterval.value = settings.time_interval;
-  darkmode.value = settings.popup_darkmode;
+  showModes.value = settings.game_modes || ["blitz", "rapid", "bullet"];
+  showStats.value = settings.show_stats || true;
+  showAccuracy.value = settings.show_accuracy || true;
+  hideOwnStats.value = settings.hide_own_stats || false;
+  showColorHighlighting.value = settings.color_highlighting || false;
+  timeInterval.value = settings.time_interval || "last 12 hours";
+  darkmode.value = settings.popup_darkmode || true;
   console.log("read settings from local storage", settings);
 });
 </script>

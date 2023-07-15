@@ -1,7 +1,17 @@
-chrome.runtime.onInstalled.addListener(() => {
-  // default state goes here
-  // this runs ONE TIME ONLY (unless the user reinstalls your extension)
+chrome.runtime.onInstalled.addListener(async () => {
   console.log("Extension installed");
+  const manifest = chrome.runtime.getManifest();
+  if (manifest.content_scripts) {
+    for (const cs of manifest.content_scripts) {
+      const tabs = await chrome.tabs.query({ url: cs.matches });
+      for (const tab of tabs) {
+        chrome.scripting.executeScript({
+          target: { tabId: tab.id! },
+          files: cs.js!,
+        });
+      }
+    }
+  }
 });
 
 chrome.tabs.onUpdated.addListener(
