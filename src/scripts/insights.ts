@@ -114,3 +114,9 @@ chrome.runtime.onMessage.addListener(async function (
   // wait 1.5 seconds for site to load usernames
   setTimeout(update_stats, 1500);
 });
+
+// get settings and update stats
+getSettingsFromStorage().then((s) => {
+  settings = s;
+  update_stats();
+});
