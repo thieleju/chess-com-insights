@@ -3,7 +3,7 @@
   "description": "Shows Win/Lose/Draw and average accuracy for players on chess.com",
   "author": "thieleju",
   "manifest_version": 3,
-  "version": "2.1.0",
+  "version": "2.1.1",
 
   "permissions": ["activeTab", "scripting", "webRequest", "storage"],
   "action": {

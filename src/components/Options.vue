@@ -94,6 +94,12 @@ function savePressed() {
 //   snackbar.value = true;
 // }
 
+function openGihtub() {
+  chrome.tabs.create({
+    url: "https://github.com/thieleju/chess-com-insights",
+  });
+}
+
 onMounted(async () => {
   const settings: Settings = await getSettingsFromStorage();
   // set ui elements according to settings
@@ -188,8 +194,20 @@ onMounted(async () => {
     </v-card-text>
     <!-- Actions -->
     <v-card-actions>
+      <v-btn
+        color="primary"
+        @click="openGihtub"
+        small
+        icon="mdi-github"
+      ></v-btn>
       <v-spacer></v-spacer>
-      <v-btn color="primary" variant="text" @click="savePressed">save</v-btn>
+      <v-btn
+        color="primary"
+        variant="text"
+        prepend-icon="mdi-content-save-outline"
+        @click="savePressed"
+        >save</v-btn
+      >
     </v-card-actions>
   </v-card>
   <v-snackbar
