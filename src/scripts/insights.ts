@@ -9,114 +9,141 @@ import { Settings } from "../types/stats";
 
 let settings: Settings;
 
-async function update_stats() {
-  if (!settings.show_stats) return;
+const q_target_top = ".board-layout-top .user-tagline-username";
+const q_target_bottom = ".board-layout-bottom .user-tagline-username";
 
-  const player_el_1 = document.querySelector(
-    ".board-layout-top .user-tagline-username"
-  ) as HTMLElement;
-  const player_el_2 = document.querySelector(
-    ".board-layout-bottom .user-tagline-username"
-  ) as HTMLElement;
+console.log("--- Chess.com Insights injected ---");
 
-  if (!player_el_1 || !player_el_2) return;
-
-  // If ui hasn't finished loading, wait 1 second and try again
-  if (
-    player_el_1.innerText.toLowerCase() === "opponent" ||
-    player_el_2.innerText.toLowerCase() === "opponent"
-  ) {
-    setTimeout(update_stats, 1000);
-    return;
+/**
+ * Create observer for username changes
+ */
+let prevContentTop = "";
+let prevContentBottom = "";
+const observer_usernames = new MutationObserver((mutationsList) => {
+  for (const mutation of mutationsList) {
+    if (mutation.type !== "childList") return;
+    const target = mutation.target as HTMLElement;
+    const currentContent = target.innerHTML;
+    if (target === target_top && currentContent !== prevContentTop) {
+      // console.log("Changed content (top):", currentContent);
+      update_stats("top");
+      prevContentTop = currentContent;
+    } else if (
+      target === target_bottom &&
+      currentContent !== prevContentBottom
+    ) {
+      // console.log("Changed content (bottom):", currentContent);
+      update_stats("bottom");
+      prevContentBottom = currentContent;
+    }
   }
+});
 
-  const flag_1 = document.querySelector(".flag-1") as HTMLElement;
-  const flag_2 = document.querySelector(".flag-2") as HTMLElement;
+// Get username elements to observe
+const target_top = document.querySelector(q_target_top) as HTMLElement;
+const target_bottom = document.querySelector(q_target_bottom) as HTMLElement;
 
-  if (flag_1) flag_1.remove();
-  if (flag_2) flag_2.remove();
+// Apply observer to username elements
+if (target_top) observer_usernames.observe(target_top, { childList: true });
+if (target_bottom)
+  observer_usernames.observe(target_bottom, { childList: true });
 
-  const info_el_1 = createInfoElement("flag-1", "info-el-1");
-  const info_el_2 = createInfoElement("flag-2", "info-el-2");
+let prevPathname = window.location.pathname; // Variable to store the previous URL path
 
-  player_el_1.parentElement?.appendChild(info_el_1);
-  player_el_2.parentElement?.appendChild(info_el_2);
+/**
+ * Function called on DOM mutations to check for URL changes
+ * @param mutationsList List of mutations
+ * @param _observer MutationObserver object
+ */
+function checkURLMutation(
+  mutationsList: MutationRecord[],
+  _observer: MutationObserver
+) {
+  for (const mutation of mutationsList) {
+    if (mutation.type === "childList" || mutation.type === "attributes") {
+      const currentPathname = window.location.pathname;
 
-  // get stats for players and update ui elements
-  // if error occurs, remove elements from DOM and update again
-  getChessData(player_el_1.innerText, settings)
-    .then((data) => {
-      // console.log("data p1", data);
-      updateElement(
-        info_el_1,
-        data,
-        settings.show_accuracy,
-        settings.color_highlighting
-      );
-    })
-    .catch((_err) => {
-      info_el_1.remove();
-      setTimeout(update_stats, 1000);
-    });
-
-  // disable bottom element if hide own stats is on
-  if (settings.hide_own_stats) return;
-
-  getChessData(player_el_2.innerText, settings)
-    .then((data) => {
-      // console.log("data p2", data);
-      updateElement(
-        info_el_2,
-        data,
-        settings.show_accuracy,
-        settings.color_highlighting
-      );
-    })
-    .catch((_err) => {
-      info_el_2.remove();
-      setTimeout(update_stats, 1000);
-    });
+      if (currentPathname !== prevPathname) {
+        // Manually update stats on page load
+        update_stats("top");
+        update_stats("bottom");
+        prevPathname = currentPathname; // Update the previous URL path
+      }
+    }
+  }
 }
 
-// handle click event on flip board button
-const flip_board_btn = document.getElementById("board-controls-flip");
+// Create a MutationObserver
+const observer_url = new MutationObserver(checkURLMutation);
 
-if (flip_board_btn) {
-  flip_board_btn.addEventListener("click", () => {
-    const info1 = document.getElementById("info-el-1")?.innerHTML;
-    const info2 = document.getElementById("info-el-2")?.innerHTML;
+// Start observing DOM mutations
+observer_url.observe(document.body, {
+  childList: true,
+  attributes: true,
+  subtree: true,
+});
 
-    const el1 = document.getElementById("info-el-1");
-    const el2 = document.getElementById("info-el-2");
-    if (el1) el1.innerHTML = info2 || "";
-    if (el2) el2.innerHTML = info1 || "";
-  });
+setTimeout(() => {
+  update_stats("top");
+  update_stats("bottom");
+}, 100);
+
+/**
+ * Update player statistics
+ * @param player Player to update statistics for ('top' or 'bottom')
+ * @param update_settings Flag indicating whether to update settings
+ */
+async function update_stats(player: "top" | "bottom", update_settings = false) {
+  // Update settings if not already loaded or if update_settings is true
+  if (!settings || update_settings) settings = await getSettingsFromStorage();
+
+  const flag = document.querySelector(
+    player === "top" ? ".flag-1" : ".flag-2"
+  ) as HTMLElement;
+
+  if (flag) flag.remove();
+
+  if (!settings.show_stats) return;
+  if (settings.hide_own_stats && player === "bottom") return;
+
+  const player_el = document.querySelector(
+    player === "top" ? q_target_top : q_target_bottom
+  ) as HTMLElement;
+
+  if (!player_el) return;
+
+  const info_el = createInfoElement(
+    player === "top" ? "flag-1" : "flag-2",
+    `info-el-${player}`
+  );
+
+  player_el.parentElement?.appendChild(info_el);
+
+  // Get stats for the player and update UI elements
+  // If an error occurs, remove the element from DOM and update again
+  try {
+    const chess_data = await getChessData(player_el.innerText, settings);
+    updateElement(
+      info_el,
+      chess_data,
+      settings.show_accuracy,
+      settings.color_highlighting
+    );
+  } catch (_err) {
+    info_el.remove();
+  }
 }
 
-// receive update events from background script
+/**
+ * Listen for update events from the options page
+ */
 chrome.runtime.onMessage.addListener(async function (
   request: { action: string },
   _sender: chrome.runtime.MessageSender,
   _sendResponse: (arg0: any) => void
 ) {
-  if (request.action !== "updateStats") return;
+  if (request.action !== "updated-settings") return;
 
-  // clear current stats if available
-  const info1 = document.getElementById("info-el-1");
-  const info2 = document.getElementById("info-el-2");
-  if (info1) info1.innerHTML = "";
-  if (info2) info2.innerHTML = "";
-
-  // get settings from extension local storage
-  let s: Settings = await getSettingsFromStorage();
-  settings = s;
-
-  // wait 1.5 seconds for site to load usernames
-  setTimeout(update_stats, 1500);
-});
-
-// get settings and update stats
-getSettingsFromStorage().then((s) => {
-  settings = s;
-  update_stats();
+  update_stats("top", true);
+  update_stats("bottom", true);
 });
