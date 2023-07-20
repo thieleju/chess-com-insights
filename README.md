@@ -47,8 +47,6 @@ Prequisites:
 
 - Node.js version 17 or higher 
 
-<br>
-
 Instructions:
 
 - Clone/fork/download the project

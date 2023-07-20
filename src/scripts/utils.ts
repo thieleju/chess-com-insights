@@ -1,9 +1,11 @@
 import { Wld, Stats, Settings } from "../types/stats";
 
+/** Colors for different game results */
 const color_wins = "#6b9438";
 const color_loses = "#bc403a";
 const color_draws = "#b38235";
 
+/** Default settings for the extension */
 export const default_settings: Settings = {
   game_modes: ["blitz", "rapid", "bullet"],
   time_interval: "last 12 hours",
@@ -14,33 +16,35 @@ export const default_settings: Settings = {
   color_highlighting: false,
 };
 
-export const updateElement = (
-  el: HTMLElement,
-  stats: Stats,
-  showAccuracy: boolean,
-  colorHighlighting: boolean
-): void => {
-  let str;
-
-  if (colorHighlighting) {
-    str =
-      `<strong>` +
-      `<span style="color: ${color_wins}">${stats.wld.wins}</span>/` +
-      `<span style="color: ${color_loses}">${stats.wld.loses}</span>/` +
-      `<span style="color: ${color_draws}">${stats.wld.draws}</span>` +
-      `</strong>`;
-  } else {
-    str = `${stats.wld.wins}/${stats.wld.loses}/${stats.wld.draws}`;
-  }
-
-  if (stats.accuracy.avg != 0 && showAccuracy)
-    str += ` (${stats.accuracy.avg}%)`;
-  el.innerHTML = str;
+/**
+ * Object that maps time intervals to their respective durations in seconds
+ */
+const time_intervals: Record<string, number> = {
+  "last hour": 3600,
+  "last 6 hours": 21600,
+  "last 12 hours": 43200,
+  "last day": 86400,
+  "last 3 days": 259200,
+  "last week": 604800,
 };
 
+/**
+ * Maximum number of retries for fetch requests and delay between retries in milliseconds
+ */
+const MAX_RETRIES = 5;
+const RETRY_DELAY = 600;
+
+/**
+ * Fetch chess data for a given username and settings
+ * @param username The username for which to fetch chess data
+ * @param settings Settings object with user preferences
+ * @param retryCount Number of retries for the fetch request (used internally for retries)
+ * @returns A Promise that resolves to the chess statistics for the given user
+ */
 export const getChessData = async (
   username: string,
-  settings: Settings
+  settings: Settings,
+  retryCount = 0
 ): Promise<Stats> => {
   // current date
   const date = new Date();
@@ -48,14 +52,32 @@ export const getChessData = async (
   const month = (date.getMonth() + 1).toString().padStart(2, "0");
   // api data
   const url = `https://api.chess.com/pub/player/${username}/games/${year}/${month}`;
-  const response = await fetch(url);
+
+  // check if response returns 429 (rate-limiting error)
+  // if so, retry after a delay, up to MAX_RETRIES times
+  let response: Response;
+  try {
+    response = await fetch(url);
+  } catch (error) {
+    if (retryCount < MAX_RETRIES) {
+      await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY));
+      return getChessData(username, settings, retryCount + 1);
+    }
+    throw error;
+  }
+  // get response data as json
   const data = await response.json();
   // filter games and collect stats
   const games_filtered = filter_games(data.games, settings);
-  const stats: Stats = get_stats(games_filtered, username);
-  return stats;
+  return get_stats(games_filtered, username);
 };
 
+/**
+ * Calculate statistics based on filtered chess games
+ * @param games An array of filtered chess games
+ * @param username The username for which to calculate the statistics
+ * @returns Calculated statistics for the given user based on the filtered games
+ */
 export const get_stats = (games: any[], username: string): Stats => {
   let stats: Stats = {
     wld: { wins: 0, loses: 0, draws: 0, games: games.length },
@@ -88,44 +110,15 @@ export const get_stats = (games: any[], username: string): Stats => {
   return stats;
 };
 
-export const filter_games = (games: any[], settings: any): any[] => {
+/**
+ * Filter chess games based on user settings
+ * @param games An array of chess games to be filtered
+ * @param settings Settings object with user preferences
+ * @returns An array of filtered chess games based on the user settings
+ */
+export const filter_games = (games: any[], settings: Settings): any[] => {
   // use default settings if settings are not set
-  if (!settings.game_modes) {
-    // console.log("No settings found, setting to default");
-    saveSettingsToStorage(default_settings);
-  }
-
-  const time_intervals: Record<string, number> = {
-    "last hour": 3600,
-    "last 6 hours": 21600,
-    "last 12 hours": 43200,
-    "last day": 86400,
-    "last 3 days": 259200,
-    "last week": 604800,
-  };
-
-  const current_date = Math.floor(Date.now() / 1000);
-  const check_time_interval = (
-    end_time: number,
-    time_interval: string
-  ): boolean => {
-    if (end_time > current_date) return false;
-
-    if (time_interval in time_intervals)
-      return end_time > current_date - time_intervals[time_interval];
-
-    if (time_interval === "today") {
-      const current_day_seconds =
-        new Date().getHours() * 3600 +
-        new Date().getMinutes() * 60 +
-        new Date().getSeconds();
-      return end_time > current_date - current_day_seconds;
-    }
-
-    if (time_interval === "this month") return true;
-
-    return false;
-  };
+  if (!settings.game_modes) saveSettingsToStorage(default_settings);
 
   return games
     .filter((game) =>
@@ -138,6 +131,35 @@ export const filter_games = (games: any[], settings: any): any[] => {
     );
 };
 
+/**
+ * Check if a game end time falls within the specified time interval
+ * @param end_time End time of the chess game in seconds since epoch
+ * @param time_interval Time interval as a string (e.g., "last 6 hours", "last week")
+ * @returns True if the game end time falls within the specified time interval, otherwise false
+ */
+const check_time_interval = (
+  end_time: number,
+  time_interval: string
+): boolean => {
+  const current_date = Math.floor(Date.now() / 1000);
+
+  // don't filter if time_interval is "last month" because
+  // the api only returns games from the current month
+  if (time_interval === "this month") return true;
+
+  if (end_time > current_date) return false;
+
+  if (time_interval in time_intervals)
+    return end_time > current_date - time_intervals[time_interval];
+
+  return false;
+};
+
+/**
+ * Transform a game result string into a corresponding Wld key
+ * @param result Game result string
+ * @returns A key of the Wld object (e.g., "wins", "loses", "draws") or undefined if the result is unknown
+ */
 export const transform_result = (result: string): keyof Wld | undefined => {
   switch (result) {
     case "win":
@@ -162,6 +184,10 @@ export const transform_result = (result: string): keyof Wld | undefined => {
   }
 };
 
+/**
+ * Retrieve user settings from the local storage
+ * @returns A Promise that resolves to the user settings object
+ */
 export const getSettingsFromStorage = async (): Promise<any> => {
   let settings = await chrome.storage.local
     .get(["settings"])
@@ -175,7 +201,7 @@ export const getSettingsFromStorage = async (): Promise<any> => {
     !isValidString(settings?.time_interval) ||
     !isValidGameModes(settings?.game_modes)
   ) {
-    // console.log("Invalid settings, setting to default", settings);
+    console.log("Invalid settings, setting to default", settings);
     saveSettingsToStorage(default_settings);
     settings = default_settings;
   }
@@ -183,6 +209,11 @@ export const getSettingsFromStorage = async (): Promise<any> => {
   return settings;
 };
 
+/**
+ * Save user settings to the local storage
+ * @param settings Settings object to be saved
+ * @returns A Promise that resolves once the settings are saved to local storage
+ */
 export const saveSettingsToStorage = async (
   settings: Settings
 ): Promise<void> => {
@@ -190,6 +221,12 @@ export const saveSettingsToStorage = async (
   // console.log("set settings", settings);
 };
 
+/**
+ * Create an info element for displaying chess statistics
+ * @param className Class name for the info element
+ * @param id ID attribute for the info element
+ * @returns A newly created info element
+ */
 export const createInfoElement = (
   className: string,
   id: string
@@ -201,14 +238,60 @@ export const createInfoElement = (
   return infoEl;
 };
 
+/**
+ * Update an HTML element with chess statistics
+ * @param el The HTML element to be updated
+ * @param stats Statistics object containing chess statistics
+ * @param showAccuracy Flag indicating whether to display accuracy information
+ * @param colorHighlighting Flag indicating whether to apply color highlighting to the statistics
+ */
+export const updateElement = (
+  el: HTMLElement,
+  stats: Stats,
+  showAccuracy: boolean,
+  colorHighlighting: boolean
+): void => {
+  let str;
+
+  if (colorHighlighting) {
+    str =
+      `<strong>` +
+      `<span style="color: ${color_wins}">${stats.wld.wins}</span>/` +
+      `<span style="color: ${color_loses}">${stats.wld.loses}</span>/` +
+      `<span style="color: ${color_draws}">${stats.wld.draws}</span>` +
+      `</strong>`;
+  } else {
+    str = `${stats.wld.wins}/${stats.wld.loses}/${stats.wld.draws}`;
+  }
+
+  if (stats.accuracy.avg != 0 && showAccuracy)
+    str += ` (${stats.accuracy.avg}%)`;
+  el.innerHTML = str;
+};
+
+/**
+ * Check if a value is a valid boolean
+ * @param value The value to be checked
+ * @returns True if the value is a valid boolean, otherwise false
+ */
 export const isValidBoolean = (value: unknown): boolean => {
   return typeof value === "boolean";
 };
 
+/**
+ * Check if a value is a valid string
+ * @param value The value to be checked
+ * @returns True if the value is a valid string, otherwise false
+ */
 export const isValidString = (value: unknown): boolean => {
   return typeof value === "string";
 };
 
+/**
+ * Check if an array of game modes is valid
+ * @param modes An array of game modes to be checked
+ * @returns True if the array contains valid game modes, otherwise false
+ */
 export const isValidGameModes = (modes: string[]): boolean => {
   if (!Array.isArray(modes)) return false;
   const valid_gamemodes = ["blitz", "rapid", "bullet", "daily"];

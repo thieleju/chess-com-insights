@@ -24,6 +24,7 @@ const timeIntervals = ref([
   "last day",
   "last 3 days",
   "last week",
+  "this month",
 ]);
 const timeInterval = ref("last 12 hours");
 const snackbar = ref(false);
@@ -55,6 +56,16 @@ async function saveSettings(): Promise<void> {
     popup_darkmode: darkmode.value,
   };
   await saveSettingsToStorage(settings);
+
+  // send update message to content script
+  const [activeTab] = await chrome.tabs.query({
+    active: true,
+    lastFocusedWindow: true,
+  });
+  chrome.tabs.sendMessage(activeTab.id!, {
+    action: "updated-settings",
+  });
+
   console.log("saved settings to local storage", settings);
   snackbar_text.value = "Updated settings";
   snackbar_timeout.value = 1500;
