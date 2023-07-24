@@ -38,12 +38,12 @@ jobs:
 
       - name: Create Git Tag
         run: |
+          echo ${{env.RELEASE_VERSION }}
           git config user.name "${{ github.actor }}"
           git config user.email "${{ github.actor }}@users.noreply.github.com"
-          git tag "v${RELEASE_VERSION}"
-          git push origin "v${RELEASE_VERSION}"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+          git tag "v${{ env.RELEASE_VERSION }}"
+          echo ${{env.RELEASE_VERSION }}
+          git push origin "v${{ env.RELEASE_VERSION }}" --quiet --force -u "${{ secrets.GH_PAT }}"
 
       - name: Create Release
         id: create_release
