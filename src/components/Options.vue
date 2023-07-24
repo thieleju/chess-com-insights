@@ -109,7 +109,7 @@ onMounted(async () => {
   hideOwnStats.value = settings.hide_own_stats || false;
   showColorHighlighting.value = settings.color_highlighting || false;
   timeInterval.value = settings.time_interval || "last 12 hours";
-  darkmode.value = settings.popup_darkmode || true;
+  darkmode.value = settings.popup_darkmode;
   console.log("read settings from local storage", settings);
 });
 </script>
@@ -153,6 +153,7 @@ onMounted(async () => {
             label="Show average accuracy"
             color="primary"
             hide-details
+            :disabled="!showStats"
           ></v-switch>
         </v-col>
         <v-col cols="6">
@@ -161,6 +162,7 @@ onMounted(async () => {
             label="Hide own stats"
             color="primary"
             hide-details
+            :disabled="!showStats"
           ></v-switch>
         </v-col>
         <v-col cols="6">
@@ -169,6 +171,7 @@ onMounted(async () => {
             label="Color highlighting"
             color="primary"
             hide-details
+            :disabled="!showStats"
           ></v-switch>
         </v-col>
         <v-col cols="6">
@@ -179,6 +182,7 @@ onMounted(async () => {
             variant="underlined"
             multiple
             hide-details
+            :disabled="!showStats"
           ></v-combobox>
         </v-col>
         <v-col cols="6">
@@ -188,6 +192,7 @@ onMounted(async () => {
             label="Time interval"
             variant="underlined"
             hide-details
+            :disabled="!showStats"
           ></v-combobox>
         </v-col>
       </v-row>
