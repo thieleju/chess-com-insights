@@ -24,3 +24,7 @@ export interface Settings {
   time_interval: string;
   color_highlighting: boolean;
 }
+
+export interface TimeIntervals {
+  [key: string]: number;
+}

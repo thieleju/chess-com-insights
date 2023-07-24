@@ -1,0 +1,31 @@
+{
+  "MAX_RETRIES": 5,
+  "RETRY_DELAY": 600,
+  "LOAD_DELAY": 1500,
+  "query_selectors": {
+    "target_top": ".board-layout-top .user-tagline-username",
+    "target_bottom": ".board-layout-bottom .user-tagline-username"
+  },
+  "colors": {
+    "wins": "#6b9438",
+    "loses": "#bc403a",
+    "draws": "#b38235"
+  },
+  "defaultSettings": {
+    "game_modes": ["blitz", "rapid", "bullet"],
+    "time_interval": "last 12 hours",
+    "hide_own_stats": false,
+    "show_accuracy": true,
+    "show_stats": true,
+    "popup_darkmode": true,
+    "color_highlighting": false
+  },
+  "timeIntervals": {
+    "last hour": 3600,
+    "last 6 hours": 21600,
+    "last 12 hours": 43200,
+    "last day": 86400,
+    "last 3 days": 259200,
+    "last week": 604800
+  }
+}
