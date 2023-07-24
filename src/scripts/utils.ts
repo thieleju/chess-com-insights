@@ -1,50 +1,91 @@
-import { Wld, Stats, Settings } from "../types/stats";
+import { Wld, Stats, Settings, TimeIntervals } from "../types/stats";
 
-/** Colors for different game results */
-const color_wins = "#6b9438";
-const color_loses = "#bc403a";
-const color_draws = "#b38235";
+import {
+  MAX_RETRIES,
+  RETRY_DELAY,
+  query_selectors,
+  colors,
+  defaultSettings,
+  timeIntervals,
+} from "../../settings.json";
 
-/** Default settings for the extension */
-export const default_settings: Settings = {
-  game_modes: ["blitz", "rapid", "bullet"],
-  time_interval: "last 12 hours",
-  hide_own_stats: false,
-  show_accuracy: true,
-  show_stats: true,
-  popup_darkmode: true,
-  color_highlighting: false,
-};
+const default_settings: Settings = defaultSettings as Settings;
+const time_intervals: TimeIntervals = timeIntervals as TimeIntervals;
+
+let settings: Settings;
 
 /**
- * Object that maps time intervals to their respective durations in seconds
+ * Update chess statistics for a player
+ * @param player "top" or "bottom"
+ * @param update_settings Whether to update settings from storage
+ * @returns A Promise that resolves once the stats are updated
  */
-const time_intervals: Record<string, number> = {
-  "last hour": 3600,
-  "last 6 hours": 21600,
-  "last 12 hours": 43200,
-  "last day": 86400,
-  "last 3 days": 259200,
-  "last week": 604800,
-};
+export async function update_stats(
+  player: "top" | "bottom",
+  update_settings = false
+): Promise<void> {
+  // Update settings if not already loaded or if update_settings is true
+  if (!settings || update_settings) settings = await getSettingsFromStorage();
+
+  const flag = document.querySelector(
+    player === "top" ? ".flag-1" : ".flag-2"
+  ) as HTMLElement;
+
+  if (flag) flag.remove();
+
+  if (!settings.show_stats) return;
+  if (settings.hide_own_stats && player === "bottom") return;
+
+  const player_el = document.querySelector(
+    player === "top"
+      ? query_selectors.target_top
+      : query_selectors.target_bottom
+  ) as HTMLElement;
+
+  if (!player_el) return;
+
+  const info_el = createInfoElement(
+    player === "top" ? "flag-1" : "flag-2",
+    `info-el-${player}`
+  );
+
+  player_el.parentElement?.appendChild(info_el);
+
+  // Get stats for the player and update UI elements
+  // If an error occurs, remove the element from DOM and update again
+  try {
+    const chess_data = await getChessData(player_el.innerText, settings);
+    // console.log("chess data for ", player, player_el.innerText, chess_data.wld);
+    updateElement(
+      info_el,
+      chess_data,
+      settings.show_accuracy,
+      settings.color_highlighting
+    );
+  } catch (_err) {
+    // log error and remove the info element from DOM
+    // console.log(_err);
+    info_el.remove();
+  }
+}
 
 /**
- * Maximum number of retries for fetch requests and delay between retries in milliseconds
+ * Update chess statistics for both players
+ * @returns A Promise that resolves once both stats are updated
  */
-const MAX_RETRIES = 5;
-const RETRY_DELAY = 600;
+export async function update_stats_both(): Promise<void> {
+  await Promise.all([update_stats("top"), update_stats("bottom")]);
+}
 
 /**
  * Fetch chess data for a given username and settings
  * @param username The username for which to fetch chess data
  * @param settings Settings object with user preferences
- * @param retryCount Number of retries for the fetch request (used internally for retries)
  * @returns A Promise that resolves to the chess statistics for the given user
  */
 export const getChessData = async (
   username: string,
-  settings: Settings,
-  retryCount = 0
+  settings: Settings
 ): Promise<Stats> => {
   // current date
   const date = new Date();
@@ -52,24 +93,40 @@ export const getChessData = async (
   const month = (date.getMonth() + 1).toString().padStart(2, "0");
   // api data
   const url = `https://api.chess.com/pub/player/${username}/games/${year}/${month}`;
+  // retry up to MAX_RETRIES times
+  let retryCount = 0;
+  // return object
+  let stats: Stats = {} as Stats;
+  let fetchSuccessful = false;
 
-  // check if response returns 429 (rate-limiting error)
-  // if so, retry after a delay, up to MAX_RETRIES times
-  let response: Response;
-  try {
-    response = await fetch(url);
-  } catch (error) {
-    if (retryCount < MAX_RETRIES) {
-      await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY));
-      return getChessData(username, settings, retryCount + 1);
+  while (retryCount < MAX_RETRIES && !fetchSuccessful) {
+    try {
+      const response = await fetch(url, {
+        cache: "no-store",
+      });
+      // get response data as json
+      const data = await response.json();
+      // filter games and collect stats
+      const games_filtered = filter_games(data.games, settings);
+      stats = get_stats(games_filtered, username);
+      fetchSuccessful = true;
+    } catch (error: any) {
+      // exit if status code is 301 (redirect)
+      if (error?.code === 301) break;
+
+      retryCount++;
+      if (retryCount < MAX_RETRIES)
+        await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY));
     }
-    throw error;
   }
-  // get response data as json
-  const data = await response.json();
-  // filter games and collect stats
-  const games_filtered = filter_games(data.games, settings);
-  return get_stats(games_filtered, username);
+
+  // If stats is still null after the loop, handle the error here
+  if (!fetchSuccessful) {
+    console.log("max retries reached");
+    throw new Error("Failed to fetch chess data after max retries.");
+  }
+
+  return stats;
 };
 
 /**
@@ -256,9 +313,9 @@ export const updateElement = (
   if (colorHighlighting) {
     str =
       `<strong>` +
-      `<span style="color: ${color_wins}">${stats.wld.wins}</span>/` +
-      `<span style="color: ${color_loses}">${stats.wld.loses}</span>/` +
-      `<span style="color: ${color_draws}">${stats.wld.draws}</span>` +
+      `<span style="color: ${colors.wins}">${stats.wld.wins}</span>/` +
+      `<span style="color: ${colors.loses}">${stats.wld.loses}</span>/` +
+      `<span style="color: ${colors.draws}">${stats.wld.draws}</span>` +
       `</strong>`;
   } else {
     str = `${stats.wld.wins}/${stats.wld.loses}/${stats.wld.draws}`;
