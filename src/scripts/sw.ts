@@ -1,6 +1,6 @@
 /**
  * This service worker injects the content scripts into all tabs that
- * match the content script's matches.
+ * match the content script's matches when the extension is installed/updated.
  *
  * This is necessary because content scripts are only injected into
  * tabs that are created after the extension is installed.
