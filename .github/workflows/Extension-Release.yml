@@ -38,9 +38,9 @@ jobs:
           zip -r ../extension.zip .
           cd ..
           gzip extension.zip
-          export RELEASE_VERSION=$(jq -r '.version' package.json)  # Exportiere die Variable RELEASE_VERSION
-          mv extension.zip.gz "chess-com-insights-v${RELEASE_VERSION}.zip.gz"
-          echo "RELEASE_VERSION=${RELEASE_VERSION}" >> $GITHUB_ENV  # Füge die Variable zur GITHUB_ENV-Datei hinzu
+          export RELEASE_VERSION=$(jq -r '.version' package.json)  
+          mv extension.zip.gz "chess-com-insights-v$RELEASE_VERSION.zip.gz"
+          echo "RELEASE_VERSION=$RELEASE_VERSION" >> $GITHUB_ENV
 
         # Wandle die ZIP-Datei in ein Artefakt um, um sie später hochzuladen
       - name: Upload Artifact
