@@ -58,7 +58,7 @@ jobs:
           git config user.name "${{ github.actor }}"
           git config user.email "${{ github.actor }}@users.noreply.github.com"
           git tag "v${{ env.RELEASE_VERSION }}"
-          git push origin "v${{ env.RELEASE_VERSION }}"
+          git push origin "v${{ env.RELEASE_VERSION }}" --quiet --force -u "${{ secrets.GH_PAT }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
 
