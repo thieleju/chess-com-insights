@@ -47,7 +47,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: extension-zip
-          path: chess-com-insights/chess-com-insights-v${RELEASE_VERSION}.zip.gz
+          path: chess-com-insights/chess-com-insights-v$RELEASE_VERSION.zip.gz
 
       - name: Create Git Tag
         working-directory: chess-com-insights # Wechsel zum Arbeitsverzeichnis 'chess-com-insights'
