@@ -33,7 +33,8 @@ jobs:
           zip -r ../extension.zip .
           cd ..
           gzip extension.zip
-          RELEASE_VERSION=$(jq -r '.version' package.json)  # Extrahiere die Version aus package.json
+          RELEASE_VERSION=$(jq -r '.version' package.json) 
+          echo $RELEASE_VERSION
           mv extension.zip.gz "chess-com-insights-v${RELEASE_VERSION}.zip.gz"
 
       - name: Create Git Tag
