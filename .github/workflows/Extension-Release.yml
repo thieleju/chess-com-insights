@@ -12,6 +12,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+        with:
+          path: "chess-com-insights" # Arbeitsverzeichnis auf 'chess-com-insights' festlegen
 
       - name: Setup Node.js
         uses: actions/setup-node@v2
@@ -22,12 +24,15 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y jq
 
       - name: Install dependencies
+        working-directory: chess-com-insights # Wechsel zum Arbeitsverzeichnis 'chess-com-insights'
         run: npm install
 
       - name: Build Chrome Extension
+        working-directory: chess-com-insights # Wechsel zum Arbeitsverzeichnis 'chess-com-insights'
         run: npm run build
 
       - name: Compress dist folder
+        working-directory: chess-com-insights # Wechsel zum Arbeitsverzeichnis 'chess-com-insights'
         run: |
           cd dist
           zip -r ../extension.zip .
@@ -42,7 +47,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          path: "chess-com-insights" # Arbeitsverzeichnis auf 'chess-com-insights' festlegen
+
       - name: Create Git Tag
+        working-directory: chess-com-insights # Wechsel zum Arbeitsverzeichnis 'chess-com-insights'
         run: |
           git config user.name "${{ github.actor }}"
           git config user.email "${{ github.actor }}@users.noreply.github.com"
@@ -61,4 +72,4 @@ jobs:
           prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          RELEASE_VERSION: ${{ env.VERSION_TAG }}
+          RELEASE_VERSION: ${{ env.RELEASE_VERSION }}
