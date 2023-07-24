@@ -33,18 +33,23 @@ jobs:
           zip -r ../extension.zip .
           cd ..
           gzip extension.zip
-          RELEASE_VERSION=$(jq -r '.version' package.json) 
-          echo $RELEASE_VERSION
+          export RELEASE_VERSION=$(jq -r '.version' package.json)  # Exportiere die Variable RELEASE_VERSION
           mv extension.zip.gz "chess-com-insights-v${RELEASE_VERSION}.zip.gz"
+          echo "RELEASE_VERSION=${RELEASE_VERSION}" >> $GITHUB_ENV  # Füge die Variable zur GITHUB_ENV-Datei hinzu
 
+  create_release:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
       - name: Create Git Tag
         run: |
-          echo ${{env.RELEASE_VERSION }}
           git config user.name "${{ github.actor }}"
           git config user.email "${{ github.actor }}@users.noreply.github.com"
           git tag "v${{ env.RELEASE_VERSION }}"
-          echo ${{env.RELEASE_VERSION }}
-          git push origin "v${{ env.RELEASE_VERSION }}" --quiet --force -u "${{ secrets.GH_PAT }}"
+          git push origin "v${{ env.RELEASE_VERSION }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
 
       - name: Create Release
         id: create_release
