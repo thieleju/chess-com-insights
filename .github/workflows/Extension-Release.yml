@@ -16,7 +16,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: "20.4.0"
+          node-version: "20.4.0" # Aktualisiere hier auf die gewünschte Node-Version
 
       - name: Install dependencies
         run: npm install
@@ -32,6 +32,16 @@ jobs:
           gzip extension.zip
           mv extension.zip.gz "chess-com-insights-v${{ env.RELEASE_VERSION }}.zip.gz"
 
+      - name: Set Release Name
+        run: echo "RELEASE_NAME=chess-com-insights-v${{ env.RELEASE_VERSION }}" >> $GITHUB_ENV
+
+      - name: Create Git Tag
+        run: |
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor }}@users.noreply.github.com"
+          git tag "v${{ env.RELEASE_VERSION }}"
+          git push origin "v${{ env.RELEASE_VERSION }}"
+
       - name: Create Release
         id: create_release
         uses: softprops/action-gh-release@v1
@@ -43,6 +53,3 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RELEASE_VERSION: ${{ env.VERSION_TAG }}
-
-      - name: Set Release Name
-        run: echo "RELEASE_NAME=chess-com-insights-v${{ env.RELEASE_VERSION }}" >> $GITHUB_ENV
