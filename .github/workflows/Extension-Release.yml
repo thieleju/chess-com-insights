@@ -16,7 +16,10 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: "20.4.0" # Aktualisiere hier auf die gewünschte Node-Version
+          node-version: "20.4.0"
+
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
 
       - name: Install dependencies
         run: npm install
@@ -30,17 +33,15 @@ jobs:
           zip -r ../extension.zip .
           cd ..
           gzip extension.zip
-          mv extension.zip.gz "chess-com-insights-v${{ env.RELEASE_VERSION }}.zip.gz"
-
-      - name: Set Release Name
-        run: echo "RELEASE_NAME=chess-com-insights-v${{ env.RELEASE_VERSION }}" >> $GITHUB_ENV
+          RELEASE_VERSION=$(jq -r '.version' package.json)  # Extrahiere die Version aus package.json
+          mv extension.zip.gz "chess-com-insights-v${RELEASE_VERSION}.zip.gz"
 
       - name: Create Git Tag
         run: |
           git config user.name "${{ github.actor }}"
           git config user.email "${{ github.actor }}@users.noreply.github.com"
-          git tag "v${{ env.RELEASE_VERSION }}"
-          git push origin "v${{ env.RELEASE_VERSION }}"
+          git tag "v${RELEASE_VERSION}"
+          git push origin "v${RELEASE_VERSION}"
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
 
