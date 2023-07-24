@@ -1,0 +1,48 @@
+name: Chrome Extension Release
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "14"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build Chrome Extension
+        run: npm run build
+
+      - name: Compress dist folder
+        run: |
+          cd dist
+          zip -r ../extension.zip .
+          cd ..
+          gzip extension.zip
+          mv extension.zip.gz "chess-com-insights-v${{ env.RELEASE_VERSION }}.zip.gz"
+
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: "chess-com-insights-v${{ env.RELEASE_VERSION }}.zip.gz"
+          body: Release of version v${{ env.RELEASE_VERSION }}
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_VERSION: ${{ env.VERSION_TAG }}
+
+      - name: Set Release Name
+        run: echo "RELEASE_NAME=chess-com-insights-v${{ env.RELEASE_VERSION }}" >> $GITHUB_ENV
