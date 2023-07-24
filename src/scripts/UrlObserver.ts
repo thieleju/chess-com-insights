@@ -1,7 +1,7 @@
 import { update_stats_both } from "./utils";
 
 /**
- * Create a MutationObserver for observing URL changes
+ * MutationObserver for observing URL changes
  * @param targetTop The top username element
  * @param targetBottom The bottom username element
  * @returns A MutationObserver object
@@ -63,9 +63,9 @@ export class UrlObserver {
    * Stop observing URL changes
    */
   public stopObserving(): void {
-    if (this.mutationObserver) {
-      this.mutationObserver.disconnect();
-      this.mutationObserver = null;
-    }
+    if (!this.mutationObserver) return;
+
+    this.mutationObserver.disconnect();
+    this.mutationObserver = null;
   }
 }
