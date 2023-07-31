@@ -35,7 +35,6 @@ Manual installation:
 
 ## 🪲 Bugs
 
-- If the board is flipped before the stats are loaded, the stats will be switched
 - Hiding your own stats only hides the bottom stats, currently not depending on the username
 
 If you find any other bugs, please open an issue [here](https://github.com/thieleju/chess-com-insights/issues)
