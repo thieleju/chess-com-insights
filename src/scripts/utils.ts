@@ -1,3 +1,5 @@
+import { DateTime } from "luxon";
+
 import { Wld, Stats, Settings, TimeIntervals } from "../types/stats";
 
 import {
@@ -87,10 +89,12 @@ export const getChessData = async (
   username: string,
   settings: Settings
 ): Promise<Stats> => {
-  // current date
-  const date = new Date();
-  const year = date.getFullYear();
-  const month = (date.getMonth() + 1).toString().padStart(2, "0");
+  // current date in New_York timezone
+  // This avoids setting a future month when chess.com servers
+  // are in a different timezone
+  const date = DateTime.local().setZone("America/New_York");
+  const year = date.year;
+  const month = date.month.toString().padStart(2, "0");
   // api data
   const url = `https://api.chess.com/pub/player/${username}/games/${year}/${month}`;
   // retry up to MAX_RETRIES times
