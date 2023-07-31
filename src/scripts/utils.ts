@@ -101,6 +101,7 @@ export const getChessData = async (
 
   while (retryCount < MAX_RETRIES && !fetchSuccessful) {
     try {
+      // no-store cache policy to prevent caching
       const response = await fetch(url, {
         cache: "no-store",
       });
