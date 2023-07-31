@@ -8,31 +8,47 @@ import {
   saveSettingsToStorage,
 } from "../scripts/utils";
 
-const theme = useTheme();
-const darkmode = ref<boolean>(true);
+import package_json from "../../package.json";
 
-const modeStats = ref(["blitz", "rapid", "bullet", "daily"]);
-const showModes = ref(["blitz", "rapid", "bullet"]);
-const showStats = ref(true);
-const showAccuracy = ref(true);
-const hideOwnStats = ref(false);
-const showColorHighlighting = ref(false);
-const timeIntervals = ref([
-  "last hour",
-  "last 6 hours",
-  "last 12 hours",
-  "last day",
-  "last 3 days",
-  "last week",
-  "this month",
-]);
-const timeInterval = ref("last 12 hours");
+// import data from settings.json
+import settings_json from "../../settings.json";
+
+const {
+  defaultSettings: {
+    popup_darkmode,
+    game_modes,
+    show_stats,
+    show_accuracy,
+    hide_own_stats,
+    color_highlighting,
+    time_interval,
+  },
+  validSettings: {
+    game_modes: game_modes_valid,
+    time_intervals: time_intervals_valid,
+  },
+} = settings_json;
+
+// Define Refs
+const modeStatsRef = ref(game_modes_valid);
+const timeIntervalsRef = ref(time_intervals_valid);
+
+const darkmodeRef = ref(popup_darkmode);
+const showModesRef = ref(game_modes);
+const showStatsRef = ref(show_stats);
+const showAccuracyRef = ref(show_accuracy);
+const hideOwnStatsRef = ref(hide_own_stats);
+const showColorHighlightingRef = ref(color_highlighting);
+const timeIntervalRef = ref(time_interval);
+
 const snackbar = ref(false);
 const snackbar_timeout = ref(1500);
 const snackbar_text = ref("Updated settings");
 
+const theme = useTheme();
+
 watch(
-  () => darkmode.value,
+  () => darkmodeRef.value,
   (newVal) => {
     if (newVal) theme.global.name.value = "dark";
     else theme.global.name.value = "light";
@@ -42,18 +58,18 @@ watch(
 // save settings to local storage
 async function saveSettings(): Promise<void> {
   let settings: Settings = {
-    show_stats: showStats.value,
-    show_accuracy: showAccuracy.value,
-    hide_own_stats: hideOwnStats.value,
-    game_modes: Array.from(showModes.value) as (
+    show_stats: showStatsRef.value,
+    show_accuracy: showAccuracyRef.value,
+    hide_own_stats: hideOwnStatsRef.value,
+    game_modes: Array.from(showModesRef.value) as (
       | "blitz"
       | "rapid"
       | "bullet"
       | "daily"
     )[],
-    time_interval: timeInterval.value,
-    color_highlighting: showColorHighlighting.value,
-    popup_darkmode: darkmode.value,
+    time_interval: timeIntervalRef.value,
+    color_highlighting: showColorHighlightingRef.value,
+    popup_darkmode: darkmodeRef.value,
   };
   await saveSettingsToStorage(settings);
 
@@ -62,6 +78,9 @@ async function saveSettings(): Promise<void> {
     active: true,
     lastFocusedWindow: true,
   });
+
+  if (!activeTab) return console.log("Could not find active Tab");
+
   chrome.tabs.sendMessage(activeTab.id!, {
     action: "updated-settings",
   });
@@ -96,20 +115,21 @@ function savePressed() {
 
 function openGihtub() {
   chrome.tabs.create({
-    url: "https://github.com/thieleju/chess-com-insights",
+    url: package_json.repository.url,
   });
 }
 
 onMounted(async () => {
   const settings: Settings = await getSettingsFromStorage();
-  // set ui elements according to settings
-  showModes.value = settings.game_modes || ["blitz", "rapid", "bullet"];
-  showStats.value = settings.show_stats || true;
-  showAccuracy.value = settings.show_accuracy || true;
-  hideOwnStats.value = settings.hide_own_stats || false;
-  showColorHighlighting.value = settings.color_highlighting || false;
-  timeInterval.value = settings.time_interval || "last 12 hours";
-  darkmode.value = settings.popup_darkmode;
+  // set ui elements according to settings or default settings
+  showModesRef.value = settings.game_modes || game_modes;
+  showStatsRef.value = settings.show_stats || show_stats;
+  showAccuracyRef.value = settings.show_accuracy || show_accuracy;
+  hideOwnStatsRef.value = settings.hide_own_stats || hide_own_stats;
+  showColorHighlightingRef.value =
+    settings.color_highlighting || color_highlighting;
+  timeIntervalRef.value = settings.time_interval || time_interval;
+  darkmodeRef.value = settings.popup_darkmode;
   console.log("read settings from local storage", settings);
 });
 </script>
@@ -127,8 +147,8 @@ onMounted(async () => {
         </v-col>
         <v-spacer></v-spacer>
         <v-col cols="auto">
-          <v-icon @click="darkmode = !darkmode">
-            {{ darkmode ? "mdi-brightness-4" : "mdi-brightness-5" }}
+          <v-icon @click="darkmodeRef = !darkmodeRef">
+            {{ darkmodeRef ? "mdi-brightness-4" : "mdi-brightness-5" }}
           </v-icon>
         </v-col>
       </v-row>
@@ -141,7 +161,7 @@ onMounted(async () => {
       <v-row>
         <v-col cols="6">
           <v-switch
-            v-model="showStats"
+            v-model="showStatsRef"
             label="Show stats"
             color="primary"
             hide-details
@@ -149,50 +169,50 @@ onMounted(async () => {
         </v-col>
         <v-col cols="6">
           <v-switch
-            v-model="showAccuracy"
+            v-model="showAccuracyRef"
             label="Show average accuracy"
             color="primary"
             hide-details
-            :disabled="!showStats"
+            :disabled="!showStatsRef"
           ></v-switch>
         </v-col>
         <v-col cols="6">
           <v-switch
-            v-model="hideOwnStats"
+            v-model="hideOwnStatsRef"
             label="Hide own stats"
             color="primary"
             hide-details
-            :disabled="!showStats"
+            :disabled="!showStatsRef"
           ></v-switch>
         </v-col>
         <v-col cols="6">
           <v-switch
-            v-model="showColorHighlighting"
+            v-model="showColorHighlightingRef"
             label="Color highlighting"
             color="primary"
             hide-details
-            :disabled="!showStats"
+            :disabled="!showStatsRef"
           ></v-switch>
         </v-col>
         <v-col cols="6">
           <v-combobox
-            v-model="showModes"
-            :items="modeStats"
+            v-model="showModesRef"
+            :items="modeStatsRef"
             label="Modes included in stats"
             variant="underlined"
             multiple
             hide-details
-            :disabled="!showStats"
+            :disabled="!showStatsRef"
           ></v-combobox>
         </v-col>
         <v-col cols="6">
           <v-combobox
-            v-model="timeInterval"
-            :items="timeIntervals"
+            v-model="timeIntervalRef"
+            :items="timeIntervalsRef"
             label="Time interval"
             variant="underlined"
             hide-details
-            :disabled="!showStats"
+            :disabled="!showStatsRef"
           ></v-combobox>
         </v-col>
       </v-row>
