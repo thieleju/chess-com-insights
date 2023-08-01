@@ -28,8 +28,9 @@ jobs:
         run: git tag v${{ github.run_number }}
 
       - name: Push Git tag
-
         run: git push origin v${{ github.run_number }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create GitHub Release
         id: create_release
