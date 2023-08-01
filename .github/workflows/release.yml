@@ -1,0 +1,43 @@
+name: Create Release
+
+on:
+  push:
+    branches:
+      - release
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+  create_release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Create Git tag
+        run: git tag v${{ github.run_number }}
+
+      - name: Push Git tag
+
+        run: git push origin v${{ github.run_number }}
+
+      - name: Create GitHub Release
+        id: create_release
+        run: |
+          git config --global user.email "actions@github.com"
+          git config --global user.name "GitHub Actions"
+          release_title="Release v${{ github.run_number }}"
+          release_tag="v${{ github.run_number }}"
+          release_branch="release"
+          body="Add your release notes here."
+          hub release create -m "$release_title" -m "$body" -t "$release_tag" "$release_branch"
