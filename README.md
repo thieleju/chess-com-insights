@@ -1,7 +1,7 @@
 # chess-com-insights
 [![Create Release](https://github.com/thieleju/chess-com-insights/actions/workflows/release.yml/badge.svg)](https://github.com/thieleju/chess-com-insights/actions/workflows/release.yml)
 
-> **Warning** <br>
+> [!WARNING]  
 > This addon is still in development and bugs might occur. If that happens, try to reload the site. <br>
 
 ## 🚀 How it works
@@ -27,16 +27,15 @@ Add the extension to your browser:
 [Chrome Web Store](https://chrome.google.com/webstore/detail/chesscom-insights/mobpnhbkmljienoleojnhbfhkhodpffe)
 
 Manual installation:
-- Download the project [here](https://github.com/thieleju/chess-com-insights/archive/refs/heads/main.zip)
-- Unzip the file
+- Download the latest release zip from [here](https://github.com/thieleju/chess-com-insights/releases)
 - Go to your browser and type `chrome://extensions/` in the search bar
-- Enable developer mode and click on `Load unpacked`
-- Select the folder you just unzipped
-- Reload the chess.com page 
+- Enable developer mode in the corner
+- Drag and drop the zip file into the browser window
 
 ## 🪲 Bugs
 
 - Hiding your own stats only hides the bottom stats, currently not depending on the username
+- Sometimes the stats flash up when visiting a chess.com game link
 
 If you find any other bugs, please open an issue [here](https://github.com/thieleju/chess-com-insights/issues)
 
