@@ -1,4 +1,5 @@
 # chess-com-insights
+[![Create Release](https://github.com/thieleju/chess-com-insights/actions/workflows/release.yml/badge.svg)](https://github.com/thieleju/chess-com-insights/actions/workflows/release.yml)
 
 > **Warning** <br>
 > This addon is still in development and bugs might occur. If that happens, try to reload the site. <br>
