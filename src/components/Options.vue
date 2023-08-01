@@ -2,7 +2,7 @@
 import { ref, onMounted, watch } from "vue";
 import { useTheme } from "vuetify";
 
-import { Settings } from "../types/stats";
+import { Settings } from "../types/settings";
 import {
   getSettingsFromStorage,
   saveSettingsToStorage,

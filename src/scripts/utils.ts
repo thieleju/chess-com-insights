@@ -1,6 +1,7 @@
 import { DateTime } from "luxon";
 
-import { Wld, Stats, Settings, TimeIntervals } from "../types/stats";
+import { Wld, Stats } from "../types/stats";
+import { Settings, TimeIntervals } from "../types/settings";
 
 import {
   MAX_RETRIES,
