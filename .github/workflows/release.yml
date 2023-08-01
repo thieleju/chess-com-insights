@@ -6,7 +6,7 @@ on:
       - release
 
 env:
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
 
 jobs:
   create_release:
@@ -24,21 +24,32 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Build project
+        run: npm run build
+
+      - name: Create zip from dist folder
+        run: |
+          cd dist
+          zip -r ../chess-com-insights.zip .
+
+      - name: Get version from package.json
+        id: get_version
+        run: echo "::set-output name=version::$(node -p "require('./package.json').version")"
+
       - name: Create Git tag
-        run: git tag v${{ github.run_number }}
+        run: git tag v${{ steps.get_version.outputs.version }}
 
       - name: Push Git tag
-        run: git push origin v${{ github.run_number }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: git push origin v${{ steps.get_version.outputs.version }}
 
-      - name: Create GitHub Release
-        id: create_release
-        run: |
-          git config --global user.email "actions@github.com"
-          git config --global user.name "GitHub Actions"
-          release_title="Release v${{ github.run_number }}"
-          release_tag="v${{ github.run_number }}"
-          release_branch="release"
-          body="Add your release notes here."
-          hub release create -m "$release_title" -m "$body" -t "$release_tag" "$release_branch"
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: v${{ steps.get_version.outputs.version }}
+          tag_name: v${{ steps.get_version.outputs.version }}
+          body: |
+            Chess.com Insights Release v${{ steps.get_version.outputs.version }}
+            <br>
+            Install the extension manually by going to chrome://extensions and enabling developer mode. Then you can drag and drop the zip file into the browser.
+          files: |
+            chess-com-insights.zip
