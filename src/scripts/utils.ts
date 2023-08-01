@@ -92,7 +92,7 @@ export const getChessData = async (
   // current date in New_York timezone
   // This avoids setting a future month when chess.com servers
   // are in a different timezone
-  const date = DateTime.local().setZone("America/New_York");
+  const date = DateTime.local().setZone("America/Los_Angeles");
   const year = date.year;
   const month = date.month.toString().padStart(2, "0");
   // api data
