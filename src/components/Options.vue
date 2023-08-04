@@ -113,13 +113,12 @@ function openGihtub() {
 onMounted(async () => {
   const settings: Settings = await settingsManager.getSettingsFromStorage();
   // set ui elements according to settings or default settings
-  showModesRef.value = settings.game_modes || game_modes;
-  showStatsRef.value = settings.show_stats || show_stats;
-  showAccuracyRef.value = settings.show_accuracy || show_accuracy;
-  hideOwnStatsRef.value = settings.hide_own_stats || hide_own_stats;
-  showColorHighlightingRef.value =
-    settings.color_highlighting || color_highlighting;
-  timeIntervalRef.value = settings.time_interval || time_interval;
+  showModesRef.value = settings.game_modes;
+  showStatsRef.value = settings.show_stats;
+  showAccuracyRef.value = settings.show_accuracy;
+  hideOwnStatsRef.value = settings.hide_own_stats;
+  showColorHighlightingRef.value = settings.color_highlighting;
+  timeIntervalRef.value = settings.time_interval;
   darkmodeRef.value = settings.popup_darkmode;
   console.log("read settings from local storage", settings);
 });
