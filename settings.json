@@ -20,23 +20,16 @@
     "popup_darkmode": true,
     "color_highlighting": false
   },
-  "validSettings": {
-    "game_modes": ["blitz", "rapid", "bullet", "daily"],
-    "time_intervals": [
-      "last hour",
-      "last 6 hours",
-      "last 12 hours",
-      "last day",
-      "last 3 days",
-      "last week",
-      "this month"
-    ],
-    "hide_own_stats": [true, false],
-    "show_accuracy": [true, false],
-    "show_stats": [true, false],
-    "popup_darkmode": [true, false],
-    "color_highlighting": [true, false]
-  },
+  "validGameModes": ["blitz", "rapid", "bullet", "daily"],
+  "validTimeIntervals": [
+    "last hour",
+    "last 6 hours",
+    "last 12 hours",
+    "last day",
+    "last 3 days",
+    "last week",
+    "this month"
+  ],
   "timeIntervals": {
     "last hour": 3600,
     "last 6 hours": 21600,

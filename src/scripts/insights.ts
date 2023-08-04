@@ -1,9 +1,9 @@
 /**
- * This file is injected into chess.com tabs.
+ * This file is injected into matching chess.com tabs.
  */
 
 import package_json from "../../package.json";
-import { update_stats, update_stats_both } from "./utils";
+import { update_stats_both } from "./utils";
 import { UrlObserver } from "./UrlObserver";
 import { LOAD_DELAY } from "../../settings.json";
 
@@ -20,8 +20,7 @@ console.log(`🚀 View source code at ${package_json.repository.url}`);
  * Initial update of chess statistics
  */
 setTimeout(() => {
-  update_stats("top");
-  update_stats("bottom");
+  update_stats_both();
 }, LOAD_DELAY);
 
 /**
@@ -41,6 +40,5 @@ chrome.runtime.onMessage.addListener(async function (
 ) {
   if (request.action !== "updated-settings") return;
 
-  update_stats("top", true);
-  update_stats("bottom", true);
+  update_stats_both(true);
 });

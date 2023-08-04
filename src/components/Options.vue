@@ -2,7 +2,7 @@
 import { ref, onMounted, watch } from "vue";
 import { useTheme } from "vuetify";
 
-import { Settings } from "../types/settings";
+import { Settings, TimeInterval, GameMode } from "../types/settings";
 import {
   getSettingsFromStorage,
   saveSettingsToStorage,
@@ -23,15 +23,13 @@ const {
     color_highlighting,
     time_interval,
   },
-  validSettings: {
-    game_modes: game_modes_valid,
-    time_intervals: time_intervals_valid,
-  },
+  validGameModes,
+  validTimeIntervals,
 } = settings_json;
 
 // Define Refs
-const modeStatsRef = ref(game_modes_valid);
-const timeIntervalsRef = ref(time_intervals_valid);
+const modeStatsRef = ref(validGameModes);
+const timeIntervalsRef = ref(validTimeIntervals);
 
 const darkmodeRef = ref(popup_darkmode);
 const showModesRef = ref(game_modes);
@@ -61,13 +59,8 @@ async function saveSettings(): Promise<void> {
     show_stats: showStatsRef.value,
     show_accuracy: showAccuracyRef.value,
     hide_own_stats: hideOwnStatsRef.value,
-    game_modes: Array.from(showModesRef.value) as (
-      | "blitz"
-      | "rapid"
-      | "bullet"
-      | "daily"
-    )[],
-    time_interval: timeIntervalRef.value,
+    game_modes: Array.from(showModesRef.value) as GameMode[],
+    time_interval: timeIntervalRef.value as TimeInterval,
     color_highlighting: showColorHighlightingRef.value,
     popup_darkmode: darkmodeRef.value,
   };
