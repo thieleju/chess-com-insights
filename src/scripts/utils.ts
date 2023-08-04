@@ -1,7 +1,7 @@
 import { DateTime } from "luxon";
 
 import { Wld, Stats } from "../types/stats";
-import { Settings, TimeIntervals } from "../types/settings";
+import { Settings, TimeInterval, GameMode } from "../types/settings";
 
 import {
   MAX_RETRIES,
@@ -10,10 +10,14 @@ import {
   colors,
   defaultSettings,
   timeIntervals,
+  validTimeIntervals,
+  validGameModes,
 } from "../../settings.json";
 
 const default_settings: Settings = defaultSettings as Settings;
-const time_intervals: TimeIntervals = timeIntervals as TimeIntervals;
+const valid_time_intervals: TimeInterval[] =
+  validTimeIntervals as TimeInterval[];
+const valid_game_modes: GameMode[] = validGameModes as GameMode[];
 
 let settings: Settings;
 
@@ -65,9 +69,9 @@ export async function update_stats(
       settings.show_accuracy,
       settings.color_highlighting
     );
-  } catch (_err) {
+  } catch (error) {
     // log error and remove the info element from DOM
-    // console.log(_err);
+    console.error(`Chess.com Insights Error:`, error);
     info_el.remove();
   }
 }
@@ -76,8 +80,13 @@ export async function update_stats(
  * Update chess statistics for both players
  * @returns A Promise that resolves once both stats are updated
  */
-export async function update_stats_both(): Promise<void> {
-  await Promise.all([update_stats("top"), update_stats("bottom")]);
+export async function update_stats_both(
+  update_settings: boolean = false
+): Promise<void> {
+  await Promise.all([
+    update_stats("top", update_settings),
+    update_stats("bottom", update_settings),
+  ]);
 }
 
 /**
@@ -126,11 +135,9 @@ export const getChessData = async (
     }
   }
 
-  // If stats is still null after the loop, handle the error here
-  if (!fetchSuccessful) {
-    console.log("max retries reached");
+  // If wasn't successful after the loop, return error
+  if (!fetchSuccessful)
     throw new Error("Failed to fetch chess data after max retries.");
-  }
 
   return stats;
 };
@@ -202,7 +209,7 @@ export const filter_games = (games: any[], settings: Settings): any[] => {
  */
 const check_time_interval = (
   end_time: number,
-  time_interval: string
+  time_interval: TimeInterval
 ): boolean => {
   const current_date = Math.floor(Date.now() / 1000);
 
@@ -212,8 +219,8 @@ const check_time_interval = (
 
   if (end_time > current_date) return false;
 
-  if (time_interval in time_intervals)
-    return end_time > current_date - time_intervals[time_interval];
+  if (time_interval in timeIntervals)
+    return end_time > current_date - timeIntervals[time_interval];
 
   return false;
 };
@@ -255,20 +262,30 @@ export const getSettingsFromStorage = async (): Promise<any> => {
   let settings = await chrome.storage.local
     .get(["settings"])
     .then((result) => result.settings);
-  // check if current settings are valid
+
+  const isValidGameMode = (mode: GameMode) => valid_game_modes.includes(mode);
+  const isValidTimeInterval = (interval: TimeInterval) =>
+    valid_time_intervals.includes(interval);
+
   if (
-    !isValidBoolean(settings?.popup_darkmode) ||
-    !isValidBoolean(settings?.show_accuracy) ||
-    !isValidBoolean(settings?.color_highlighting) ||
-    !isValidBoolean(settings?.show_stats) ||
-    !isValidString(settings?.time_interval) ||
-    !isValidGameModes(settings?.game_modes)
+    typeof settings.popup_darkmode !== "boolean" ||
+    typeof settings.show_stats !== "boolean" ||
+    typeof settings.show_accuracy !== "boolean" ||
+    typeof settings.hide_own_stats !== "boolean" ||
+    !Array.isArray(settings.game_modes) ||
+    !settings.game_modes.every(isValidGameMode) ||
+    !isValidTimeInterval(settings.time_interval) ||
+    typeof settings.color_highlighting !== "boolean"
   ) {
-    console.log("Invalid settings, setting to default", settings);
+    alert("invalid " + JSON.stringify(settings));
+    console.log("Invalid settings, setting to default", {
+      invalid: settings,
+      default: default_settings,
+    });
     saveSettingsToStorage(default_settings);
     settings = default_settings;
   }
-  // console.log("read settings", settings);
+
   return settings;
 };
 
