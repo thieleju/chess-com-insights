@@ -1,16 +1,16 @@
 export interface Stats {
-  wld: Wld;
-  accuracy: Accuracy;
+  wld: Wld
+  accuracy: Accuracy
 }
 
 export interface Wld {
-  wins: number;
-  loses: number;
-  draws: number;
-  games: number;
+  wins: number
+  loses: number
+  draws: number
+  games: number
 }
 
 export interface Accuracy {
-  avg: number;
-  games: number;
+  avg: number
+  games: number
 }

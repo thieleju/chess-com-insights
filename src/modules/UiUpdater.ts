@@ -1,6 +1,6 @@
-import { Stats } from "../types/stats";
+import { Stats } from "../types/stats"
 
-import { colors } from "../../settings.json";
+import { colors } from "../../settings.json"
 
 /**
  * Utility class for updating UI elements with chess statistics.
@@ -21,7 +21,7 @@ export class UiUpdater {
     showAccuracy: boolean,
     colorHighlighting: boolean
   ): void {
-    let str;
+    let str
 
     if (colorHighlighting) {
       str =
@@ -29,16 +29,16 @@ export class UiUpdater {
         `<span style="color: ${colors.wins}">${stats.wld.wins}</span>/` +
         `<span style="color: ${colors.loses}">${stats.wld.loses}</span>/` +
         `<span style="color: ${colors.draws}">${stats.wld.draws}</span>` +
-        `</strong>`;
+        `</strong>`
     } else {
-      str = `${stats.wld.wins}/${stats.wld.loses}/${stats.wld.draws}`;
+      str = `${stats.wld.wins}/${stats.wld.loses}/${stats.wld.draws}`
     }
 
     if (stats.accuracy.avg !== 0 && showAccuracy) {
-      str += ` (${stats.accuracy.avg}%)`;
+      str += ` (${stats.accuracy.avg}%)`
     }
 
-    el.innerHTML = str;
+    el.innerHTML = str
   }
 
   /**
@@ -49,10 +49,10 @@ export class UiUpdater {
    * @returns {HTMLElement} A newly created info element.
    */
   createInfoElement(className: string, id: string): HTMLElement {
-    const infoEl = document.createElement("div");
-    infoEl.classList.add("user-tagline-rating", className);
-    infoEl.id = id;
-    infoEl.style.marginLeft = "10px";
-    return infoEl;
+    const infoEl = document.createElement("div")
+    infoEl.classList.add("user-tagline-rating", className)
+    infoEl.id = id
+    infoEl.style.marginLeft = "10px"
+    return infoEl
   }
 }
