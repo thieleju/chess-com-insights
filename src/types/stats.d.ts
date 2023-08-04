@@ -10,7 +10,7 @@ export interface Wld {
   games: number;
 }
 
-interface Accuracy {
+export interface Accuracy {
   avg: number;
   games: number;
 }

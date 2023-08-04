@@ -3,14 +3,10 @@ import { ref, onMounted, watch } from "vue";
 import { useTheme } from "vuetify";
 
 import { Settings, TimeInterval, GameMode } from "../types/settings";
-import {
-  getSettingsFromStorage,
-  saveSettingsToStorage,
-} from "../scripts/utils";
+
+import { SettingsManager } from "../modules/SettingsManager";
 
 import package_json from "../../package.json";
-
-// import data from settings.json
 import settings_json from "../../settings.json";
 
 const {
@@ -26,6 +22,8 @@ const {
   validGameModes,
   validTimeIntervals,
 } = settings_json;
+
+const settingsManager: SettingsManager = SettingsManager.getInstance();
 
 // Define Refs
 const modeStatsRef = ref(validGameModes);
@@ -64,7 +62,7 @@ async function saveSettings(): Promise<void> {
     color_highlighting: showColorHighlightingRef.value,
     popup_darkmode: darkmodeRef.value,
   };
-  await saveSettingsToStorage(settings);
+  await settingsManager.saveSettingsToStorage(settings);
 
   // send update message to content script
   const [activeTab] = await chrome.tabs.query({
@@ -113,7 +111,7 @@ function openGihtub() {
 }
 
 onMounted(async () => {
-  const settings: Settings = await getSettingsFromStorage();
+  const settings: Settings = await settingsManager.getSettingsFromStorage();
   // set ui elements according to settings or default settings
   showModesRef.value = settings.game_modes || game_modes;
   showStatsRef.value = settings.show_stats || show_stats;
@@ -245,3 +243,4 @@ onMounted(async () => {
   max-width: 510px;
 }
 </style>
+../classes/SettingsManager../modules/SettingsManager
