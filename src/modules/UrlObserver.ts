@@ -1,13 +1,13 @@
-import { StatsUpdater } from "./StatsUpdater";
+import { StatsUpdater } from "./StatsUpdater"
 
 /**
  * MutationObserver for observing URL changes
  */
 export class UrlObserver {
-  private statsUpdater: StatsUpdater;
-  private mutationObserver: MutationObserver | null;
-  private prevPathname: string;
-  private timeout: number;
+  private statsUpdater: StatsUpdater
+  private mutationObserver: MutationObserver | null
+  private prevPathname: string
+  private timeout: number
 
   /**
    * Constructor for UrlObserver
@@ -17,10 +17,10 @@ export class UrlObserver {
    * @constructor
    */
   constructor(statsUpdater: StatsUpdater, timeout: number) {
-    this.statsUpdater = statsUpdater;
-    this.prevPathname = window.location.pathname;
-    this.mutationObserver = null;
-    this.timeout = timeout;
+    this.statsUpdater = statsUpdater
+    this.prevPathname = window.location.pathname
+    this.mutationObserver = null
+    this.timeout = timeout
   }
 
   /**
@@ -32,17 +32,17 @@ export class UrlObserver {
   private handleMutation(mutationsList: MutationRecord[]): void {
     for (const mutation of mutationsList) {
       if (mutation.type !== "childList" && mutation.type !== "attributes")
-        continue;
+        continue
 
-      const currentPathname = window.location.pathname;
-      if (currentPathname === this.prevPathname) continue;
-      this.prevPathname = currentPathname;
+      const currentPathname = window.location.pathname
+      if (currentPathname === this.prevPathname) continue
+      this.prevPathname = currentPathname
 
       // Update stats after a timeout
       setTimeout(
         () => this.statsUpdater.updateStatsForBothPlayers(),
         this.timeout
-      );
+      )
     }
   }
 
@@ -52,18 +52,18 @@ export class UrlObserver {
    * @returns {void}
    */
   public startObserving(): void {
-    if (this.mutationObserver) return;
+    if (this.mutationObserver) return
 
     this.mutationObserver = new MutationObserver(
       (mutationsList: MutationRecord[]) => this.handleMutation(mutationsList)
-    );
+    )
 
     this.mutationObserver.observe(document.documentElement, {
       childList: true,
       subtree: true,
       attributes: true,
-      attributeFilter: ["href"],
-    });
+      attributeFilter: ["href"]
+    })
   }
 
   /**
@@ -72,9 +72,9 @@ export class UrlObserver {
    * @returns {void}
    */
   public stopObserving(): void {
-    if (!this.mutationObserver) return;
+    if (!this.mutationObserver) return
 
-    this.mutationObserver.disconnect();
-    this.mutationObserver = null;
+    this.mutationObserver.disconnect()
+    this.mutationObserver = null
   }
 }

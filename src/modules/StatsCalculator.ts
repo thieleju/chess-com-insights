@@ -1,15 +1,15 @@
-import { Settings, TimeInterval } from "../types/settings";
-import { Stats, Wld } from "../types/stats";
+import { Settings, TimeInterval } from "../types/settings"
+import { Stats, Wld } from "../types/stats"
 
-import { SettingsManager } from "./SettingsManager";
+import { SettingsManager } from "./SettingsManager"
 
-import { timeIntervals } from "../../settings.json";
+import { timeIntervals } from "../../settings.json"
 
 /**
  * A utility class for calculating chess statistics based on filtered games.
  */
 export class StatsCalculator {
-  private settingsManager: SettingsManager;
+  private settingsManager: SettingsManager
 
   /**
    * Creates a new StatsCalculator instance.
@@ -17,7 +17,7 @@ export class StatsCalculator {
    * @constructor
    */
   constructor(settingsManager: SettingsManager) {
-    this.settingsManager = settingsManager;
+    this.settingsManager = settingsManager
   }
 
   /**
@@ -30,33 +30,33 @@ export class StatsCalculator {
   calculateStats(games: any[], username: string): Stats {
     let stats: Stats = {
       wld: { wins: 0, loses: 0, draws: 0, games: games.length },
-      accuracy: { avg: 0, games: games.length },
-    };
+      accuracy: { avg: 0, games: games.length }
+    }
 
     games.forEach((game) => {
       const color =
         game.white.username.toLowerCase() === username.toLowerCase()
           ? "white"
-          : "black";
-      const accuracies = game.accuracies;
+          : "black"
+      const accuracies = game.accuracies
 
-      if (accuracies) stats.accuracy.avg += accuracies[color] || 0;
-      else stats.accuracy.games--;
+      if (accuracies) stats.accuracy.avg += accuracies[color] || 0
+      else stats.accuracy.games--
 
-      const result = this.transformResult(game[color].result);
+      const result = this.transformResult(game[color].result)
       if (!result) {
-        console.error("Unknown result", result);
-        return;
+        console.error("Unknown result", result)
+        return
       }
-      stats.wld[result]++;
-    });
+      stats.wld[result]++
+    })
 
     stats.accuracy.avg = parseFloat(
       (stats.accuracy.avg / stats.accuracy.games).toFixed(2)
-    );
-    if (isNaN(stats.accuracy.avg)) stats.accuracy.avg = 0;
+    )
+    if (isNaN(stats.accuracy.avg)) stats.accuracy.avg = 0
 
-    return stats;
+    return stats
   }
 
   /**
@@ -68,7 +68,7 @@ export class StatsCalculator {
    */
   async filterGames(games: any[], settings: Settings): Promise<any[]> {
     if (!settings.game_modes)
-      await this.settingsManager.saveDefaultSettingsToStorage();
+      await this.settingsManager.saveDefaultSettingsToStorage()
 
     return games
       .filter((game) =>
@@ -78,7 +78,7 @@ export class StatsCalculator {
       )
       .filter((game) =>
         this.checkTimeInterval(game.end_time, settings.time_interval)
-      );
+      )
   }
 
   /**
@@ -89,16 +89,16 @@ export class StatsCalculator {
    * @returns {boolean} True if the game end time falls within the specified time interval, otherwise false.
    */
   checkTimeInterval(end_time: number, time_interval: TimeInterval): boolean {
-    const current_date = Math.floor(Date.now() / 1000);
+    const current_date = Math.floor(Date.now() / 1000)
 
-    if (time_interval === "this month") return true;
+    if (time_interval === "this month") return true
 
-    if (end_time > current_date) return false;
+    if (end_time > current_date) return false
 
     if (time_interval in timeIntervals)
-      return end_time > current_date - timeIntervals[time_interval];
+      return end_time > current_date - timeIntervals[time_interval]
 
-    return false;
+    return false
   }
 
   /**
@@ -110,24 +110,24 @@ export class StatsCalculator {
   transformResult(result: string): keyof Wld | undefined {
     switch (result) {
       case "win":
-        return "wins";
+        return "wins"
       case "lose":
       case "checkmated":
       case "resigned":
       case "timeout":
       case "abandoned":
       case "bughousepartnerlose":
-        return "loses";
+        return "loses"
       case "agreed":
       case "timevsinsufficient":
       case "repetition":
       case "stalemate":
       case "insufficient":
       case "50move":
-        return "draws";
+        return "draws"
       default:
-        console.error(`Cannot transform unknown result: ${result}`);
-        return undefined;
+        console.error(`Cannot transform unknown result: ${result}`)
+        return undefined
     }
   }
 }
