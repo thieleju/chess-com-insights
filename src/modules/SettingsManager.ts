@@ -1,21 +1,21 @@
-import { Settings } from "../types/settings";
-import { GameMode, TimeInterval } from "../types/settings";
+import { Settings } from "../types/settings"
+import { GameMode, TimeInterval } from "../types/settings"
 
 import {
   defaultSettings,
   validTimeIntervals,
-  validGameModes,
-} from "../../settings.json";
+  validGameModes
+} from "../../settings.json"
 
 /**
  * Manages user settings, including retrieval, validation, and storage.
  */
 export class SettingsManager {
-  private static instance: SettingsManager;
-  private settings: Settings | undefined;
+  private static instance: SettingsManager
+  private settings: Settings | undefined
 
   private constructor(s?: Settings) {
-    this.settings = s;
+    this.settings = s
   }
 
   /**
@@ -25,9 +25,9 @@ export class SettingsManager {
    */
   public static getInstance(): SettingsManager {
     if (!SettingsManager.instance)
-      SettingsManager.instance = new SettingsManager();
+      SettingsManager.instance = new SettingsManager()
 
-    return SettingsManager.instance;
+    return SettingsManager.instance
   }
 
   /**
@@ -39,13 +39,13 @@ export class SettingsManager {
   async getSettingsFromStorage(): Promise<Settings> {
     const settings = await chrome.storage.local
       .get(["settings"])
-      .then((result) => result.settings);
+      .then((result) => result.settings)
 
-    const default_settings: Settings = defaultSettings as Settings;
+    const default_settings: Settings = defaultSettings as Settings
 
-    if (!this.validateSettings(settings)) return default_settings;
+    if (!this.validateSettings(settings)) return default_settings
 
-    return settings;
+    return settings
   }
 
   /**
@@ -55,8 +55,8 @@ export class SettingsManager {
    * @returns {Promise<void>} A Promise that resolves once the settings are saved.
    */
   async saveSettingsToStorage(settings: Settings): Promise<void> {
-    await chrome.storage.local.set({ settings });
-    this.settings = settings;
+    await chrome.storage.local.set({ settings })
+    this.settings = settings
   }
 
   /**
@@ -67,12 +67,12 @@ export class SettingsManager {
    */
   validateSettings(settings: Settings): boolean {
     const valid_time_intervals: TimeInterval[] =
-      validTimeIntervals as TimeInterval[];
-    const valid_game_modes: GameMode[] = validGameModes as GameMode[];
+      validTimeIntervals as TimeInterval[]
+    const valid_game_modes: GameMode[] = validGameModes as GameMode[]
 
-    const isValidGameMode = (mode: GameMode) => valid_game_modes.includes(mode);
+    const isValidGameMode = (mode: GameMode) => valid_game_modes.includes(mode)
     const isValidTimeInterval = (interval: TimeInterval) =>
-      valid_time_intervals.includes(interval);
+      valid_time_intervals.includes(interval)
 
     if (
       typeof settings.popup_darkmode !== "boolean" ||
@@ -84,12 +84,12 @@ export class SettingsManager {
       !isValidTimeInterval(settings.time_interval) ||
       typeof settings.color_highlighting !== "boolean"
     ) {
-      console.error("Invalid settings detected:", settings);
-      this.saveDefaultSettingsToStorage();
-      return false;
+      console.error("Invalid settings detected:", settings)
+      this.saveDefaultSettingsToStorage()
+      return false
     }
 
-    return true;
+    return true
   }
 
   /**
@@ -98,8 +98,8 @@ export class SettingsManager {
    * @returns {Promise<void>} A Promise that resolves once the settings are saved.
    */
   async saveDefaultSettingsToStorage(): Promise<void> {
-    const default_settings: Settings = defaultSettings as Settings;
-    this.saveSettingsToStorage(default_settings);
+    const default_settings: Settings = defaultSettings as Settings
+    this.saveSettingsToStorage(default_settings)
   }
 
   /**
@@ -110,8 +110,8 @@ export class SettingsManager {
    */
   async getSettings(updateSettings?: boolean): Promise<Settings> {
     if (!this.settings || updateSettings)
-      this.settings = await this.getSettingsFromStorage();
+      this.settings = await this.getSettingsFromStorage()
 
-    return this.settings;
+    return this.settings
   }
 }
