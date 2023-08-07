@@ -14,7 +14,7 @@
     "preview": "vite preview",
     "test": "tsc && mocha",
     "test:actions": "tsc && mocha --reporter mocha-junit-reporter --reporter-options mochaFile=tests/results.xml",
-    "coverage": "nyc npm run test:actions"
+    "coverage": "nyc -t tests/coverage npm run test:actions"
   },
   "dependencies": {
     "@mdi/font": "7.2.96",
