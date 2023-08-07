@@ -1,5 +1,7 @@
 # chess-com-insights
-[![Create Release](https://github.com/thieleju/chess-com-insights/actions/workflows/release.yml/badge.svg)](https://github.com/thieleju/chess-com-insights/actions/workflows/release.yml)
+[![Release Workflow](https://github.com/thieleju/chess-com-insights/actions/workflows/release.yml/badge.svg)](https://github.com/thieleju/chess-com-insights/actions/workflows/release.yml)
+![](https://img.shields.io/chrome-web-store/users/mobpnhbkmljienoleojnhbfhkhodpffe
+)
 
 > [!WARNING]  
 > This addon is still in development and bugs might occur. If that happens, try to reload the site. <br>
