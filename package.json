@@ -13,7 +13,7 @@
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview",
     "test": "tsc && mocha",
-    "test:actions": "tsc && mocha -t --reporter mocha-junit-reporter --reporter-options mochaFile=tests/results.xml",
+    "test:actions": "tsc && mocha -t 5000 --reporter mocha-junit-reporter --reporter-options mochaFile=tests/results.xml",
     "coverage": "nyc npm run test:actions"
   },
   "dependencies": {
