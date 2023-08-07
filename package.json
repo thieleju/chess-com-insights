@@ -11,7 +11,10 @@
     "prebuild": "prettier --write \"src/**/*.ts\" \"tests/*.ts\"",
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "tsc && mocha",
+    "test:actions": "mocha --reporter mocha-junit-reporter --reporter-options mochaFile=tests/results.xml",
+    "coverage": "nyc npm run test:actions"
   },
   "dependencies": {
     "@mdi/font": "7.2.96",
@@ -24,14 +27,21 @@
   "devDependencies": {
     "@babel/types": "^7.21.4",
     "@crxjs/vite-plugin": "^2.0.0-beta.18",
+    "@istanbuljs/nyc-config-typescript": "^1.0.2",
+    "@types/chai": "^4.3.5",
     "@types/chrome": "^0.0.243",
     "@types/luxon": "^3.3.1",
     "@types/mocha": "^10.0.1",
     "@types/node": "^20.4.8",
     "@types/webfontloader": "^1.6.35",
     "@vitejs/plugin-vue": "^4.2.3",
+    "chai": "^4.3.7",
     "mocha": "^10.2.0",
+    "mocha-junit-reporter": "^2.2.1",
+    "nyc": "^15.1.0",
     "prettier": "^3.0.1",
+    "source-map-support": "^0.5.21",
+    "ts-node": "^10.9.1",
     "typescript": "^5.0.2",
     "vite": "^4.4.9",
     "vite-plugin-vuetify": "^1.0.0",
