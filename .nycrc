@@ -4,7 +4,13 @@
   "check-coverage": false,
   "reporter": ["html", "text"],
   "report-dir": "tests/coverage",
-  "exclude": ["tests/**/*", "src/plugins/*"],
+  "exclude": [
+    "tests/**/*",
+    "src/plugins/*",
+    "src/types/*",
+    "src/vite-env.d.ts",
+    "dist"
+  ],
   "branches": 80,
   "lines": 80,
   "functions": 80,
