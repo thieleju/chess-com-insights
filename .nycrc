@@ -2,7 +2,7 @@
   "extends": "@istanbuljs/nyc-config-typescript",
   "all": true,
   "check-coverage": false,
-  "reporter": ["html", "text"],
+  "reporter": ["html", "text", "text-summary"],
   "report-dir": "tests/coverage",
   "exclude": [
     "tests/**/*",
