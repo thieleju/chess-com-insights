@@ -1,7 +1,6 @@
 # chess-com-insights
 [![Release Workflow](https://github.com/thieleju/chess-com-insights/actions/workflows/release.yml/badge.svg)](https://github.com/thieleju/chess-com-insights/actions/workflows/release.yml)
-[![Mocha Tests](https://github.com/thieleju/chess-com-insights/actions/workflows/mocha.yml/badge.svg)](https://github.com/thieleju/chess-com-insights/actions/workflows/mocha.yml)
-![ GitHub](https://img.shields.io/nycrc/thieleju/chess-com-insights)
+[![Unit Tests](https://github.com/thieleju/chess-com-insights/actions/workflows/mocha.yml/badge.svg)](https://github.com/thieleju/chess-com-insights/actions/workflows/mocha.yml)
 ![Chrome Web Store](https://img.shields.io/chrome-web-store/users/mobpnhbkmljienoleojnhbfhkhodpffe
 )
 
