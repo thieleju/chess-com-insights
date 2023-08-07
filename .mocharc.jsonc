@@ -1,0 +1,18 @@
+/*
+ * Mocha Tests Configuration
+ */
+
+{
+  "diff": true,
+  "extension": ["ts"],
+  "spec": ["tests/**/*.test.ts"],
+  "package": "./package.json",
+  "reporter": "spec",
+  "slow": "75",
+  "timeout": "15000",
+  "exit": true,
+  "node-option": [
+    "experimental-specifier-resolution=node",
+    "loader=ts-node/esm"
+  ]
+}
