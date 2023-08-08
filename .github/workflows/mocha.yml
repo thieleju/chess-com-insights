@@ -52,9 +52,9 @@ jobs:
         with:
           report_paths: "tests/results.xml"
 
-      - name: NYC Coverage Report
-        uses: Tintef/nyc-reporter-action@0.1.0
-        with:
-          REPORTER: "text-summary"
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          COVERAGE_FOLDER: "tests/coverage"
+      # - name: NYC Coverage Report
+      #   uses: Tintef/nyc-reporter-action@0.1.0
+      #   with:
+      #     REPORTER: "text-summary"
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #     COVERAGE_FOLDER: "tests/coverage"
