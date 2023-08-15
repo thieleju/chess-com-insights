@@ -50,6 +50,7 @@ jobs:
           branch: coverage
           # commit_options: '--no-verify --signoff'
           file_pattern: "*.js *.html *.css *.png"
+          add_options: "-f"
           repository: .
           push_options: "--force"
           skip_dirty_check: true # Optional. Disable dirty check and always try to create a commit and push
