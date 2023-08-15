@@ -31,7 +31,10 @@ export class SettingsManager {
     const defaultSettings: Settings = this.settingsJSON
       .defaultSettings as Settings
 
-    if (!this.validateSettings(settings)) return defaultSettings
+    if (!settings || !this.validateSettings(settings)) {
+      await this.saveSettingsToStorage(defaultSettings)
+      return defaultSettings
+    }
 
     return settings
   }
@@ -75,24 +78,9 @@ export class SettingsManager {
       !isBoolean(settings.color_highlighting)
     ]
 
-    if (invalidSettings.some((invalid) => invalid)) {
-      console.error("Invalid settings detected:", settings)
-      this.saveDefaultSettingsToStorage()
-      return false
-    }
+    if (invalidSettings.some((invalid) => invalid)) return false
 
     return true
-  }
-
-  /**
-   * Saves default settings to local storage.
-   *
-   * @returns {Promise<void>} A Promise that resolves once the settings are saved.
-   */
-  async saveDefaultSettingsToStorage(): Promise<void> {
-    const defaultSettings: Settings = this.settingsJSON
-      .defaultSettings as Settings
-    this.saveSettingsToStorage(defaultSettings)
   }
 
   /**
