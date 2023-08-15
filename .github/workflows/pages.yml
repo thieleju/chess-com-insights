@@ -41,9 +41,13 @@ jobs:
       - name: Run c8 code coverage
         run: npm run cover
 
-      - name: Deploy to Coverage Branch
-        run: |
-          git checkout -b coverage
-          git add -f tests/coverage
-          git commit -m "Deploy coverage HTML page"
-          git push -f origin coverage
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Update coverage retport html
+          branch: coverage
+          # commit_options: '--no-verify --signoff'
+          repository: tests/coverage
+          push_options: '--force'
+          # Optional. Disable dirty check and always try to create a commit and push
+          skip_dirty_check: true    
+          
