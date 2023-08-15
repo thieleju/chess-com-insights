@@ -13,8 +13,8 @@
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview",
     "test": "tsc && ts-mocha",
-    "test:actions": "tsc && ts-mocha --reporter mocha-junit-reporter --reporter-options mochaFile=tests/results.xml",
-    "cover": "npx c8 npm run test"
+    "test:junit": "tsc && ts-mocha --reporter mocha-junit-reporter --reporter-options mochaFile=tests/results.xml",
+    "cover": "npx c8 npm run test && npx c8 report --reporter html"
   },
   "dependencies": {
     "@mdi/font": "7.2.96",
