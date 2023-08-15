@@ -41,13 +41,15 @@ jobs:
       - name: Run c8 code coverage
         run: npm run cover
 
+      - name: Move files to root directory
+        run: mv tests/coverage/* .
+
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: Update coverage retport html
           branch: coverage
           # commit_options: '--no-verify --signoff'
-          repository: tests/coverage
-          push_options: '--force'
-          # Optional. Disable dirty check and always try to create a commit and push
-          skip_dirty_check: true    
-          
+          file_pattern: "*.js *.html *.css *.png"
+          repository: .
+          push_options: "--force"
+          skip_dirty_check: true # Optional. Disable dirty check and always try to create a commit and push
