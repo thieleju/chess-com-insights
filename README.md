@@ -19,6 +19,7 @@ Use the icon in the top right corner to adjust the settings.
 ### Preview
 ![preview](images/preview.png)
 ![preview](images/preview2.png)
+![preview](images/preview3.png)
 
 ### Options
 
