@@ -46,6 +46,6 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git checkout -b coverage
-          git add -f tests/coverage 
-          git commit -f -m "Deploy coverage HTML page"
+          git add tests/coverage 
+          git commit -m "Deploy coverage HTML page"
           git push -f origin coverage
