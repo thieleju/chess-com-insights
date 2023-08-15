@@ -1,8 +1,8 @@
 # chess-com-insights
-[![Release Workflow](https://github.com/thieleju/chess-com-insights/actions/workflows/release.yml/badge.svg)](https://github.com/thieleju/chess-com-insights/actions/workflows/release.yml)
-[![Unit Tests](https://github.com/thieleju/chess-com-insights/actions/workflows/mocha.yml/badge.svg)](https://github.com/thieleju/chess-com-insights/actions/workflows/mocha.yml)
-![Chrome Web Store](https://img.shields.io/chrome-web-store/users/mobpnhbkmljienoleojnhbfhkhodpffe
-)
+[![Release](https://github.com/thieleju/chess-com-insights/actions/workflows/release.yml/badge.svg)](https://github.com/thieleju/chess-com-insights/actions/workflows/release.yml)
+[![Tests](https://github.com/thieleju/chess-com-insights/actions/workflows/mocha.yml/badge.svg)](https://github.com/thieleju/chess-com-insights/actions/workflows/mocha.yml)
+![Chrome Web Store](https://img.shields.io/chrome-web-store/users/mobpnhbkmljienoleojnhbfhkhodpffe?label=Active%20Users)
+![Chrome Web Store](https://img.shields.io/chrome-web-store/stars/mobpnhbkmljienoleojnhbfhkhodpffe?label=Rating)
 
 > [!WARNING]  
 > This addon is still in development and bugs might occur. If that happens, try to reload the site. <br>
