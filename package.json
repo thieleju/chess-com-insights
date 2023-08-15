@@ -14,7 +14,7 @@
     "preview": "vite preview",
     "test": "tsc && ts-mocha",
     "test:actions": "tsc && ts-mocha --reporter mocha-junit-reporter --reporter-options mochaFile=tests/results.xml",
-    "test:coverage": "nyc -t tests/coverage npm run test:actions"
+    "cover": "npx c8 npm run test"
   },
   "dependencies": {
     "@mdi/font": "7.2.96",
@@ -26,7 +26,6 @@
   },
   "devDependencies": {
     "@crxjs/vite-plugin": "^2.0.0-beta.18",
-    "@istanbuljs/nyc-config-typescript": "^1.0.2",
     "@types/chai": "^4.3.5",
     "@types/chrome": "^0.0.243",
     "@types/expect": "^24.3.0",
@@ -38,12 +37,12 @@
     "@types/sinon": "^10.0.16",
     "@types/webfontloader": "^1.6.35",
     "@vitejs/plugin-vue": "^4.2.3",
+    "c8": "^8.0.1",
     "chai": "^4.3.7",
     "jsdom": "^22.1.0",
     "jsdom-global": "^3.0.2",
     "mocha": "^10.2.0",
     "mocha-junit-reporter": "^2.2.1",
-    "nyc": "^15.1.0",
     "prettier": "^3.0.1",
     "sinon": "^15.2.0",
     "source-map-support": "^0.5.21",

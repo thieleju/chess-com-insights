@@ -4,14 +4,7 @@
   "check-coverage": false,
   "reporter": ["text", "text-summary"],
   "report-dir": "tests/coverage",
-  "include": ["src/**/*.ts", "src/modules/*.ts"],
-  "exclude": [
-    "tests/**/*",
-    "src/plugins/*",
-    "src/types/*",
-    "src/vite-env.d.ts",
-    "dist"
-  ],
+  "include": ["src/modules/*.ts"],
   "branches": 80,
   "lines": 80,
   "functions": 80,
