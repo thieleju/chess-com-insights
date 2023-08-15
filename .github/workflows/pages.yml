@@ -42,6 +42,8 @@ jobs:
 
       # - name: Run c8 code coverage
       #   run: npm run cover
+      - name: test
+        run: mkdir -p tests/coverage && echo "test" > tests/coverage/index.html
 
       - name: Setup Pages
         uses: actions/configure-pages@v3
