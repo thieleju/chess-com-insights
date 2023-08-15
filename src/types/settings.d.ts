@@ -18,3 +18,30 @@ export interface Settings {
   time_interval: TimeInterval
   color_highlighting: boolean
 }
+
+export interface SettingsStorage {
+  getStoredSettings(): Promise<Settings>
+  saveSettings(settings: Settings): Promise<void>
+}
+
+export interface SettingsJSON {
+  FETCH_MAX_RETRIES: number
+  FETCH_RETRY_DELAY: number
+  LOAD_DELAY: number
+  query_selectors: {
+    target_name: string
+    target_top: string
+    target_bottom: string
+  }
+  colors: {
+    wins: string
+    loses: string
+    draws: string
+  }
+  defaultSettings: Settings
+  validGameModes: GameMode[]
+  validTimeIntervals: TimeInterval[]
+  timeIntervalsMS: {
+    [key: string]: number
+  }
+}

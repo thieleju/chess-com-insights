@@ -1,18 +1,32 @@
+import { SettingsJSON } from "../types/settings"
 import { Stats } from "../types/stats"
-
-import { colors } from "../../settings.json"
 
 /**
  * Utility class for updating UI elements with chess statistics.
  */
 export class UiUpdater {
+  private color_wins: string
+  private color_loses: string
+  private color_draws: string
+
   /**
-   * Aktualisiert ein HTML-Element mit Schachstatistiken.
+   * Create a UiUpdater instance.
    *
-   * @param {HTMLElement} el - Das HTML-Element, das aktualisiert werden soll.
-   * @param {Object} stats - Ein Statistik-Objekt mit Schachstatistiken.
-   * @param {boolean} showAccuracy - Ein Flag, das angibt, ob Genauigkeitsinformationen angezeigt werden sollen.
-   * @param {boolean} colorHighlighting - Ein Flag, das angibt, ob Farbhervorhebung auf die Statistiken angewendet werden soll.
+   * @param {SettingsJSON} settingsJSON - The settings in JSON format.
+   */
+  constructor(settingsJSON: SettingsJSON) {
+    this.color_wins = settingsJSON.colors.wins
+    this.color_loses = settingsJSON.colors.loses
+    this.color_draws = settingsJSON.colors.draws
+  }
+
+  /**
+   * Update an HTML element with chess statistics.
+   *
+   * @param {HTMLElement} el - The HTML element to be updated.
+   * @param {Stats} stats - A statistics object containing chess statistics.
+   * @param {boolean} showAccuracy - A flag indicating whether accuracy information should be displayed.
+   * @param {boolean} colorHighlighting - A flag indicating whether color highlighting should be applied to the statistics.
    * @returns {void}
    */
   updateElement(
@@ -26,9 +40,9 @@ export class UiUpdater {
     if (colorHighlighting) {
       str =
         `<strong>` +
-        `<span style="color: ${colors.wins}">${stats.wld.wins}</span>/` +
-        `<span style="color: ${colors.loses}">${stats.wld.loses}</span>/` +
-        `<span style="color: ${colors.draws}">${stats.wld.draws}</span>` +
+        `<span style="color: ${this.color_wins}">${stats.wld.wins}</span>/` +
+        `<span style="color: ${this.color_loses}">${stats.wld.loses}</span>/` +
+        `<span style="color: ${this.color_draws}">${stats.wld.draws}</span>` +
         `</strong>`
     } else {
       str = `${stats.wld.wins}/${stats.wld.loses}/${stats.wld.draws}`

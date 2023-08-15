@@ -1,13 +1,19 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from "vue";
-import { useTheme } from "vuetify";
+import { ref, onMounted, watch } from "vue"
+import { useTheme } from "vuetify"
 
-import { Settings, TimeInterval, GameMode } from "../types/settings";
+import {
+  Settings,
+  TimeInterval,
+  GameMode,
+  SettingsJSON
+} from "../types/settings"
 
-import { SettingsManager } from "../modules/SettingsManager";
+import { SettingsManager } from "../modules/SettingsManager"
+import { ChromeSettingsStorage } from "../modules/ChromeSettingsStorage"
 
-import package_json from "../../package.json";
-import settings_json from "../../settings.json";
+import package_json from "../../package.json"
+import settings_json from "../../settings.json"
 
 const {
   defaultSettings: {
@@ -17,39 +23,42 @@ const {
     show_accuracy,
     hide_own_stats,
     color_highlighting,
-    time_interval,
+    time_interval
   },
   validGameModes,
-  validTimeIntervals,
-} = settings_json;
+  validTimeIntervals
+} = settings_json
 
-const settingsManager: SettingsManager = SettingsManager.getInstance();
+const settingsManager: SettingsManager = new SettingsManager(
+  new ChromeSettingsStorage(),
+  settings_json as SettingsJSON
+)
 
 // Define Refs
-const modeStatsRef = ref(validGameModes);
-const timeIntervalsRef = ref(validTimeIntervals);
+const modeStatsRef = ref(validGameModes)
+const timeIntervalsRef = ref(validTimeIntervals)
 
-const darkmodeRef = ref(popup_darkmode);
-const showModesRef = ref(game_modes);
-const showStatsRef = ref(show_stats);
-const showAccuracyRef = ref(show_accuracy);
-const hideOwnStatsRef = ref(hide_own_stats);
-const showColorHighlightingRef = ref(color_highlighting);
-const timeIntervalRef = ref(time_interval);
+const darkmodeRef = ref(popup_darkmode)
+const showModesRef = ref(game_modes)
+const showStatsRef = ref(show_stats)
+const showAccuracyRef = ref(show_accuracy)
+const hideOwnStatsRef = ref(hide_own_stats)
+const showColorHighlightingRef = ref(color_highlighting)
+const timeIntervalRef = ref(time_interval)
 
-const snackbar = ref(false);
-const snackbar_timeout = ref(1500);
-const snackbar_text = ref("Updated settings");
+const snackbar = ref(false)
+const snackbar_timeout = ref(1500)
+const snackbar_text = ref("Updated settings")
 
-const theme = useTheme();
+const theme = useTheme()
 
 watch(
   () => darkmodeRef.value,
   (newVal) => {
-    if (newVal) theme.global.name.value = "dark";
-    else theme.global.name.value = "light";
+    if (newVal) theme.global.name.value = "dark"
+    else theme.global.name.value = "light"
   }
-);
+)
 
 // save settings to local storage
 async function saveSettings(): Promise<void> {
@@ -60,42 +69,42 @@ async function saveSettings(): Promise<void> {
     game_modes: Array.from(showModesRef.value) as GameMode[],
     time_interval: timeIntervalRef.value as TimeInterval,
     color_highlighting: showColorHighlightingRef.value,
-    popup_darkmode: darkmodeRef.value,
-  };
-  await settingsManager.saveSettingsToStorage(settings);
+    popup_darkmode: darkmodeRef.value
+  }
+  await settingsManager.saveSettingsToStorage(settings)
 
   // send update message to content script
   const [activeTab] = await chrome.tabs.query({
     active: true,
-    lastFocusedWindow: true,
-  });
+    lastFocusedWindow: true
+  })
 
-  if (!activeTab) return console.log("Could not find active Tab");
+  if (!activeTab) return console.log("Could not find active Tab")
 
   chrome.tabs.sendMessage(activeTab.id!, {
-    action: "updated-settings",
-  });
+    action: "updated-settings"
+  })
 
-  console.log("saved settings to local storage", settings);
-  snackbar_text.value = "Updated settings";
-  snackbar_timeout.value = 1500;
-  snackbar.value = true;
+  console.log("saved settings to local storage", settings)
+  snackbar_text.value = "Updated settings"
+  snackbar_timeout.value = 1500
+  snackbar.value = true
 }
 
 function updateUI() {
   chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-    const activeTab = tabs[0];
+    const activeTab = tabs[0]
     if (activeTab) {
       chrome.tabs.sendMessage(activeTab.id!, {
-        action: "updateStats",
-      });
+        action: "updateStats"
+      })
     }
-  });
+  })
 }
 
 function savePressed() {
-  updateUI();
-  saveSettings();
+  updateUI()
+  saveSettings()
 }
 
 // function showComingSoon() {
@@ -106,22 +115,22 @@ function savePressed() {
 
 function openGihtub() {
   chrome.tabs.create({
-    url: package_json.repository.url,
-  });
+    url: package_json.repository.url
+  })
 }
 
 onMounted(async () => {
-  const settings: Settings = await settingsManager.getSettingsFromStorage();
+  const settings: Settings = await settingsManager.getSettingsFromStorage()
   // set ui elements according to settings or default settings
-  showModesRef.value = settings.game_modes;
-  showStatsRef.value = settings.show_stats;
-  showAccuracyRef.value = settings.show_accuracy;
-  hideOwnStatsRef.value = settings.hide_own_stats;
-  showColorHighlightingRef.value = settings.color_highlighting;
-  timeIntervalRef.value = settings.time_interval;
-  darkmodeRef.value = settings.popup_darkmode;
-  console.log("read settings from local storage", settings);
-});
+  showModesRef.value = settings.game_modes
+  showStatsRef.value = settings.show_stats
+  showAccuracyRef.value = settings.show_accuracy
+  hideOwnStatsRef.value = settings.hide_own_stats
+  showColorHighlightingRef.value = settings.color_highlighting
+  timeIntervalRef.value = settings.time_interval
+  darkmodeRef.value = settings.popup_darkmode
+  console.log("read settings from local storage", settings)
+})
 </script>
 
 <template>
@@ -242,4 +251,3 @@ onMounted(async () => {
   max-width: 510px;
 }
 </style>
-../classes/SettingsManager../modules/SettingsManager
