@@ -1,31 +1,54 @@
-import { StatsUpdater } from "./StatsUpdater"
-
 /**
- * MutationObserver for observing URL changes
+ * MutationObserver for observing URL changes.
  */
 export class UrlObserver {
-  private statsUpdater: StatsUpdater
+  private eventListeners: { [event: string]: ((...args: any[]) => void)[] } = {}
   private mutationObserver: MutationObserver | null
   private prevPathname: string
-  private timeout: number
 
   /**
-   * Constructor for UrlObserver
-   *
-   * @param {StatsUpdater} statsUpdater - The StatsUpdater instance to be used.
-   * @param {number} timeout - Timeout in milliseconds to wait before updating stats.
-   * @constructor
+   * Constructor for UrlObserver.
    */
-  constructor(statsUpdater: StatsUpdater, timeout: number) {
-    this.statsUpdater = statsUpdater
+  constructor() {
     this.prevPathname = window.location.pathname
     this.mutationObserver = null
-    this.timeout = timeout
+  }
+
+  /**
+   * Attach an event listener for the specified event.
+   *
+   * @param {string} event - The event name.
+   * @param {Function} listener - The event listener function.
+   * @returns {void}
+   */
+  on(event: string, listener: (...args: any[]) => void): void {
+    if (!this.eventListeners[event]) {
+      this.eventListeners[event] = []
+    }
+    this.eventListeners[event].push(listener)
+  }
+
+  /**
+   * Emit an event to notify listeners.
+   *
+   * @private
+   * @param {string} event - The event name.
+   * @param {any[]} args - Arguments to pass to the listeners.
+   * @returns {void}
+   */
+  private emit(event: string, ...args: any[]): void {
+    const listeners = this.eventListeners[event]
+    if (listeners) {
+      for (const listener of listeners) {
+        listener(...args)
+      }
+    }
   }
 
   /**
    * Handle a mutation event.
    *
+   * @private
    * @param {MutationRecord[]} mutationsList - A list of MutationRecord objects.
    * @returns {void}
    */
@@ -38,17 +61,14 @@ export class UrlObserver {
       if (currentPathname === this.prevPathname) continue
       this.prevPathname = currentPathname
 
-      // Update stats after a timeout
-      setTimeout(
-        () => this.statsUpdater.updateStatsForBothPlayers(),
-        this.timeout
-      )
+      this.emit("url-mutation")
     }
   }
 
   /**
    * Start observing URL changes.
    *
+   * @public
    * @returns {void}
    */
   public startObserving(): void {
@@ -69,6 +89,7 @@ export class UrlObserver {
   /**
    * Stop observing URL changes.
    *
+   * @public
    * @returns {void}
    */
   public stopObserving(): void {

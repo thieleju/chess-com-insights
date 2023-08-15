@@ -1,33 +1,23 @@
-import { Settings } from "../types/settings"
-import { GameMode, TimeInterval } from "../types/settings"
-
-import {
-  defaultSettings,
-  validTimeIntervals,
-  validGameModes
-} from "../../settings.json"
+import { Settings, SettingsJSON } from "../types/settings"
+import { GameMode, TimeInterval, SettingsStorage } from "../types/settings"
 
 /**
  * Manages user settings, including retrieval, validation, and storage.
  */
 export class SettingsManager {
-  private static instance: SettingsManager
-  private settings: Settings | undefined
-
-  private constructor(s?: Settings) {
-    this.settings = s
-  }
+  private settings: Settings
+  private storage: SettingsStorage
+  private settingsJSON: SettingsJSON
 
   /**
-   * Returns the singleton instance of SettingsManager.
+   * Creates an instance of SettingsManager.
    *
-   * @returns {SettingsManager} The singleton instance of SettingsManager.
+   * @param {SettingsStorage} settingsStorage - The storage provider for user settings.
+   * @param {SettingsJSON} settingsJSON - The predefined settings structure.
    */
-  public static getInstance(): SettingsManager {
-    if (!SettingsManager.instance)
-      SettingsManager.instance = new SettingsManager()
-
-    return SettingsManager.instance
+  constructor(settingsStorage: SettingsStorage, settingsJSON: SettingsJSON) {
+    this.storage = settingsStorage
+    this.settingsJSON = settingsJSON
   }
 
   /**
@@ -37,13 +27,11 @@ export class SettingsManager {
    * @returns {Promise<Settings>} A Promise that resolves to the user settings object.
    */
   async getSettingsFromStorage(): Promise<Settings> {
-    const settings = await chrome.storage.local
-      .get(["settings"])
-      .then((result) => result.settings)
+    const settings = await this.storage.getStoredSettings()
+    const defaultSettings: Settings = this.settingsJSON
+      .defaultSettings as Settings
 
-    const default_settings: Settings = defaultSettings as Settings
-
-    if (!this.validateSettings(settings)) return default_settings
+    if (!this.validateSettings(settings)) return defaultSettings
 
     return settings
   }
@@ -55,7 +43,7 @@ export class SettingsManager {
    * @returns {Promise<void>} A Promise that resolves once the settings are saved.
    */
   async saveSettingsToStorage(settings: Settings): Promise<void> {
-    await chrome.storage.local.set({ settings })
+    await this.storage.saveSettings(settings)
     this.settings = settings
   }
 
@@ -66,24 +54,28 @@ export class SettingsManager {
    * @returns {boolean} True if the settings are valid, otherwise false.
    */
   validateSettings(settings: Settings): boolean {
-    const valid_time_intervals: TimeInterval[] =
-      validTimeIntervals as TimeInterval[]
-    const valid_game_modes: GameMode[] = validGameModes as GameMode[]
+    const validTimeIntervals: TimeInterval[] = this.settingsJSON
+      .validTimeIntervals as TimeInterval[]
+    const validGameModes: GameMode[] = this.settingsJSON
+      .validGameModes as GameMode[]
 
-    const isValidGameMode = (mode: GameMode) => valid_game_modes.includes(mode)
+    const isBoolean = (value: any) => typeof value === "boolean"
+    const isValidGameMode = (mode: GameMode) => validGameModes.includes(mode)
     const isValidTimeInterval = (interval: TimeInterval) =>
-      valid_time_intervals.includes(interval)
+      validTimeIntervals.includes(interval)
 
-    if (
-      typeof settings.popup_darkmode !== "boolean" ||
-      typeof settings.show_stats !== "boolean" ||
-      typeof settings.show_accuracy !== "boolean" ||
-      typeof settings.hide_own_stats !== "boolean" ||
+    const invalidSettings = [
+      !isBoolean(settings.popup_darkmode),
+      !isBoolean(settings.show_stats),
+      !isBoolean(settings.show_accuracy),
+      !isBoolean(settings.hide_own_stats),
       !Array.isArray(settings.game_modes) ||
-      !settings.game_modes.every(isValidGameMode) ||
-      !isValidTimeInterval(settings.time_interval) ||
-      typeof settings.color_highlighting !== "boolean"
-    ) {
+        !settings.game_modes.every(isValidGameMode),
+      !isValidTimeInterval(settings.time_interval),
+      !isBoolean(settings.color_highlighting)
+    ]
+
+    if (invalidSettings.some((invalid) => invalid)) {
       console.error("Invalid settings detected:", settings)
       this.saveDefaultSettingsToStorage()
       return false
@@ -98,8 +90,9 @@ export class SettingsManager {
    * @returns {Promise<void>} A Promise that resolves once the settings are saved.
    */
   async saveDefaultSettingsToStorage(): Promise<void> {
-    const default_settings: Settings = defaultSettings as Settings
-    this.saveSettingsToStorage(default_settings)
+    const defaultSettings: Settings = this.settingsJSON
+      .defaultSettings as Settings
+    this.saveSettingsToStorage(defaultSettings)
   }
 
   /**
@@ -108,10 +101,19 @@ export class SettingsManager {
    * @param {boolean} updateSettings - Indicates whether to update settings from storage.
    * @returns {Promise<Settings>} The user settings object.
    */
-  async getSettings(updateSettings?: boolean): Promise<Settings> {
+  async getSettings(updateSettings: boolean = false): Promise<Settings> {
     if (!this.settings || updateSettings)
       this.settings = await this.getSettingsFromStorage()
 
     return this.settings
+  }
+
+  /**
+   * Returns the predefined settings structure.
+   *
+   * @returns {SettingsJSON} The predefined settings structure.
+   */
+  getSettingsJSON(): SettingsJSON {
+    return this.settingsJSON
   }
 }

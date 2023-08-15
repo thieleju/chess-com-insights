@@ -1,33 +1,39 @@
-import { Settings, TimeInterval } from "../types/settings"
+import { ApiGame } from "../types/apidata"
+import { GameMode, SettingsJSON, TimeInterval } from "../types/settings"
 import { Stats, Wld } from "../types/stats"
-
-import { SettingsManager } from "./SettingsManager"
-
-import { timeIntervals } from "../../settings.json"
 
 /**
  * A utility class for calculating chess statistics based on filtered games.
  */
 export class StatsCalculator {
-  private settingsManager: SettingsManager
+  private validTimeIntervals: { [key: string]: number }
 
   /**
-   * Creates a new StatsCalculator instance.
-   * @param {SettingsManager} settingsManager SettingsManager instance
-   * @constructor
+   * Constructs a new instance of the StatsCalculator class.
+   *
+   * @param {SettingsJSON} settingsJSON - The settings JSON object.
    */
-  constructor(settingsManager: SettingsManager) {
-    this.settingsManager = settingsManager
+  constructor(settingsJSON: SettingsJSON) {
+    this.validTimeIntervals = settingsJSON.timeIntervalsMS
   }
 
   /**
-   * Calculates chess statistics for a given array of games and a username.
+   * Calculates chess statistics for filtered games.
    *
-   * @param {Array} games - An array of filtered chess games.
-   * @param {string} username - The username for which to calculate the statistics.
-   * @returns {Stats} Calculated statistics for the given user based on the filtered games.
+   * @param {ApiGame[]} games - The array of API games.
+   * @param {GameMode[]} gameModes - The array of game modes to include.
+   * @param {TimeInterval} timeInterval - The time interval for filtering games.
+   * @param {string} username - The username for identifying player's games.
+   * @returns {Stats} The calculated statistics.
    */
-  calculateStats(games: any[], username: string): Stats {
+  calculateStats(
+    games: ApiGame[],
+    gameModes: GameMode[],
+    timeInterval: TimeInterval,
+    username: string
+  ): Stats {
+    games = this.filterGames(games, gameModes, timeInterval)
+
     let stats: Stats = {
       wld: { wins: 0, loses: 0, draws: 0, games: games.length },
       accuracy: { avg: 0, games: games.length }
@@ -38,9 +44,8 @@ export class StatsCalculator {
         game.white.username.toLowerCase() === username.toLowerCase()
           ? "white"
           : "black"
-      const accuracies = game.accuracies
 
-      if (accuracies) stats.accuracy.avg += accuracies[color] || 0
+      if (game.accuracies) stats.accuracy.avg += game.accuracies[color] || 0
       else stats.accuracy.games--
 
       const result = this.transformResult(game[color].result)
@@ -52,7 +57,7 @@ export class StatsCalculator {
     })
 
     stats.accuracy.avg = parseFloat(
-      (stats.accuracy.avg / stats.accuracy.games).toFixed(2)
+      (stats.accuracy.avg / stats.accuracy.games).toFixed(1)
     )
     if (isNaN(stats.accuracy.avg)) stats.accuracy.avg = 0
 
@@ -60,25 +65,25 @@ export class StatsCalculator {
   }
 
   /**
-   * Filters chess games based on user settings.
+   * Filters games based on game modes and time intervals.
    *
-   * @param {Array} games - An array of chess games to be filtered.
-   * @param {Settings} settings - Settings object with user preferences.
-   * @returns {Promise<Array>} An array of filtered chess games based on the user settings.
+   * @param {ApiGame[]} games - The array of API games.
+   * @param {GameMode[]} gameModes - The array of game modes to include.
+   * @param {TimeInterval} timeInterval - The time interval for filtering games.
+   * @returns {ApiGame[]} The filtered array of games.
    */
-  async filterGames(games: any[], settings: Settings): Promise<any[]> {
-    if (!settings.game_modes)
-      await this.settingsManager.saveDefaultSettingsToStorage()
-
+  filterGames(
+    games: ApiGame[],
+    gameModes: GameMode[],
+    timeInterval: TimeInterval
+  ): ApiGame[] {
     return games
       .filter((game) =>
-        Array.isArray(settings.game_modes)
-          ? settings.game_modes.includes(game.time_class)
-          : game.time_class === settings.game_modes
+        Array.isArray(gameModes)
+          ? gameModes.includes(game.time_class as GameMode)
+          : game.time_class === gameModes
       )
-      .filter((game) =>
-        this.checkTimeInterval(game.end_time, settings.time_interval)
-      )
+      .filter((game) => this.checkTimeInterval(game.end_time, timeInterval))
   }
 
   /**
@@ -95,8 +100,8 @@ export class StatsCalculator {
 
     if (end_time > current_date) return false
 
-    if (time_interval in timeIntervals)
-      return end_time > current_date - timeIntervals[time_interval]
+    if (time_interval in this.validTimeIntervals)
+      return end_time > current_date - this.validTimeIntervals[time_interval]
 
     return false
   }
@@ -126,8 +131,7 @@ export class StatsCalculator {
       case "50move":
         return "draws"
       default:
-        console.error(`Cannot transform unknown result: ${result}`)
-        return undefined
+        throw `Cannot transform unknown result: ${result}`
     }
   }
 }

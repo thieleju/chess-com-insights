@@ -3,14 +3,13 @@
  * It initializes the stats updater and logs some info to the console.
  */
 
-import package_json from "../../package.json"
-import { StatsUpdater } from "../modules/StatsUpdater"
+import { version, repository } from "../../package.json"
+import { StatsUpdaterFactory } from "../modules/StatsUpdaterFactory"
 
-console.log(`⚡ Chess.com Insights v${package_json.version} injected`)
-console.log(`🚀 View source code at ${package_json.repository.url}`)
+console.log(`⚡ Chess.com Insights v${version} injected`)
+console.log(`🚀 View source code at ${repository.url}`)
 
 /**
- * Initialize the stats updater
+ * Initialize the stats updater and start updating stats.
  */
-const statsUpdater = new StatsUpdater()
-statsUpdater.initialize()
+StatsUpdaterFactory.createStatsUpdater().initialize()

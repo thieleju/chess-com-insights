@@ -4,6 +4,7 @@
   "check-coverage": false,
   "reporter": ["text", "text-summary"],
   "report-dir": "tests/coverage",
+  "include": ["src/**/*.ts", "src/modules/*.ts"],
   "exclude": [
     "tests/**/*",
     "src/plugins/*",
