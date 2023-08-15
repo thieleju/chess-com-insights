@@ -76,7 +76,7 @@ jobs:
         run: npm ci
 
       - name: Run c8 code coverage
-        run: npm run coverage
+        run: npm run cover
 
       - name: Setup Pages
         uses: actions/configure-pages@v3
