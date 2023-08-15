@@ -13,6 +13,7 @@ on:
 permissions:
   contents: read
   pages: write
+  checks: write
   id-token: write
 
 # Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
@@ -24,35 +25,27 @@ concurrency:
 jobs:
   # Single deploy job since we're just deploying
   deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
 
-      # - name: Set up Node.js
-      #   uses: actions/setup-node@v2
-      #   with:
-      #     node-version: 20
-
-      # - name: Install dependencies
-      #   run: npm ci
-
-      # - name: Run c8 code coverage
-      #   run: npm run cover
-      - name: test
-        run: mkdir -p tests/coverage && echo "test" > tests/coverage/index.html
-
-      - name: Setup Pages
-        uses: actions/configure-pages@v3
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v2
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
         with:
-          path: "tests/coverage"
+          node-version: 20
 
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v2
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run c8 code coverage
+        run: npm run cover
+
+      - name: Deploy to Coverage Branch
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git checkout -b coverage
+          git add tests/coverage
+          git commit -m "Deploy coverage HTML page"
+          git push origin coverage
