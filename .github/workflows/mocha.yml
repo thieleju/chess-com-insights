@@ -44,7 +44,7 @@ jobs:
       - name: Upload Test results
         uses: actions/upload-artifact@v2
         with:
-          name: coverage-results
+          name: test-results
           path: tests/results.xml
 
       - name: Publish Test Report
