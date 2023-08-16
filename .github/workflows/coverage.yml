@@ -45,7 +45,7 @@ jobs:
 
       - name: Clean up existing files
         run: |
-          git checkout coverage
+          git checkout origin/coverage
           rm -rf docs/*
           git add -A
           git commit -m "Clean up existing files before coverage report"
