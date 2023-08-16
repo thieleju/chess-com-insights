@@ -36,8 +36,8 @@ jobs:
           git config user.email github-actions@github.com
           rm -rf docs/*
           git add -A
-          git commit -m "Clean up existing files before coverage report"
-          git push
+          git diff-index --quiet HEAD || git commit -m "Clean up existing files before coverage report"
+          git diff-index --quiet HEAD || git push
 
       - name: Checkout main branch
         uses: actions/checkout@v3
