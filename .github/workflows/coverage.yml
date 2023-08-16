@@ -40,6 +40,11 @@ jobs:
       #     git diff-index --quiet HEAD || git commit -m "Clean up existing files before coverage report"
       #     git diff-index --quiet HEAD || git push
 
+      - name: Checkout main branch
+        uses: actions/checkout@v3
+        with:
+          ref: coverage
+
       - name: Delete folder and push changes
         run: |
           git config user.name github-actions
