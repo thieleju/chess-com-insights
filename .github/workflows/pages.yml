@@ -42,10 +42,10 @@ jobs:
         run: npm run cover
 
       - name: Create coverage report directory
-        run: mkdir coverage-report
+        run: mkdir docs
 
       - name: Move files to root directory
-        run: mv tests/coverage/* coverage-report
+        run: mv tests/coverage/* docs
 
       - name: Commit and push to coverage branch
         uses: stefanzweifel/git-auto-commit-action@v4
@@ -53,7 +53,7 @@ jobs:
           commit_message: Update coverage retport html
           branch: coverage
           # commit_options: '--no-verify --signoff'
-          file_pattern: "coverage-report/*.js coverage-report/*.html coverage-report/*.css coverage-report/*.png"
+          file_pattern: "docs/*.js docs/*.html docs/*.css docs/*.png"
           add_options: "-f"
           repository: .
           push_options: "--force"
