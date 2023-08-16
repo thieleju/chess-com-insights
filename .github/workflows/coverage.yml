@@ -36,10 +36,13 @@ jobs:
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
-          git checkout coverage
-          git rm -rf * 
-          git commit -m "Delete all files in coverage branch"
-          git push origin coverage
+          if [ -n "$(ls -A docs)" ]; then
+            git rm -rf * 
+            git commit -m "Delete folder from coverage branch"
+            git push origin coverage
+          else
+            echo "No files to delete in 'docs' directory"
+          fi
 
       - name: Checkout main branch
         uses: actions/checkout@v3
@@ -68,7 +71,7 @@ jobs:
           git config user.name github-actions
           git config user.email github-actions@github.com
           git checkout -B coverage
-          git pull origin coverage --rebase
+          git pull origin coverage --rebase --force
           git add docs/*.js docs/*.html docs/*.css docs/*.png
           git commit -m "Update coverage report html"
           git push origin coverage --force --no-verify
