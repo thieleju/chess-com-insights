@@ -72,14 +72,3 @@ jobs:
           git add docs/*.js docs/*.html docs/*.css docs/*.png
           git commit -m "Update coverage report html"
           git push origin coverage
-
-      # - name: Commit and push to coverage branch
-      #   uses: stefanzweifel/git-auto-commit-action@v4
-      #   with:
-      #     commit_message: Update coverage retport html
-      #     branch: coverage
-      #     file_pattern: "docs/*.js docs/*.html docs/*.css docs/*.png"
-      #     add_options: "-f"
-      #     repository: .
-      #     push_options: "--force"
-      #     skip_dirty_check: true
