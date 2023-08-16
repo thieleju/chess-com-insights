@@ -44,8 +44,8 @@ jobs:
       - name: Move files to root directory
         run: mv tests/coverage/* .
 
-      - name: Git reset hard
-        run: git reset --hard HEAD
+      # - name: Git reset hard
+      #   run: git reset --hard HEAD
 
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
