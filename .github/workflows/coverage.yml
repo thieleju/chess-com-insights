@@ -27,7 +27,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout main branch
+      - name: Checkout coverage branch
         uses: actions/checkout@v3
         with:
           ref: coverage
@@ -37,13 +37,9 @@ jobs:
           git config user.name github-actions
           git config user.email github-actions@github.com
           git checkout coverage
-          if [ -n "$(ls -A docs)" ]; then
-            git rm -rf * 
-            git commit -m "Delete folder from coverage branch"
-            git push origin coverage
-          else
-            echo "No files to delete in 'docs' directory"
-          fi
+          git rm -rf * 
+          git commit -m "Delete all files in coverage branch"
+          git push origin coverage
 
       - name: Checkout main branch
         uses: actions/checkout@v3
