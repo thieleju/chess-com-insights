@@ -41,18 +41,19 @@ jobs:
       - name: Run c8 code coverage
         run: npm run cover
 
+      - name: Create coverage report directory
+        run: mkdir coverage-report
+
       - name: Move files to root directory
-        run: mv tests/coverage/* .
+        run: mv tests/coverage/* coverage-report
 
-      # - name: Git reset hard
-      #   run: git reset --hard HEAD
-
-      - uses: stefanzweifel/git-auto-commit-action@v4
+      - name: Commit and push to coverage branch
+        uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: Update coverage retport html
           branch: coverage
           # commit_options: '--no-verify --signoff'
-          file_pattern: "*.js *.html *.css *.png"
+          file_pattern: "coverage-report/*.js coverage-report/*.html coverage-report/*.css coverage-report/*.png"
           add_options: "-f"
           repository: .
           push_options: "--force"
