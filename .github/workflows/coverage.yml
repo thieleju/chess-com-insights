@@ -38,7 +38,7 @@ jobs:
           git config user.email github-actions@github.com
           git checkout coverage
           if [ -n "$(ls -A docs)" ]; then
-            git rm -rf docs/* 
+            git rm -rf * 
             git commit -m "Delete folder from coverage branch"
             git push origin coverage
           else
