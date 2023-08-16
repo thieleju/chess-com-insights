@@ -61,24 +61,14 @@ jobs:
       - name: Move files to root directory
         run: mv tests/coverage/* docs
 
-      - name: Commit html coverage report to coverage branch
-        run: |
-          git config user.name github-actions
-          git config user.email github-actions@github.com
-          git diff-index HEAD
-          git add docs/*
-          git diff-index --quiet HEAD || git commit -m "Update coverage retport html"
-          git diff-index --quiet HEAD || git push origin coverage --force
-
-
-      # - name: Commit and push to coverage branch
-      #   uses: stefanzweifel/git-auto-commit-action@v4
-      #   with:
-      #     commit_message: Update coverage retport html
-      #     branch: coverage
-      #     # commit_options: '--no-verify --signoff'
-      #     file_pattern: "docs/*.js docs/*.html docs/*.css docs/*.png"
-      #     add_options: "-f"
-      #     repository: .
-      #     push_options: "--force"
-      #     skip_dirty_check: true # Optional. Disable dirty check and always try to create a commit and push
+      - name: Commit and push to coverage branch
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Update coverage retport html
+          branch: coverage
+          # commit_options: '--no-verify --signoff'
+          file_pattern: "docs/*.js docs/*.html docs/*.css docs/*.png"
+          add_options: "-f"
+          repository: .
+          push_options: "--force"
+          skip_dirty_check: true # Optional. Disable dirty check and always try to create a commit and push
