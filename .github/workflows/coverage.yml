@@ -27,18 +27,27 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Cleanup existing files in coverage branch
-        uses: actions/checkout@v3
-        with:
-          ref: coverage
-      - run: |
+      # - name: Cleanup existing files in coverage branch
+      #   uses: actions/checkout@v3
+      #   with:
+      #     ref: coverage
+      # - run: |
+      #     git config user.name github-actions
+      #     git config user.email github-actions@github.com
+      #     rm -rf docs/*
+      #     ls -la
+      #     git add -A
+      #     git diff-index --quiet HEAD || git commit -m "Clean up existing files before coverage report"
+      #     git diff-index --quiet HEAD || git push
+
+      - name: Delete folder and push changes
+        run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
-          rm -rf docs/*
-          ls -la
-          git add -A
-          git diff-index --quiet HEAD || git commit -m "Clean up existing files before coverage report"
-          git diff-index --quiet HEAD || git push
+          git checkout coverage
+          git rm -rf docs/* 
+          git commit -m "Delete folder from coverage branch"
+          git push origin coverage
 
       - name: Checkout main branch
         uses: actions/checkout@v3
