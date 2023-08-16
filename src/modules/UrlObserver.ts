@@ -5,12 +5,17 @@ export class UrlObserver {
   private eventListeners: { [event: string]: ((...args: any[]) => void)[] } = {}
   private mutationObserver: MutationObserver | null
   private prevPathname: string
+  private window: Window
+  private document: Document
 
   /**
    * Constructor for UrlObserver.
    */
-  constructor() {
-    this.prevPathname = window.location.pathname
+  constructor(w?: Window, d?: Document) {
+    this.window = w ? w : window
+    this.document = d ? d : document
+
+    this.prevPathname = this.window.location.pathname
     this.mutationObserver = null
   }
 
@@ -57,7 +62,7 @@ export class UrlObserver {
       if (mutation.type !== "childList" && mutation.type !== "attributes")
         continue
 
-      const currentPathname = window.location.pathname
+      const currentPathname = this.window.location.pathname
       if (currentPathname === this.prevPathname) continue
       this.prevPathname = currentPathname
 
@@ -78,7 +83,7 @@ export class UrlObserver {
       (mutationsList: MutationRecord[]) => this.handleMutation(mutationsList)
     )
 
-    this.mutationObserver.observe(document.documentElement, {
+    this.mutationObserver.observe(this.document.documentElement, {
       childList: true,
       subtree: true,
       attributes: true,
