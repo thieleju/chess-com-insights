@@ -35,6 +35,7 @@ jobs:
           git config user.name github-actions
           git config user.email github-actions@github.com
           rm -rf docs/*
+          ls -la
           git add -A
           git diff-index --quiet HEAD || git commit -m "Clean up existing files before coverage report"
           git diff-index --quiet HEAD || git push
