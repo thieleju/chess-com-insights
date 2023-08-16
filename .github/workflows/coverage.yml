@@ -71,4 +71,4 @@ jobs:
           git pull origin coverage --rebase
           git add docs/*.js docs/*.html docs/*.css docs/*.png
           git commit -m "Update coverage report html"
-          git push origin coverage
+          git push origin coverage --force --no-verify
