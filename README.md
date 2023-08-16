@@ -57,3 +57,8 @@ Instructions:
   - Files will be exported to the `dist` folder
   - You can also run `npm run dev` to start the vite dev server to view the options page, but some things f.e. reading the settings will not work
 - do the manual installation steps above and select the `dist` folder
+
+
+## 💯 Code Coverage Report
+
+[Code Coverage Report](https://thieleju.github.io/chess-com-insights/) served with github pages
