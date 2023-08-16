@@ -37,11 +37,15 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-
-      - name: Clean up existing files
+      
+      - name: Setup up git configs
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com>"
+
+      - name: Clean up existing files
+        run: |
+          git checkout coverage
           rm -rf docs/*
           git add -A
           git commit -m "Clean up existing files before coverage report"
