@@ -41,7 +41,7 @@ jobs:
       - name: Clean up existing files
         run: |
           git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com>
+          git config --global user.email "github-actions[bot]@users.noreply.github.com>"
           rm -rf docs/*
           git add -A
           git commit -m "Clean up existing files before coverage report"
