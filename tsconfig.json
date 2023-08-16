@@ -22,7 +22,7 @@
     "strictFunctionTypes": true,
     "strictPropertyInitialization": false,
     "strictBindCallApply": true,
-    "noUnusedLocals": true,
+    "noUnusedLocals": false,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
 
