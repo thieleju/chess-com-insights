@@ -57,7 +57,7 @@ export class StatsCalculator {
     })
 
     stats.accuracy.avg = parseFloat(
-      (stats.accuracy.avg / stats.accuracy.games).toFixed(1)
+      (stats.accuracy.avg / stats.accuracy.games).toFixed(0)
     )
     if (isNaN(stats.accuracy.avg)) stats.accuracy.avg = 0
 
