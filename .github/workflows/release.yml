@@ -1,10 +1,14 @@
 name: Release
 
 on:
-  workflow_dispatch:
   push:
     branches:
       - release
+  workflow_dispatch:
+    inputs:
+      text:
+        description: "What changed?"
+        required: false
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
@@ -50,6 +54,8 @@ jobs:
           tag_name: v${{ steps.get_version.outputs.version }}
           body: |
             Chess.com Insights Release v${{ steps.get_version.outputs.version }}
+            <br>
+            ${{ github.event.inputs.text }}
             <br>
             Install the extension manually by going to chrome://extensions and enabling developer mode. Then you can drag and drop the zip file into the browser.
           files: |
