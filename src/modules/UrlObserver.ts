@@ -1,3 +1,5 @@
+import { UiWindow } from "../types/wrapper"
+
 /**
  * MutationObserver for observing URL changes.
  */
@@ -5,17 +7,15 @@ export class UrlObserver {
   private eventListeners: { [event: string]: ((...args: any[]) => void)[] } = {}
   private mutationObserver: MutationObserver | null
   private prevPathname: string
-  private window: Window
-  private document: Document
+
+  private uiWindow: UiWindow
 
   /**
    * Constructor for UrlObserver.
    */
-  constructor(w?: Window, d?: Document) {
-    this.window = w ? w : window
-    this.document = d ? d : document
-
-    this.prevPathname = this.window.location.pathname
+  constructor(uiWindow: UiWindow) {
+    this.uiWindow = uiWindow
+    this.prevPathname = this.uiWindow.getWindow().location.pathname
     this.mutationObserver = null
   }
 
@@ -62,7 +62,7 @@ export class UrlObserver {
       if (mutation.type !== "childList" && mutation.type !== "attributes")
         continue
 
-      const currentPathname = this.window.location.pathname
+      const currentPathname = this.uiWindow.getWindow().location.pathname
       if (currentPathname === this.prevPathname) continue
       this.prevPathname = currentPathname
 
@@ -83,7 +83,7 @@ export class UrlObserver {
       (mutationsList: MutationRecord[]) => this.handleMutation(mutationsList)
     )
 
-    this.mutationObserver.observe(this.document.documentElement, {
+    this.mutationObserver.observe(this.uiWindow.getDocument().documentElement, {
       childList: true,
       subtree: true,
       attributes: true,

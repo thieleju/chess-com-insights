@@ -1,5 +1,6 @@
 import { SettingsJSON } from "../types/settings"
 import { Stats } from "../types/stats"
+import { UiWindow } from "../types/wrapper"
 
 /**
  * Utility class for updating UI elements with chess statistics.
@@ -9,15 +10,20 @@ export class UiUpdater {
   private color_loses: string
   private color_draws: string
 
+  private uiWindow: UiWindow
+
   /**
    * Create a UiUpdater instance.
    *
    * @param {SettingsJSON} settingsJSON - The settings in JSON format.
+   * @param {UiWindow} uiWindow - The window object for the UI.
    */
-  constructor(settingsJSON: SettingsJSON) {
+  constructor(settingsJSON: SettingsJSON, uiWindow: UiWindow) {
     this.color_wins = settingsJSON.colors.wins
     this.color_loses = settingsJSON.colors.loses
     this.color_draws = settingsJSON.colors.draws
+
+    this.uiWindow = uiWindow
   }
 
   /**
@@ -35,7 +41,7 @@ export class UiUpdater {
     showAccuracy: boolean,
     colorHighlighting: boolean
   ): void {
-    let str
+    let str: string
 
     if (colorHighlighting) {
       str =
@@ -63,7 +69,7 @@ export class UiUpdater {
    * @returns {HTMLElement} A newly created info element.
    */
   createInfoElement(className: string, id: string): HTMLElement {
-    const infoEl = document.createElement("div")
+    const infoEl = this.uiWindow.getDocument().createElement("div")
     infoEl.classList.add("user-tagline-rating", className)
     infoEl.id = id
     infoEl.style.marginLeft = "10px"
