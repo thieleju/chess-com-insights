@@ -69,6 +69,7 @@ jobs:
           git config user.email github-actions@github.com
           git checkout -B coverage
           git pull origin coverage --rebase --force
+          git rebase --strategy=ours origin/coverage
           git add docs/*.js docs/*.html docs/*.css docs/*.png
           git commit -m "Update coverage report html"
           git push origin coverage --force --no-verify
