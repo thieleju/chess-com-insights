@@ -1,5 +1,10 @@
-import { Settings, SettingsJSON } from "../types/settings"
-import { GameMode, TimeInterval, SettingsStorage } from "../types/settings"
+import {
+  Settings,
+  SettingsJSON,
+  GameMode,
+  TimeInterval
+} from "../types/settings"
+import { SettingsStorage } from "../types/wrapper"
 
 /**
  * Manages user settings, including retrieval, validation, and storage.

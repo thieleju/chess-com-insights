@@ -1,6 +1,7 @@
 /// <reference types="chrome" />
 
-import { Settings, SettingsStorage } from "../types/settings"
+import { Settings } from "../types/settings"
+import { SettingsStorage } from "../types/wrapper"
 
 /**
  * A SettingsStorage implementation that uses Chrome's local storage.
