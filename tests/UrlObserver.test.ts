@@ -1,48 +1,22 @@
 import { expect } from "chai"
-import { JSDOM } from "jsdom"
+
+import { UiWindow } from "../src/types/wrapper"
 
 import { UrlObserver } from "../src/modules/UrlObserver"
-// import { DOMWindow } from "jsdom"
+
+import { MockUiWindow } from "./mocks/MockUiWindow"
 
 describe("UrlObserver", () => {
   let urlObserver: UrlObserver
-  let window: any
+  let mockUiWindow: MockUiWindow
 
-  before(() => {
-    window = new JSDOM("<!doctype html><html><body></body></html>").window
-
-    urlObserver = new UrlObserver(window, window.document)
+  before(async () => {
+    mockUiWindow = new MockUiWindow()
+    await mockUiWindow.initialize()
+    urlObserver = new UrlObserver(mockUiWindow)
   })
-
-  // after(() => {
-  //   urlObserver.stopObserving()
-  // })
 
   it("should initialize correctly", () => {
-    // urlObserver.startObserving()
-    expect(true).to.be.true
-    // urlObserver.stopObserving()
+    expect(urlObserver).to.be.an.instanceof(UrlObserver)
   })
-
-  // it('should emit "url-mutation" event when URL changes', (done) => {
-  //   urlObserver.startObserving()
-
-  //   urlObserver.on("url-mutation", () => {
-  //     expect(window.location.pathname).to.not.equal(urlObserver["prevPathname"])
-  //     done()
-  //   })
-
-  //   window.history.pushState({}, "New Page", "/new-page")
-
-  //   setTimeout(() => {
-  //     const mutationObserver = (urlObserver as any)["_mutationObserver"]
-  //     mutationObserver.handleMutation([
-  //       {
-  //         type: "attributes",
-  //         attributeName: "href",
-  //         target: document.documentElement
-  //       }
-  //     ])
-  //   }, 0)
-  // })
 })

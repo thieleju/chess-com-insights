@@ -1,4 +1,5 @@
-import { SettingsStorage, Settings } from "../types/settings"
+import { Settings } from "../../src/types/settings"
+import { SettingsStorage } from "../../src/types/wrapper"
 
 /**
  * A mock implementation of the SettingsStorage interface for testing purposes.

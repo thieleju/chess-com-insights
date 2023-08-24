@@ -19,11 +19,6 @@ export interface Settings {
   color_highlighting: boolean
 }
 
-export interface SettingsStorage {
-  getStoredSettings(): Promise<Settings>
-  saveSettings(settings: Settings): Promise<void>
-}
-
 export interface SettingsJSON {
   FETCH_MAX_RETRIES: number
   FETCH_RETRY_DELAY: number

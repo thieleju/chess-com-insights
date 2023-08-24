@@ -122,9 +122,8 @@ export class StatsUpdater {
     side: "top" | "bottom",
     updateSettings: boolean = false
   ): Promise<void> {
-    const settings: Settings = await this.settingsManager.getSettings(
-      updateSettings
-    )
+    const settings: Settings =
+      await this.settingsManager.getSettings(updateSettings)
 
     const flag = document.querySelector(
       side === "top" ? ".flag-1" : ".flag-2"

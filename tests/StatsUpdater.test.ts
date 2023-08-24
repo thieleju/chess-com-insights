@@ -8,7 +8,8 @@ import { UiUpdater } from "../src/modules/UiUpdater"
 import { SettingsManager } from "../src/modules/SettingsManager"
 import { APIHandler } from "../src/modules/APIHandler"
 import { StatsCalculator } from "../src/modules/StatsCalculator"
-import { MockSettingsStorage } from "../src/modules/MockSettingsStorage"
+
+import { MockSettingsStorage } from "./mocks/MockSettingsStorage"
 
 import {
   Settings,
@@ -19,6 +20,7 @@ import {
 import { Stats } from "../src/types/stats"
 
 import settingsData from "../settings.json" assert { type: "json" }
+import { MockUiWindow } from "./mocks/MockUiWindow"
 
 const { defaultSettings } = settingsData
 
@@ -30,9 +32,12 @@ describe("StatsUpdater", () => {
   let statsCalculator: StatsCalculator
   let settingsJSON: SettingsJSON
 
-  beforeEach(() => {
+  beforeEach(async () => {
+    const mockUiWindow: MockUiWindow = new MockUiWindow()
+    await mockUiWindow.initialize()
     statsUpdater = StatsUpdaterFactory.createStatsUpdaterForTest(
-      new MockSettingsStorage(defaultSettings)
+      new MockSettingsStorage(defaultSettings),
+      mockUiWindow
     )
     uiUpdater = statsUpdater.getUiUpdater()
     settingsManager = statsUpdater.getSettingsManager()
@@ -137,6 +142,7 @@ describe("StatsUpdater", () => {
         data.gameModes as GameMode[],
         data.timeInterval as TimeInterval
       )
+      await new Promise((resolve) => setTimeout(resolve, 800))
     }
   })
 })
