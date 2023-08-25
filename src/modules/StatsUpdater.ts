@@ -84,33 +84,18 @@ export class StatsUpdater {
   }
 
   /**
-   * Get update chess statistics for a specific player.
+   * Update chess statistics for both players.
    *
-   * @param {("top" | "bottom")} side - The player ("top" or "bottom") for whom to update statistics.
-   * @param {string} username - The username of the player.
-   * @param {GameMode[]} gameModes - The game modes to include in the statistics.
-   * @param {TimeInterval} timeInterval - The time interval to include in the statistics.
-   * @returns {Promise<Stats>} A Promise that resolves with the updated statistics.
+   * @param {boolean} updateSettings - Whether to update settings from storage.
+   * @returns {Promise<void>} A Promise that resolves once the statistics are updated for both players.
    */
-  async getUpdateStats(
-    side: "top" | "bottom",
-    username: string,
-    gameModes: GameMode[],
-    timeInterval: TimeInterval
-  ): Promise<Stats> {
-    try {
-      const data: ApiChessData = await this.apiHandler.getChessData(username)
-
-      return this.statsCalculator.calculateStats(
-        data.games,
-        gameModes,
-        timeInterval,
-        username
-      )
-    } catch (error) {
-      this.removeInfoElement(side)
-      throw `Could not retrieve chess data for ${username}`
-    }
+  async updateStatsForBothPlayers(
+    updateSettings: boolean = false
+  ): Promise<void> {
+    await Promise.all([
+      this.updateStatsForPlayer("top", updateSettings),
+      this.updateStatsForPlayer("bottom", updateSettings)
+    ])
   }
 
   /**
@@ -127,28 +112,56 @@ export class StatsUpdater {
     const settings: Settings =
       await this.settingsManager.getSettings(updateSettings)
 
-    const flag = this.uiWindow
-      .getDocument()
-      .querySelector(side === "top" ? ".flag-1" : ".flag-2") as HTMLElement
+    const flag = this.uiUpdater.getFlagElement(side)
 
     if (flag) flag.remove()
 
     if (!settings.show_stats) return
     if (settings.hide_own_stats && side === "bottom") return
 
-    const stats: Stats = await this.getUpdateStats(
+    const stats: Stats = await this.getStats(
       side,
-      this.getUsername(side),
+      this.uiUpdater.getUsername(side),
       settings.game_modes,
       settings.time_interval
     )
 
     this.uiUpdater.updateElement(
-      this.getInfoElement(side),
+      this.uiUpdater.getInfoElement(side),
       stats,
       settings.show_accuracy,
       settings.color_highlighting
     )
+  }
+
+  /**
+   * Get update chess statistics for a specific player.
+   *
+   * @param {("top" | "bottom")} side - The player ("top" or "bottom") for whom to update statistics.
+   * @param {string} username - The username of the player.
+   * @param {GameMode[]} gameModes - The game modes to include in the statistics.
+   * @param {TimeInterval} timeInterval - The time interval to include in the statistics.
+   * @returns {Promise<Stats>} A Promise that resolves with the updated statistics.
+   */
+  async getStats(
+    side: "top" | "bottom",
+    username: string,
+    gameModes: GameMode[],
+    timeInterval: TimeInterval
+  ): Promise<Stats> {
+    try {
+      const data: ApiChessData = await this.apiHandler.getChessData(username)
+
+      return this.statsCalculator.calculateStats(
+        data.games,
+        gameModes,
+        timeInterval,
+        username
+      )
+    } catch (error) {
+      this.uiUpdater.removeInfoElement(side)
+      throw `Could not retrieve chess data for ${username}`
+    }
   }
 
   /**
@@ -180,102 +193,6 @@ export class StatsUpdater {
         this.updateStatsForBothPlayers(true)
       }
     )
-  }
-
-  /**
-   * Update chess statistics for both players.
-   *
-   * @param {boolean} updateSettings - Whether to update settings from storage.
-   * @returns {Promise<void>} A Promise that resolves once the statistics are updated for both players.
-   */
-  async updateStatsForBothPlayers(
-    updateSettings: boolean = false
-  ): Promise<void> {
-    await Promise.all([
-      this.updateStatsForPlayer("top", updateSettings),
-      this.updateStatsForPlayer("bottom", updateSettings)
-    ])
-  }
-
-  /**
-   * Retrieves the username of a specific player.
-   *
-   * @private
-   * @param {("top" | "bottom")} player - The player ("top" or "bottom") for whom to retrieve the username.
-   * @returns {string} The username of the player.
-   */
-  private getUsername(player: "top" | "bottom"): string {
-    const target_top = this.settingsJSON.query_selectors.target_top
-    const target_bottom = this.settingsJSON.query_selectors.target_bottom
-    const target_name = this.settingsJSON.query_selectors.target_name
-
-    const player_el = this.uiWindow
-      .getDocument()
-      .querySelector(
-        player === "top"
-          ? `.${target_top} .${target_name}`
-          : `.${target_bottom} .${target_name}`
-      ) as HTMLElement
-
-    return player_el?.innerText || ""
-  }
-
-  /**
-   * Retrieves the info element for a specific player.
-   *
-   * @private
-   * @param {("top" | "bottom")} player - The player ("top" or "bottom") for whom to retrieve the info element.
-   * @returns {HTMLElement} The info element for the player.
-   */
-  private getInfoElement(player: "top" | "bottom"): HTMLElement {
-    const info_el_id = `info-el-${player}`
-    let info_el = this.uiWindow.getDocument().getElementById(info_el_id)
-
-    if (!info_el) {
-      info_el = this.uiUpdater.createInfoElement(
-        player === "top" ? "flag-1" : "flag-2",
-        info_el_id
-      )
-      const player_el = this.getPlayerElement(player)
-      player_el?.parentElement?.appendChild(info_el)
-    }
-
-    return info_el
-  }
-
-  /**
-   * Removes the info element for a specific player.
-   *
-   * @private
-   * @param {("top" | "bottom")} player - The player ("top" or "bottom") for whom to remove the info element.
-   */
-  private removeInfoElement(player: "top" | "bottom"): void {
-    const info_el_id = `info-el-${player}`
-    const info_el = this.uiWindow.getDocument().getElementById(info_el_id)
-    if (info_el) {
-      info_el.remove()
-    }
-  }
-
-  /**
-   * Retrieves the player element for a specific player.
-   *
-   * @private
-   * @param {("top" | "bottom")} player - The player ("top" or "bottom") for whom to retrieve the player element.
-   * @returns {HTMLElement | null} The player element for the player, or null if not found.
-   */
-  private getPlayerElement(player: "top" | "bottom"): HTMLElement | null {
-    const target_top = this.settingsJSON.query_selectors.target_top
-    const target_bottom = this.settingsJSON.query_selectors.target_bottom
-    const target_name = this.settingsJSON.query_selectors.target_name
-
-    return this.uiWindow
-      .getDocument()
-      .querySelector(
-        player === "top"
-          ? `.${target_top} .${target_name}`
-          : `.${target_bottom} .${target_name}`
-      ) as HTMLElement
   }
 
   getUiUpdater(): UiUpdater {

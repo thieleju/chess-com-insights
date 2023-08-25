@@ -1,6 +1,4 @@
 import { expect } from "chai"
-// import sinon from "sinon"
-// import jsdomGlobal from "jsdom-global"
 
 import { StatsUpdater } from "../src/modules/StatsUpdater"
 import { StatsUpdaterFactory } from "../src/modules/StatsUpdaterFactory"
@@ -89,7 +87,7 @@ describe("StatsUpdater", () => {
     expect(settings).to.deep.equal(defaultSettings)
   })
 
-  it("should get correct stats for a player", async () => {
+  it("should get correct stats for various players", async () => {
     statsUpdater.initialize(false, false)
 
     const settings: Settings = await settingsManager.getSettings()
@@ -99,7 +97,7 @@ describe("StatsUpdater", () => {
       gameModes: GameMode[],
       timeInterval: TimeInterval
     ) => {
-      const stats: Stats = await statsUpdater.getUpdateStats(
+      const stats: Stats = await statsUpdater.getStats(
         Math.random() > 0.5 ? "top" : "bottom",
         un,
         gameModes,
