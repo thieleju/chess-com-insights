@@ -37,7 +37,8 @@ export class StatsUpdaterFactory {
       apiHandler: new APIHandler(settingsJSON),
       uiUpdater: new UiUpdater(settingsJSON, uiWindow),
       statsCalculator: new StatsCalculator(settingsJSON),
-      urlObserver: new UrlObserver(uiWindow)
+      urlObserver: new UrlObserver(uiWindow),
+      uiWindow
     })
   }
 
@@ -58,7 +59,8 @@ export class StatsUpdaterFactory {
       apiHandler: new APIHandler(settingsJSON),
       uiUpdater: new UiUpdater(settingsJSON, uiWindow),
       statsCalculator: new StatsCalculator(settingsJSON),
-      urlObserver: new UrlObserver(uiWindow)
+      urlObserver: new UrlObserver(uiWindow),
+      uiWindow
     })
   }
 }

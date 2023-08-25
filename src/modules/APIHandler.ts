@@ -31,8 +31,7 @@ export class APIHandler {
     while (retryCount < this.FETCH_MAX_RETRIES) {
       try {
         const url = this.buildUrl(username)
-        const response = await fetch(url, { cache: "no-store" })
-        return response.json()
+        return await this.fetchChessData(url)
       } catch (error: any) {
         if (error?.code === 301) break
 
@@ -46,6 +45,17 @@ export class APIHandler {
       }
     }
     throw "Max retries exceeded"
+  }
+
+  /**
+   * Fetches chess data from a given URL.
+   *
+   * @param {string} url - The URL from which to fetch chess data.
+   * @returns {Promise<ApiChessData>} A Promise that resolves to the fetched chess data.
+   */
+  async fetchChessData(url: string): Promise<ApiChessData> {
+    const response = await fetch(url, { cache: "no-store" })
+    return response.json()
   }
 
   /**

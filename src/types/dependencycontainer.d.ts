@@ -4,6 +4,7 @@ import { APIHandler } from "../modules/APIHandler"
 import { UiUpdater } from "../modules/UiUpdater"
 import { UrlObserver } from "../modules/UrlObserver"
 import { StatsCalculator } from "../modules/StatsCalculator"
+import { UiWindow } from "./wrapper"
 
 export interface DependencyContainer {
   settingsJSON: SettingsJSON
@@ -11,5 +12,6 @@ export interface DependencyContainer {
   apiHandler: APIHandler
   uiUpdater: UiUpdater
   statsCalculator: StatsCalculator
-  urlObserver?: UrlObserver
+  urlObserver: UrlObserver
+  uiWindow: UiWindow
 }
