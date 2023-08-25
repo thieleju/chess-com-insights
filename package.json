@@ -8,8 +8,8 @@
     "url": "https://github.com/thieleju/chess-com-insights"
   },
   "scripts": {
-    "prebuild": "prettier --write \"src/**/*.ts\" \"tests/*.ts\"",
-    "pretest": "prettier --write \"src/**/*.ts\" \"tests/*.ts\"",
+    "prebuild": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\"",
+    "pretest": "prettier \"src/**/*.ts\" \"tests/**/*.ts\"",
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview",
