@@ -24,6 +24,29 @@ import { MockUiWindow } from "./mocks/MockUiWindow"
 
 const { defaultSettings } = settingsData
 
+const testData = [
+  {
+    un: "Kugelbuch",
+    gameModes: ["bullet", "blitz", "rapid", "daily"],
+    timeInterval: "this month"
+  },
+  {
+    un: "Kugelbuch",
+    gameModes: ["rapid"],
+    timeInterval: "this month"
+  },
+  {
+    un: "Kugelbuch",
+    gameModes: ["bullet", "blitz", "rapid", "daily"],
+    timeInterval: "last week"
+  },
+  {
+    un: "DanielNaroditsky",
+    gameModes: ["bullet", "blitz", "rapid", "daily"],
+    timeInterval: "this month"
+  }
+]
+
 describe("StatsUpdater", () => {
   let statsUpdater: StatsUpdater
   let uiUpdater: UiUpdater
@@ -31,10 +54,12 @@ describe("StatsUpdater", () => {
   let apiHandler: APIHandler
   let statsCalculator: StatsCalculator
   let settingsJSON: SettingsJSON
+  let mockUiWindow: MockUiWindow
 
   beforeEach(async () => {
-    const mockUiWindow: MockUiWindow = new MockUiWindow()
+    mockUiWindow = new MockUiWindow()
     await mockUiWindow.initialize()
+
     statsUpdater = StatsUpdaterFactory.createStatsUpdaterForTest(
       new MockSettingsStorage(defaultSettings),
       mockUiWindow
@@ -108,33 +133,11 @@ describe("StatsUpdater", () => {
       expect(accuracy.games).to.be.at.most(games)
     }
 
-    const testData = [
-      {
-        un: "Kugelbuch",
-        gameModes: ["bullet", "blitz", "rapid", "daily"],
-        timeInterval: "this month"
-      },
-      {
-        un: "Kugelbuch",
-        gameModes: ["rapid"],
-        timeInterval: "this month"
-      },
-      {
-        un: "Kugelbuch",
-        gameModes: ["bullet", "blitz", "rapid", "daily"],
-        timeInterval: "last week"
-      },
-      {
-        un: "DanielNaroditsky",
-        gameModes: ["bullet", "blitz", "rapid", "daily"],
-        timeInterval: "this month"
-      },
-      {
-        un: "DanielNaroditsky",
-        gameModes: settings.game_modes,
-        timeInterval: settings.time_interval
-      }
-    ]
+    testData.push({
+      un: "DanielNaroditsky",
+      gameModes: settings.game_modes,
+      timeInterval: settings.time_interval
+    })
 
     for (const data of testData) {
       await validateStats(
@@ -144,5 +147,12 @@ describe("StatsUpdater", () => {
       )
       await new Promise((resolve) => setTimeout(resolve, 800))
     }
+  })
+
+  it("should update stats ui element", async () => {
+    statsUpdater.initialize(false, false)
+
+    statsUpdater.updateStatsForPlayer("top", false)
+    statsUpdater.updateStatsForPlayer("bottom", true)
   })
 })

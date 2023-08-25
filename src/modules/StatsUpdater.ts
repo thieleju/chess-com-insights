@@ -11,8 +11,10 @@ import { APIHandler } from "./APIHandler"
 import { UiUpdater } from "./UiUpdater"
 import { UrlObserver } from "./UrlObserver"
 import { StatsCalculator } from "./StatsCalculator"
+
 import { ApiChessData } from "../types/apidata"
 import { Stats } from "../types/stats"
+import { UiWindow } from "../types/wrapper"
 
 /**
  * Class responsible for updating chess statistics and UI elements.
@@ -27,6 +29,8 @@ export class StatsUpdater {
   private uiUpdater: UiUpdater
   private apiHandler: APIHandler
   private statsCalculator: StatsCalculator
+  private urlObserver: UrlObserver
+  private uiWindow: UiWindow
 
   /**
    * Creates an instance of StatsUpdater with dependencies injected through a container.
@@ -41,8 +45,8 @@ export class StatsUpdater {
     this.apiHandler = dependencies.apiHandler
     this.settingsJSON = dependencies.settingsJSON
     this.statsCalculator = dependencies.statsCalculator
-
-    if (dependencies.urlObserver) this.urlobserver = dependencies.urlObserver
+    this.urlobserver = dependencies.urlObserver
+    this.uiWindow = dependencies.uiWindow
   }
 
   /**
@@ -86,8 +90,6 @@ export class StatsUpdater {
    * @param {string} username - The username of the player.
    * @param {GameMode[]} gameModes - The game modes to include in the statistics.
    * @param {TimeInterval} timeInterval - The time interval to include in the statistics.
-   * @param {boolean} showAccuracy - Whether to show accuracy in the statistics.
-   * @param {boolean} colorHighlighting - Whether to highlight the player's color in the statistics.
    * @returns {Promise<Stats>} A Promise that resolves with the updated statistics.
    */
   async getUpdateStats(
@@ -125,9 +127,9 @@ export class StatsUpdater {
     const settings: Settings =
       await this.settingsManager.getSettings(updateSettings)
 
-    const flag = document.querySelector(
-      side === "top" ? ".flag-1" : ".flag-2"
-    ) as HTMLElement
+    const flag = this.uiWindow
+      .getDocument()
+      .querySelector(side === "top" ? ".flag-1" : ".flag-2") as HTMLElement
 
     if (flag) flag.remove()
 
@@ -153,7 +155,9 @@ export class StatsUpdater {
    * Attach click event listener to the flip board button.
    */
   private attachFlipBoardClickEvent(): void {
-    const flip_board_btn = document.getElementById("board-controls-flip")
+    const flip_board_btn = this.uiWindow
+      .getDocument()
+      .getElementById("board-controls-flip")
     if (!flip_board_btn) return
 
     flip_board_btn.addEventListener("click", () =>
@@ -205,11 +209,13 @@ export class StatsUpdater {
     const target_bottom = this.settingsJSON.query_selectors.target_bottom
     const target_name = this.settingsJSON.query_selectors.target_name
 
-    const player_el = document.querySelector(
-      player === "top"
-        ? `.${target_top} .${target_name}`
-        : `.${target_bottom} .${target_name}`
-    ) as HTMLElement
+    const player_el = this.uiWindow
+      .getDocument()
+      .querySelector(
+        player === "top"
+          ? `.${target_top} .${target_name}`
+          : `.${target_bottom} .${target_name}`
+      ) as HTMLElement
 
     return player_el?.innerText || ""
   }
@@ -223,7 +229,7 @@ export class StatsUpdater {
    */
   private getInfoElement(player: "top" | "bottom"): HTMLElement {
     const info_el_id = `info-el-${player}`
-    let info_el = document.getElementById(info_el_id)
+    let info_el = this.uiWindow.getDocument().getElementById(info_el_id)
 
     if (!info_el) {
       info_el = this.uiUpdater.createInfoElement(
@@ -245,7 +251,7 @@ export class StatsUpdater {
    */
   private removeInfoElement(player: "top" | "bottom"): void {
     const info_el_id = `info-el-${player}`
-    const info_el = document.getElementById(info_el_id)
+    const info_el = this.uiWindow.getDocument().getElementById(info_el_id)
     if (info_el) {
       info_el.remove()
     }
@@ -263,11 +269,13 @@ export class StatsUpdater {
     const target_bottom = this.settingsJSON.query_selectors.target_bottom
     const target_name = this.settingsJSON.query_selectors.target_name
 
-    return document.querySelector(
-      player === "top"
-        ? `.${target_top} .${target_name}`
-        : `.${target_bottom} .${target_name}`
-    ) as HTMLElement
+    return this.uiWindow
+      .getDocument()
+      .querySelector(
+        player === "top"
+          ? `.${target_top} .${target_name}`
+          : `.${target_bottom} .${target_name}`
+      ) as HTMLElement
   }
 
   getUiUpdater(): UiUpdater {
