@@ -57,12 +57,15 @@ export class StatsUpdater {
    */
   initialize(
     attachEventListeners: boolean = true,
-    startObserving: boolean = true
+    startObserving: boolean = true,
+    startUpdating: boolean = true
   ): void {
     // initial update
-    setTimeout(() => {
-      this.updateStatsForBothPlayers()
-    }, this.settingsJSON.LOAD_DELAY)
+    if (startUpdating) {
+      setTimeout(() => {
+        this.updateStatsForBothPlayers()
+      }, this.settingsJSON.LOAD_DELAY)
+    }
 
     // attach event listeners for flip board and settings updates
     if (attachEventListeners) {
@@ -119,9 +122,12 @@ export class StatsUpdater {
     if (!settings.show_stats) return
     if (settings.hide_own_stats && side === "bottom") return
 
+    const username = this.uiUpdater.getUsername(side)
+    if (!username) throw `No username found for side ${side}`
+
     const stats: Stats = await this.getStats(
       side,
-      this.uiUpdater.getUsername(side),
+      username,
       settings.game_modes,
       settings.time_interval
     )
