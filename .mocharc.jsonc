@@ -14,9 +14,5 @@
   "node-option": [
     "experimental-specifier-resolution=node",
     "loader=ts-node/esm"
-  ],
-  "exclude": [
-    "src/modules/ChromeSettingsStorage.ts",
-    "src/modules/BrowserUiWindow.ts"
   ]
 }
