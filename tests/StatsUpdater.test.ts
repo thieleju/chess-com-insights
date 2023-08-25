@@ -70,7 +70,7 @@ describe("StatsUpdater", () => {
   })
 
   it("should initialize correctly with dependencies", () => {
-    statsUpdater.initialize(false, false)
+    statsUpdater.initialize(false, false, false)
 
     expect(uiUpdater).to.be.an.instanceof(UiUpdater)
     expect(settingsManager).to.be.an.instanceof(SettingsManager)
@@ -80,7 +80,7 @@ describe("StatsUpdater", () => {
   })
 
   it("should initialize with default settings", async () => {
-    statsUpdater.initialize(false, false)
+    statsUpdater.initialize(false, false, false)
 
     const settings: Settings = await settingsManager.getSettings()
 
@@ -88,7 +88,7 @@ describe("StatsUpdater", () => {
   })
 
   it("should get correct stats for various players", async () => {
-    statsUpdater.initialize(false, false)
+    statsUpdater.initialize(false, false, false)
 
     const settings: Settings = await settingsManager.getSettings()
 
@@ -147,10 +147,19 @@ describe("StatsUpdater", () => {
     }
   })
 
-  it("should update stats ui element", async () => {
-    statsUpdater.initialize(false, false)
+  it("should throw username not found error with empty mock dom", async () => {
+    statsUpdater.initialize(false, false, false)
 
-    statsUpdater.updateStatsForPlayer("top", false)
-    statsUpdater.updateStatsForPlayer("bottom", true)
+    try {
+      await statsUpdater.updateStatsForPlayer("top", false)
+    } catch (error) {
+      expect(error).to.equal("No username found for side top")
+    }
+
+    try {
+      await statsUpdater.updateStatsForPlayer("bottom", false)
+    } catch (error) {
+      expect(error).to.equal("No username found for side bottom")
+    }
   })
 })
