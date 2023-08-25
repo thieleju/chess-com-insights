@@ -47,8 +47,8 @@ describe("UiUpdater", () => {
   })
 
   it("should create an info element for displaying chess statistics", () => {
-    const className = "test-class"
-    const id = "test-id"
+    const className = "flag-1"
+    const id = "info-el-top"
 
     const infoEl = uiUpdater.createInfoElement(className, id)
 
@@ -56,5 +56,21 @@ describe("UiUpdater", () => {
     expect(infoEl.classList.contains("user-tagline-rating")).to.be.true
     expect(infoEl.id).to.equal(id)
     expect(infoEl.style.marginLeft).to.equal("10px")
+  })
+
+  it("should get the created info element", () => {
+    const infoElTop = uiUpdater.getInfoElement("top")
+
+    expect(infoElTop.classList.contains("flag-1")).to.be.true
+    expect(infoElTop.classList.contains("user-tagline-rating")).to.be.true
+    expect(infoElTop.id).to.equal("info-el-top")
+    expect(infoElTop.style.marginLeft).to.equal("10px")
+
+    const infoElBottom = uiUpdater.getInfoElement("bottom")
+
+    expect(infoElBottom.classList.contains("flag-2")).to.be.true
+    expect(infoElBottom.classList.contains("user-tagline-rating")).to.be.true
+    expect(infoElBottom.id).to.equal("info-el-bottom")
+    expect(infoElBottom.style.marginLeft).to.equal("10px")
   })
 })
