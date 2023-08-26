@@ -12,5 +12,5 @@ export interface Wld {
 
 export interface Accuracy {
   avg: number
-  games: number
+  wld: Wld
 }

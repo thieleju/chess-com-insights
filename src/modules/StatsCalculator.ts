@@ -34,9 +34,17 @@ export class StatsCalculator {
   ): Stats {
     games = this.filterGames(games, gameModes, timeInterval)
 
-    let stats: Stats = {
+    const stats: Stats = {
       wld: { wins: 0, loses: 0, draws: 0, games: games.length },
-      accuracy: { avg: 0, games: games.length }
+      accuracy: {
+        avg: 0,
+        wld: {
+          wins: 0,
+          loses: 0,
+          draws: 0,
+          games: games.length
+        }
+      }
     }
 
     games.forEach((game) => {
@@ -45,19 +53,21 @@ export class StatsCalculator {
           ? "white"
           : "black"
 
-      if (game.accuracies) stats.accuracy.avg += game.accuracies[color] || 0
-      else stats.accuracy.games--
-
       const result = this.transformResult(game[color].result)
       if (!result) {
         console.error("Unknown result", result)
         return
       }
       stats.wld[result]++
+
+      if (game.accuracies) {
+        stats.accuracy.avg += game.accuracies[color] || 0
+        stats.accuracy.wld[result]++
+      } else stats.accuracy.wld.games--
     })
 
     stats.accuracy.avg = parseFloat(
-      (stats.accuracy.avg / stats.accuracy.games).toFixed(0)
+      (stats.accuracy.avg / stats.accuracy.wld.games).toFixed(0)
     )
     if (isNaN(stats.accuracy.avg)) stats.accuracy.avg = 0
 

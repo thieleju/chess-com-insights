@@ -37,19 +37,22 @@ export class UiUpdater {
   /**
    * Update an HTML element with chess statistics.
    *
-   * @param {HTMLElement} el - The HTML element to be updated.
+   * @param {("top" | "bottom")} side - The player ("top" or "bottom") for whom to update the element.
    * @param {Stats} stats - A statistics object containing chess statistics.
    * @param {boolean} showAccuracy - A flag indicating whether accuracy information should be displayed.
    * @param {boolean} colorHighlighting - A flag indicating whether color highlighting should be applied to the statistics.
    * @returns {void}
    */
   updateElement(
-    el: HTMLElement,
+    side: "top" | "bottom",
     stats: Stats,
     showAccuracy: boolean,
-    colorHighlighting: boolean
-  ): void {
-    let str: string
+    colorHighlighting: boolean,
+    timeInterval: string
+  ): HTMLElement {
+    const el = this.getInfoElement(side)
+
+    let str: string = ``
 
     if (colorHighlighting) {
       str =
@@ -64,6 +67,60 @@ export class UiUpdater {
       str += ` (${stats.accuracy.avg}%)`
 
     el.innerHTML = str
+
+    this.addTooltipToStatsElement(el, side, stats, timeInterval)
+
+    return el
+  }
+
+  //TODO optimize this function and document it
+  addTooltipToStatsElement(
+    el: HTMLElement,
+    side: "top" | "bottom",
+    stats: Stats,
+    timeInterval: string
+  ): void {
+    el.addEventListener("mouseenter", () => {
+      const tooltip = document.createElement("div")
+      tooltip.classList.add("user-popover-component")
+      tooltip.classList.add("user-popover-popover")
+      tooltip.classList.add("user-username-component")
+      tooltip.classList.add("user-tagline-username")
+
+      this.uiWindow.getDocument().body.appendChild(tooltip)
+
+      // const percent = Math.floor(
+      //   (stats.accuracy.wld.games / stats.wld.games) * 100
+      // )
+
+      const { wins, loses, draws } = stats.accuracy.wld
+
+      tooltip.innerHTML = `
+        <span style="padding-bottom:5px">
+        <strong>Average accuracy of ${stats.accuracy.avg}%</strong>  (${timeInterval})
+        </span>
+        <span>
+        Accuracy available on ${stats.accuracy.wld.games} out of ${stats.wld.games} games 
+        <br>
+        WLD of analyzed games: ${wins}/${loses}/${draws}
+        </span>
+      `
+
+      const elementWidth = 280
+
+      tooltip.style.position = "absolute"
+      tooltip.style.padding = "10px"
+      tooltip.style.width = `${elementWidth}px`
+
+      const { left, top, height, bottom } = el.getBoundingClientRect()
+      tooltip.style.left = `${left}px`
+      tooltip.style.top = `${top + height}px`
+
+      if (side === "bottom")
+        tooltip.style.top = `${top - tooltip.getBoundingClientRect().height}px`
+
+      el.addEventListener("mouseleave", () => tooltip.remove())
+    })
   }
 
   /**
