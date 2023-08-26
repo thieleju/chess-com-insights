@@ -23,7 +23,15 @@ describe("UiUpdater", () => {
   it("should update an HTML element with chess statistics", async () => {
     const stats: Stats = {
       wld: { wins: 10, loses: 5, draws: 3, games: 18 },
-      accuracy: { avg: 75, games: 11 }
+      accuracy: {
+        avg: 75,
+        wld: {
+          wins: 5,
+          loses: 4,
+          draws: 2,
+          games: 11
+        }
+      }
     }
 
     settingsJSON.colors = {
@@ -32,9 +40,13 @@ describe("UiUpdater", () => {
       draws: "#b38235"
     }
 
-    const el = mockUiWindow.getDocument().createElement("div")
-
-    uiUpdater.updateElement(el, stats, true, true)
+    const el = uiUpdater.updateElement(
+      "bottom",
+      stats,
+      true,
+      true,
+      settingsJSON.defaultSettings.time_interval
+    )
 
     const expectedStr =
       `<strong>` +

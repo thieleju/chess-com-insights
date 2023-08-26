@@ -118,9 +118,11 @@ describe("StatsUpdater", () => {
 
       expect(accuracy).to.be.an("object")
       expect(accuracy).to.have.property("avg").to.be.a("number")
-      expect(accuracy).to.have.property("games").to.be.a("number")
+      expect(accuracy).to.have.property("wld").to.be.an("object")
 
       const { wins, loses, draws, games } = wld
+
+      //TODO add tests for wld of accuracy games
 
       expect(wins).to.be.at.least(0)
       expect(loses).to.be.at.least(0)
@@ -128,7 +130,7 @@ describe("StatsUpdater", () => {
       expect(games).to.equal(wins + loses + draws)
 
       expect(accuracy.avg).to.be.at.least(0)
-      expect(accuracy.games).to.be.at.most(games)
+      expect(accuracy.wld.games).to.be.at.most(games)
     }
 
     testData.push({
