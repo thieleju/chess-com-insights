@@ -133,10 +133,11 @@ export class StatsUpdater {
     )
 
     this.uiUpdater.updateElement(
-      this.uiUpdater.getInfoElement(side),
+      side,
       stats,
       settings.show_accuracy,
-      settings.color_highlighting
+      settings.color_highlighting,
+      settings.time_interval
     )
   }
 
