@@ -28,7 +28,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout coverage branch
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: coverage
 
@@ -42,7 +42,7 @@ jobs:
           git push origin coverage
 
       - name: Checkout main branch
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: main
 
