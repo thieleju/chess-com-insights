@@ -13,7 +13,7 @@
     "draws": "#b38235"
   },
   "defaultSettings": {
-    "game_modes": ["blitz", "rapid"],
+    "game_modes": ["bullet", "blitz", "rapid"],
     "time_interval": "last 12 hours",
     "hide_own_stats": false,
     "show_accuracy": true,
