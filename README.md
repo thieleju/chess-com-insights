@@ -14,7 +14,8 @@ Use the icon in the top right corner to adjust the settings.
 
 - First three numbers are the wins/loses/draws of the player
 - Percentage in brackets is the average accuracy of the player
-    - Accuracy is only available on games which were reviewed
+    - Accuracy is only available on rated games which were reviewed
+    - Hover over the stats to see information how many games the average is based on
 
 ### Preview
 ![preview](images/preview.png)
