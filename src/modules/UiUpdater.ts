@@ -73,51 +73,64 @@ export class UiUpdater {
     return el
   }
 
-  //TODO optimize this function and document it
+  /**
+   * Adds a tooltip to a given HTML element when the mouse enters it.
+   *
+   * @param {HTMLElement} el - The HTML element to which the tooltip will be added.
+   * @param {"top" | "bottom"} side - The side of the element where the tooltip should appear.
+   * @param {Stats} stats - The statistics object containing accuracy and game data.
+   * @param {string} timeInterval - The time interval for which the accuracy is displayed.
+   * @returns {void}
+   */
   addTooltipToStatsElement(
     el: HTMLElement,
     side: "top" | "bottom",
     stats: Stats,
     timeInterval: string
   ): void {
+    // add event to stats element
     el.addEventListener("mouseenter", () => {
+      // create tooltip element
       const tooltip = document.createElement("div")
-      tooltip.classList.add("user-popover-component")
-      tooltip.classList.add("user-popover-popover")
-      tooltip.classList.add("user-username-component")
-      tooltip.classList.add("user-tagline-username")
+      tooltip.classList.add(
+        "user-popover-component",
+        "user-popover-popover",
+        "user-username-component",
+        "user-tagline-username"
+      )
 
       this.uiWindow.getDocument().body.appendChild(tooltip)
 
-      // const percent = Math.floor(
-      //   (stats.accuracy.wld.games / stats.wld.games) * 100
-      // )
+      const { wins, loses, draws, games } = stats.accuracy.wld
 
-      const { wins, loses, draws } = stats.accuracy.wld
-
-      tooltip.innerHTML = `
-        <span style="padding-bottom:5px">
-        <strong>Average accuracy of ${stats.accuracy.avg}%</strong>  (${timeInterval})
-        </span>
-        <span>
-        Accuracy available on ${stats.accuracy.wld.games} out of ${stats.wld.games} games 
-        <br>
-        WLD of analyzed games: ${wins}/${loses}/${draws}
-        </span>
-      `
-
-      const elementWidth = 280
+      tooltip.innerHTML =
+        stats.accuracy.avg === 0
+          ? `<span style="padding-bottom:5px"> \
+               No accuracy data available (${timeInterval}) \
+               <br>\
+               Accuracy is only available on analyzed rated games \
+             </span>`
+          : `<span style="padding-bottom:5px"> \
+               <strong>Average accuracy of ${stats.accuracy.avg}%</strong> (${timeInterval}) \
+             </span> \
+             <span> \
+               Accuracy based on ${games} out of ${stats.wld.games} games  \
+               <br> \
+               W/L/D of analyzed games: ${wins}/${loses}/${draws} \
+             </span>`
 
       tooltip.style.position = "absolute"
       tooltip.style.padding = "10px"
-      tooltip.style.width = `${elementWidth}px`
+      tooltip.style.width = `auto`
+      tooltip.style.maxWidth = `fit-content`
 
-      const { left, top, height, bottom } = el.getBoundingClientRect()
+      const { left, top, height } = el.getBoundingClientRect()
+
       tooltip.style.left = `${left}px`
-      tooltip.style.top = `${top + height}px`
-
-      if (side === "bottom")
-        tooltip.style.top = `${top - tooltip.getBoundingClientRect().height}px`
+      tooltip.style.top =
+        side === "bottom"
+          ? `${top - tooltip.getBoundingClientRect().height}px`
+          : `${top + height}px`
 
       el.addEventListener("mouseleave", () => tooltip.remove())
     })
