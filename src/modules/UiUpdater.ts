@@ -108,7 +108,7 @@ export class UiUpdater {
           ? `<span style="padding-bottom:5px"> \
                No accuracy data available (${timeInterval}) \
                <br>\
-               Accuracy is only available on analyzed rated games \
+               Accuracy is only available on analyzed games \
              </span>`
           : `<span style="padding-bottom:5px"> \
                <strong>Average accuracy of ${stats.accuracy.avg}%</strong> (${timeInterval}) \
