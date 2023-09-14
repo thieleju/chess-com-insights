@@ -56,7 +56,5 @@ jobs:
             Chess.com Insights Release v${{ steps.get_version.outputs.version }}
             <br>
             ${{ github.event.inputs.text }}
-            <br>
-            Install the extension manually by going to chrome://extensions and enabling developer mode. Then you can drag and drop the zip file into the browser.
           files: |
             chess-com-insights.zip
