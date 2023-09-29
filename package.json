@@ -37,7 +37,7 @@
     "@types/webfontloader": "^1.6.35",
     "@vitejs/plugin-vue": "^4.3.4",
     "c8": "^8.0.1",
-    "chai": "^4.3.9",
+    "chai": "^4.3.10",
     "jsdom": "^22.1.0",
     "mocha": "^10.2.0",
     "mocha-junit-reporter": "^2.2.1",
