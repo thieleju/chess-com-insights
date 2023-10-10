@@ -17,7 +17,7 @@
     "cover": "npx c8 npm run test && npx c8 report --reporter html"
   },
   "dependencies": {
-    "@mdi/font": "7.2.96",
+    "@mdi/font": "7.3.67",
     "luxon": "^3.4.3",
     "roboto-fontface": "*",
     "vue": "^3.2.0",
