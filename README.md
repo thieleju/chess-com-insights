@@ -41,7 +41,7 @@ Manual installation:
 
 - Hiding your own stats only hides the bottom stats, currently not depending on the username
 - Sometimes the stats flash up when visiting a chess.com game link
-- Chess data is fetched for the current month. At the end or start of a month, the stats don't show accurate game data 
+- Chess data is fetched for the current month. At the start of a month, the stats don't show accurate game data 
 
 If you find any other bugs, please open an issue [here](https://github.com/thieleju/chess-com-insights/issues)
 
