@@ -35,7 +35,7 @@
     "@types/node": "^20.8.10",
     "@types/sinon": "^17.0.1",
     "@types/webfontloader": "^1.6.37",
-    "@vitejs/plugin-vue": "^4.4.0",
+    "@vitejs/plugin-vue": "^4.4.1",
     "c8": "^8.0.1",
     "chai": "^4.3.10",
     "jsdom": "^22.1.0",
