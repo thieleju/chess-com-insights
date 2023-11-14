@@ -4,7 +4,7 @@
   "author": "thieleju",
   "manifest_version": 3,
   "version": "2.3.4",
-  "permissions": ["activeTab", "scripting", "webRequest", "storage"],
+  "permissions": ["activeTab", "scripting", "storage"],
   "action": {
     "default_locale": "en",
     "default_title": "Chess.com Insights",
