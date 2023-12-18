@@ -39,4 +39,7 @@ export interface SettingsJSON {
   timeIntervalsMS: {
     [key: string]: number
   }
+  specialTitles: {
+    [username: string]: string
+  }
 }
