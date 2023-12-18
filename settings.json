@@ -38,5 +38,8 @@
     "last day": 86400,
     "last 3 days": 259200,
     "last week": 604800
+  },
+  "specialTitles": {
+    "0xju": "AFM"
   }
 }
