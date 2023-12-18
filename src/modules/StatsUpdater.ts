@@ -113,6 +113,12 @@ export class StatsUpdater {
     this.updateTitleForPlayer("bottom")
   }
 
+  /**
+   * Update chess title for a specific player.
+   *
+   * @param {("top" | "bottom")} side - The player ("top" or "bottom") for whom to update title.
+   * @returns {void}
+   */
   updateTitleForPlayer(side: "top" | "bottom"): void {
     const username = this.uiUpdater.getUsername(side)
     if (!username) return
