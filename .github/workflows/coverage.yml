@@ -1,0 +1,75 @@
+# Simple workflow for deploying static content to GitHub Pages
+name: Coverage
+
+on:
+  # Runs on pushes targeting the default branch
+  push:
+    branches: ["main"]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: write
+  pages: write
+  checks: write
+  id-token: write
+
+# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
+# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  # Single deploy job since we're just deploying
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout coverage branch
+        uses: actions/checkout@v4
+        with:
+          ref: coverage
+
+      - name: Delete folder and push changes
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git checkout coverage
+          git rm -rf * 
+          git commit -m "Delete all files in coverage branch"
+          git push origin coverage
+
+      - name: Checkout main branch
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run c8 code coverage
+        run: npm run cover
+
+      - name: Create coverage report directory
+        run: mkdir docs
+
+      - name: Move files to root directory
+        run: mv tests/coverage/* docs
+
+      - name: Commit and push to coverage branch
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git checkout -B coverage
+          git pull origin coverage --rebase --force
+          git rebase --strategy=ours origin/coverage
+          git add docs/*.js docs/*.html docs/*.css docs/*.png
+          git commit -m "Update coverage report html"
+          git push origin coverage --force --no-verify
