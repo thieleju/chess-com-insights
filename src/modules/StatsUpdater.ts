@@ -64,6 +64,7 @@ export class StatsUpdater {
     if (startUpdating) {
       setTimeout(() => {
         this.updateStatsForBothPlayers()
+        this.updateTitleForBothPlayers()
       }, this.settingsJSON.LOAD_DELAY)
     }
 
@@ -82,6 +83,7 @@ export class StatsUpdater {
     this.urlobserver.on("url-mutation", () => {
       setTimeout(() => {
         this.updateStatsForBothPlayers()
+        this.updateTitleForBothPlayers()
       }, this.settingsJSON.LOAD_DELAY)
     })
   }
@@ -90,15 +92,44 @@ export class StatsUpdater {
    * Update chess statistics for both players.
    *
    * @param {boolean} updateSettings - Whether to update settings from storage.
-   * @returns {Promise<void>} A Promise that resolves once the statistics are updated for both players.
+   * @returns {Promise<void[]>} A Promise that resolves once the statistics are updated for both players.
    */
   async updateStatsForBothPlayers(
     updateSettings: boolean = false
-  ): Promise<void> {
-    await Promise.all([
+  ): Promise<void[]> {
+    return Promise.all([
       this.updateStatsForPlayer("top", updateSettings),
       this.updateStatsForPlayer("bottom", updateSettings)
     ])
+  }
+
+  /**
+   * Update chess title for both players.
+   *
+   * @returns {void}
+   */
+  updateTitleForBothPlayers(): void {
+    this.updateTitleForPlayer("top")
+    this.updateTitleForPlayer("bottom")
+  }
+
+  updateTitleForPlayer(side: "top" | "bottom"): void {
+    const username = this.uiUpdater.getUsername(side)
+    if (!username) return
+
+    const title = this.uiUpdater
+      .getPlayerElement(side)
+      ?.parentElement?.querySelector(".cci-custom-title")
+    if (title) title.remove()
+
+    // check if user has a special Title
+    const specialTitles = this.settingsJSON.specialTitles
+    if (!specialTitles) return
+    const specialTitle = specialTitles[username]
+    if (!specialTitle) return
+
+    // give player title if applicable
+    this.uiUpdater.updateTitleElement(side, specialTitle)
   }
 
   /**
@@ -131,7 +162,6 @@ export class StatsUpdater {
       settings.game_modes,
       settings.time_interval
     )
-
     this.uiUpdater.updateElement(
       side,
       stats,
@@ -180,9 +210,10 @@ export class StatsUpdater {
       .getElementById("board-controls-flip")
     if (!flip_board_btn) return
 
-    flip_board_btn.addEventListener("click", () =>
+    flip_board_btn.addEventListener("click", () => {
       this.updateStatsForBothPlayers()
-    )
+      this.updateTitleForBothPlayers()
+    })
   }
 
   /**
@@ -190,14 +221,10 @@ export class StatsUpdater {
    */
   private attachSettingsUpdateListener(): void {
     chrome.runtime.onMessage.addListener(
-      async (
-        request: { action: string },
-        _sender: chrome.runtime.MessageSender,
-        _sendResponse: (arg0: any) => void
-      ) => {
+      async (request: { action: string }) => {
         if (request.action !== "updated-settings") return
-
         this.updateStatsForBothPlayers(true)
+        this.updateTitleForBothPlayers()
       }
     )
   }

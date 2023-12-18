@@ -74,6 +74,23 @@ export class UiUpdater {
   }
 
   /**
+   * Update an HTML element with a special title.
+   *
+   * @param {("top" | "bottom")} side - The player ("top" or "bottom") for whom to update the element.
+   * @param {string} specialTitle - The special title to display.
+   */
+  updateTitleElement(side: "top" | "bottom", specialTitle: string): void {
+    const htmlEl = document.createElement("a")
+    htmlEl.href = "/members/titled-players"
+    htmlEl.target = "_blank"
+    htmlEl.classList.add("user-chess-title-component", "cci-custom-title")
+    htmlEl.dataset.tooltipTarget = "15"
+    htmlEl.innerHTML = specialTitle
+
+    this.getPlayerElement(side)?.parentElement?.prepend(htmlEl)
+  }
+
+  /**
    * Adds a tooltip to a given HTML element when the mouse enters it.
    *
    * @param {HTMLElement} el - The HTML element to which the tooltip will be added.
