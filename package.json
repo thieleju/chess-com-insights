@@ -21,7 +21,7 @@
     "luxon": "^3.4.4",
     "roboto-fontface": "*",
     "vue": "^3.3.12",
-    "vuetify": "^3.4.7",
+    "vuetify": "^3.4.8",
     "webfontloader": "^1.0.0"
   },
   "devDependencies": {
