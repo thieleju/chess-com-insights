@@ -20,7 +20,7 @@
     "@mdi/font": "7.4.47",
     "luxon": "^3.4.4",
     "roboto-fontface": "*",
-    "vue": "^3.3.13",
+    "vue": "^3.4.0",
     "vuetify": "^3.4.9",
     "webfontloader": "^1.0.0"
   },
