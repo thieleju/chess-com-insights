@@ -36,7 +36,7 @@
     "@types/sinon": "^17.0.1",
     "@types/webfontloader": "^1.6.37",
     "@typescript-eslint/eslint-plugin": "^6.16.0",
-    "@vitejs/plugin-vue": "^4.6.0",
+    "@vitejs/plugin-vue": "^4.6.1",
     "c8": "^8.0.1",
     "chai": "^5.0.0",
     "jsdom": "^23.0.1",
