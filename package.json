@@ -33,7 +33,7 @@
     "@types/luxon": "^3.4.0",
     "@types/mocha": "^10.0.4",
     "@types/node": "^20.11.0",
-    "@types/sinon": "^17.0.1",
+    "@types/sinon": "^17.0.3",
     "@types/webfontloader": "^1.6.37",
     "@typescript-eslint/eslint-plugin": "^6.18.1",
     "@vitejs/plugin-vue": "^4.6.2",
