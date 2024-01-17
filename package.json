@@ -27,7 +27,7 @@
   "devDependencies": {
     "@crxjs/vite-plugin": "^2.0.0-beta.22",
     "@types/chai": "^4.3.11",
-    "@types/chrome": "^0.0.257",
+    "@types/chrome": "^0.0.258",
     "@types/jsdom": "^21.1.6",
     "@types/jsdom-global": "^3.0.7",
     "@types/luxon": "^3.4.1",
