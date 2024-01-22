@@ -54,6 +54,7 @@ export class StatsUpdater {
    *
    * @param {boolean} attachEventListeners - Whether to attach event listeners for flip board and settings updates.
    * @param {boolean} startObserving - Whether to start observing URL changes.
+   * @param {boolean} startUpdating - Whether to start updating statistics.
    */
   initialize(
     attachEventListeners: boolean = true,
@@ -68,12 +69,13 @@ export class StatsUpdater {
       }, this.settingsJSON.LOAD_DELAY)
     }
 
-    // attach event listeners for flip board and settings updates
+    // Attach event listeners for flip board and settings updates
     if (attachEventListeners) {
-      this.attachFlipBoardClickEvent()
+      this.attachButtonClickEvent("board-controls-flip")
+      this.attachButtonClickEvent("board-controls-settings")
+      this.attachButtonClickEvent("board-controls-theatre")
+      this.attachButtonClickEvent("board-controls-focus")
       this.attachSettingsUpdateListener()
-      this.attachTheatreModeClickEvent()
-      this.attachFocusModeClickEvent()
     }
 
     if (!startObserving) return
@@ -210,45 +212,13 @@ export class StatsUpdater {
   }
 
   /**
-   * Attach click event listener to the theatre button.
+   * Attach click event listeners to specified buttons.
    */
-  private attachTheatreModeClickEvent(): void {
-    const toggle_theatre_mode = this.uiWindow
-      .getDocument()
-      .getElementById("board-controls-theatre")
-    if (!toggle_theatre_mode) return
+  private attachButtonClickEvent(buttonId: string): void {
+    const button = this.uiWindow.getDocument().getElementById(buttonId)
+    if (!button) return
 
-    toggle_theatre_mode.addEventListener("click", () => {
-      this.updateStatsForBothPlayers()
-      this.updateTitleForBothPlayers()
-    })
-  }
-
-  /**
-   * Attach click event listener to the focus button.
-   */
-  private attachFocusModeClickEvent(): void {
-    const toggle_focus_mode = this.uiWindow
-      .getDocument()
-      .getElementById("board-controls-focus")
-    if (!toggle_focus_mode) return
-
-    toggle_focus_mode.addEventListener("click", () => {
-      this.updateStatsForBothPlayers()
-      this.updateTitleForBothPlayers()
-    })
-  }
-
-  /**
-   * Attach click event listener to the flip board button.
-   */
-  private attachFlipBoardClickEvent(): void {
-    const flip_board_btn = this.uiWindow
-      .getDocument()
-      .getElementById("board-controls-flip")
-    if (!flip_board_btn) return
-
-    flip_board_btn.addEventListener("click", () => {
+    button.addEventListener("click", () => {
       this.updateStatsForBothPlayers()
       this.updateTitleForBothPlayers()
     })
