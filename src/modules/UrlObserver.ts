@@ -4,7 +4,9 @@ import { UiWindow } from "../types/wrapper"
  * MutationObserver for observing URL changes.
  */
 export class UrlObserver {
-  private eventListeners: { [event: string]: ((...args: any[]) => void)[] } = {}
+  private eventListeners: {
+    [event: string]: ((...args: unknown[]) => void)[]
+  } = {}
   private mutationObserver: MutationObserver | null
   private prevPathname: string
 
@@ -26,7 +28,7 @@ export class UrlObserver {
    * @param {Function} listener - The event listener function.
    * @returns {void}
    */
-  on(event: string, listener: (...args: any[]) => void): void {
+  on(event: string, listener: (...args: unknown[]) => void): void {
     if (!this.eventListeners[event]) {
       this.eventListeners[event] = []
     }
@@ -41,7 +43,7 @@ export class UrlObserver {
    * @param {any[]} args - Arguments to pass to the listeners.
    * @returns {void}
    */
-  private emit(event: string, ...args: any[]): void {
+  private emit(event: string, ...args: unknown[]): void {
     const listeners = this.eventListeners[event]
     if (listeners) {
       for (const listener of listeners) {

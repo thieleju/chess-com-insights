@@ -3,9 +3,16 @@
   "FETCH_RETRY_DELAY": 600,
   "LOAD_DELAY": 1700,
   "query_selectors": {
-    "target_name": "user-tagline-username",
-    "target_top": "board-layout-top",
-    "target_bottom": "board-layout-bottom"
+    "top": "board-layout-top",
+    "bottom": "board-layout-bottom",
+    "normal": {
+      "username": "user-tagline-username",
+      "elementToAppend": "user-tagline-username"
+    },
+    "compact": {
+      "username": "user-tagline-compact-username",
+      "elementToAppend": "user-tagline-compact-theatre"
+    }
   },
   "colors": {
     "wins": "#6b9438",
@@ -13,7 +20,11 @@
     "draws": "#b38235"
   },
   "defaultSettings": {
-    "game_modes": ["bullet", "blitz", "rapid"],
+    "game_modes": [
+      "bullet",
+      "blitz",
+      "rapid"
+    ],
     "time_interval": "last 12 hours",
     "hide_own_stats": false,
     "show_accuracy": true,
@@ -21,7 +32,12 @@
     "popup_darkmode": true,
     "color_highlighting": false
   },
-  "validGameModes": ["blitz", "rapid", "bullet", "daily"],
+  "validGameModes": [
+    "blitz",
+    "rapid",
+    "bullet",
+    "daily"
+  ],
   "validTimeIntervals": [
     "last hour",
     "last 6 hours",
