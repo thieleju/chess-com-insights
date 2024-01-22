@@ -72,6 +72,8 @@ export class StatsUpdater {
     if (attachEventListeners) {
       this.attachFlipBoardClickEvent()
       this.attachSettingsUpdateListener()
+      this.attachTheatreModeClickEvent()
+      this.attachFocusModeClickEvent()
     }
 
     if (!startObserving) return
@@ -205,6 +207,36 @@ export class StatsUpdater {
       this.uiUpdater.removeInfoElement(side)
       throw `Could not retrieve chess data for ${username}`
     }
+  }
+
+  /**
+   * Attach click event listener to the theatre button.
+   */
+  private attachTheatreModeClickEvent(): void {
+    const toggle_theatre_mode = this.uiWindow
+      .getDocument()
+      .getElementById("board-controls-theatre")
+    if (!toggle_theatre_mode) return
+
+    toggle_theatre_mode.addEventListener("click", () => {
+      this.updateStatsForBothPlayers()
+      this.updateTitleForBothPlayers()
+    })
+  }
+
+  /**
+   * Attach click event listener to the focus button.
+   */
+  private attachFocusModeClickEvent(): void {
+    const toggle_focus_mode = this.uiWindow
+      .getDocument()
+      .getElementById("board-controls-focus")
+    if (!toggle_focus_mode) return
+
+    toggle_focus_mode.addEventListener("click", () => {
+      this.updateStatsForBothPlayers()
+      this.updateTitleForBothPlayers()
+    })
   }
 
   /**

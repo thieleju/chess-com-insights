@@ -24,9 +24,16 @@ export interface SettingsJSON {
   FETCH_RETRY_DELAY: number
   LOAD_DELAY: number
   query_selectors: {
-    target_name: string
-    target_top: string
-    target_bottom: string
+    top: string
+    bottom: string
+    normal: {
+      username: string
+      elementToAppend: string
+    }
+    compact: {
+      username: string
+      elementToAppend: string
+    }
   }
   colors: {
     wins: string
