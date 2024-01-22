@@ -67,7 +67,7 @@ export class SettingsManager {
     const validGameModes: GameMode[] = this.settingsJSON
       .validGameModes as GameMode[]
 
-    const isBoolean = (value: any) => typeof value === "boolean"
+    const isBoolean = (value: unknown) => typeof value === "boolean"
     const isValidGameMode = (mode: GameMode) => validGameModes.includes(mode)
     const isValidTimeInterval = (interval: TimeInterval) =>
       validTimeIntervals.includes(interval)

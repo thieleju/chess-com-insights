@@ -11,9 +11,16 @@ export class UiUpdater {
   private color_draws: string
 
   private query_selectors: {
-    target_top: string
-    target_bottom: string
-    target_name: string
+    top: string
+    bottom: string
+    normal: {
+      username: string
+      elementToAppend: string
+    }
+    compact: {
+      username: string
+      elementToAppend: string
+    }
   }
 
   private uiWindow: UiWindow
@@ -175,17 +182,16 @@ export class UiUpdater {
    * @returns {HTMLElement | null} The player element for the player, or null if not found.
    */
   getPlayerElement(player: "top" | "bottom"): HTMLElement | null {
-    const target_top = this.query_selectors.target_top
-    const target_bottom = this.query_selectors.target_bottom
-    const target_name = this.query_selectors.target_name
+    const { top, bottom, normal, compact } = this.query_selectors
+
+    const location = player === "top" ? top : bottom
+    const elementToAppend = this.isInCompactMode()
+      ? compact.elementToAppend
+      : normal.elementToAppend
 
     return this.uiWindow
       .getDocument()
-      .querySelector(
-        player === "top"
-          ? `.${target_top} .${target_name}`
-          : `.${target_bottom} .${target_name}`
-      ) as HTMLElement
+      .querySelector(`.${location} .${elementToAppend}`) as HTMLElement
   }
 
   /**
@@ -229,17 +235,13 @@ export class UiUpdater {
    * @returns {string} The username of the player.
    */
   getUsername(player: "top" | "bottom"): string {
-    const target_top = this.query_selectors.target_top
-    const target_bottom = this.query_selectors.target_bottom
-    const target_name = this.query_selectors.target_name
+    const { top, bottom, normal, compact } = this.query_selectors
 
+    const location = player === "top" ? top : bottom
+    const username = this.isInCompactMode() ? compact.username : normal.username
     const player_el = this.uiWindow
       .getDocument()
-      .querySelector(
-        player === "top"
-          ? `.${target_top} .${target_name}`
-          : `.${target_bottom} .${target_name}`
-      ) as HTMLElement
+      .querySelector(`.${location} .${username}`) as HTMLElement
 
     return player_el?.innerText || ""
   }
@@ -254,5 +256,18 @@ export class UiUpdater {
     return this.uiWindow
       .getDocument()
       .querySelector(side === "top" ? ".flag-1" : ".flag-2") as HTMLElement
+  }
+
+  /**
+   * Checks whether the UI is in compact mode by looking for the normal user html element.
+   *
+   * @returns {boolean} A flag indicating whether the UI is in compact mode.
+   */
+  isInCompactMode(): boolean {
+    const { top, normal } = this.query_selectors
+    const normalElementsVisible = this.uiWindow
+      .getDocument()
+      .querySelector(`.${top} .${normal.username}`)
+    return !normalElementsVisible
   }
 }
