@@ -117,8 +117,8 @@ export class UiUpdater {
       // create tooltip element
       const tooltip = document.createElement("div")
       tooltip.classList.add(
-        "user-popover-component",
-        "user-popover-popover",
+        "user-popover-legacy-component",
+        "user-popover-legacy-popover",
         "user-username-component",
         "user-tagline-username"
       )
