@@ -48,7 +48,7 @@ jobs:
         run: git push origin v${{ steps.get_version.outputs.version }}
 
       - name: Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           name: v${{ steps.get_version.outputs.version }}
           tag_name: v${{ steps.get_version.outputs.version }}
