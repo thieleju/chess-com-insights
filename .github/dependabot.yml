@@ -18,9 +18,6 @@ updates:
     schedule:
       interval: "daily"
     groups:
-      dev-dependencies:
-        patterns:
-          - "*"
       dependencies:
         patterns:
           - "*"
