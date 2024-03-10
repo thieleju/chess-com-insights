@@ -20,11 +20,7 @@
     "draws": "#b38235"
   },
   "defaultSettings": {
-    "game_modes": [
-      "bullet",
-      "blitz",
-      "rapid"
-    ],
+    "game_modes": ["bullet", "blitz", "rapid"],
     "time_interval": "last 12 hours",
     "hide_own_stats": false,
     "show_accuracy": true,
@@ -32,12 +28,7 @@
     "popup_darkmode": true,
     "color_highlighting": false
   },
-  "validGameModes": [
-    "blitz",
-    "rapid",
-    "bullet",
-    "daily"
-  ],
+  "validGameModes": ["blitz", "rapid", "bullet", "daily"],
   "validTimeIntervals": [
     "last hour",
     "last 6 hours",
@@ -56,6 +47,6 @@
     "last week": 604800
   },
   "specialTitles": {
-    "robertyaa": "AFM"
+    "RobertBrot": "AFM"
   }
 }
