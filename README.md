@@ -10,7 +10,7 @@
 ## 🚀 How it works
 
 This extension shows statistics for chess.com games. 
-Use the icon in the top right corner to adjust the settings.
+Use the icon in the top right corner to adjust the settings (In the Browser).
 
 - First three numbers are the wins/loses/draws of the player
 - Percentage in brackets is the average accuracy of the player
