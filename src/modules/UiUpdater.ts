@@ -24,6 +24,7 @@ export class UiUpdater {
   }
 
   private uiWindow: UiWindow
+  private open_tooltip_delay: number
 
   /**
    * Create a UiUpdater instance.
@@ -39,6 +40,8 @@ export class UiUpdater {
     this.query_selectors = settingsJSON.query_selectors
 
     this.uiWindow = uiWindow
+
+    this.open_tooltip_delay = settingsJSON.OPEN_TOOLTIP_DELAY
   }
 
   /**
@@ -104,7 +107,6 @@ export class UiUpdater {
    * @param {"top" | "bottom"} side - The side of the element where the tooltip should appear.
    * @param {Stats} stats - The statistics object containing accuracy and game data.
    * @param {string} timeInterval - The time interval for which the accuracy is displayed.
-   * @returns {void}
    */
   addTooltipToStatsElement(
     el: HTMLElement,
@@ -112,52 +114,74 @@ export class UiUpdater {
     stats: Stats,
     timeInterval: string
   ): void {
-    // add event to stats element
+    let tooltip: HTMLElement
+    let tooltipTimeout: NodeJS.Timeout
+
     el.addEventListener("mouseenter", () => {
-      // create tooltip element
-      const tooltip = document.createElement("div")
-      tooltip.classList.add(
-        "user-popover-legacy-component",
-        "user-popover-legacy-popover",
-        "user-username-component",
-        "user-tagline-username"
-      )
+      // Show the tooltip after a delay
+      tooltipTimeout = setTimeout(() => {
+        tooltip = this.createTooltip(stats, timeInterval)
 
-      this.uiWindow.getDocument().body.appendChild(tooltip)
+        // Add Tooltip first to the body to get the correct dimensions for positioning
+        this.uiWindow.getDocument().body.appendChild(tooltip)
 
-      const { wins, loses, draws, games } = stats.accuracy.wld
-
-      tooltip.innerHTML =
-        stats.accuracy.avg === 0
-          ? `<span style="padding-bottom:5px"> \
-               No accuracy data available (${timeInterval}) \
-               <br>\
-               Accuracy is only available on analyzed games \
-             </span>`
-          : `<span style="padding-bottom:5px"> \
-               <strong>Average accuracy of ${stats.accuracy.avg}%</strong> (${timeInterval}) \
-             </span> \
-             <span> \
-               Accuracy based on ${games} out of ${stats.wld.games} games  \
-               <br> \
-               W/L/D of analyzed games: ${wins}/${loses}/${draws} \
-             </span>`
-
-      tooltip.style.position = "absolute"
-      tooltip.style.padding = "10px"
-      tooltip.style.width = `auto`
-      tooltip.style.maxWidth = `fit-content`
-
-      const { left, top, height } = el.getBoundingClientRect()
-
-      tooltip.style.left = `${left}px`
-      tooltip.style.top =
-        side === "bottom"
-          ? `${top - tooltip.getBoundingClientRect().height}px`
-          : `${top + height}px`
-
-      el.addEventListener("mouseleave", () => tooltip.remove())
+        const { left, top, height } = el.getBoundingClientRect()
+        tooltip.style.left = `${left}px`
+        tooltip.style.top =
+          side === "bottom"
+            ? `${top - tooltip.getBoundingClientRect().height}px`
+            : `${top + height}px`
+      }, this.open_tooltip_delay)
     })
+
+    el.addEventListener("mouseleave", () => {
+      clearTimeout(tooltipTimeout)
+      // Check if the tooltip is shown before removing it
+      if (tooltip && tooltip.parentElement)
+        tooltip.parentElement.removeChild(tooltip)
+    })
+  }
+
+  /**
+   * Creates a tooltip element based on the provided statistics and time interval.
+   *
+   * @param {Stats} stats - The statistics object containing accuracy and game data.
+   * @param {string} timeInterval - The time interval for which the accuracy is displayed.
+   * @returns {HTMLElement} The created tooltip element.
+   */
+  private createTooltip(stats: Stats, timeInterval: string): HTMLElement {
+    const tooltip: HTMLElement = document.createElement("div")
+    tooltip.classList.add(
+      "user-popover-legacy-component",
+      "user-popover-legacy-popover",
+      "user-username-component",
+      "user-tagline-username"
+    )
+
+    const { wins, loses, draws, games } = stats.accuracy.wld
+
+    tooltip.innerHTML =
+      stats.accuracy.avg === 0
+        ? `<span style="padding-bottom:5px"> \
+             No accuracy data available (${timeInterval}) \
+             <br>\
+             Accuracy is only available on analyzed games \
+           </span>`
+        : `<span style="padding-bottom:5px"> \
+             <strong>Average accuracy of ${stats.accuracy.avg}%</strong> (${timeInterval}) \
+           </span> \
+           <span> \
+             Accuracy based on ${games} out of ${stats.wld.games} games  \
+             <br> \
+             W/L/D of analyzed games: ${wins}/${loses}/${draws} \
+           </span>`
+
+    tooltip.style.position = "absolute"
+    tooltip.style.padding = "10px"
+    tooltip.style.width = `auto`
+    tooltip.style.maxWidth = `fit-content`
+
+    return tooltip
   }
 
   /**

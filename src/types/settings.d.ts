@@ -23,6 +23,7 @@ export interface SettingsJSON {
   FETCH_MAX_RETRIES: number
   FETCH_RETRY_DELAY: number
   LOAD_DELAY: number
+  OPEN_TOOLTIP_DELAY: number
   query_selectors: {
     top: string
     bottom: string

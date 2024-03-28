@@ -1,7 +1,7 @@
 {
   "name": "chess-com-insights",
   "private": true,
-  "version": "2.5.2",
+  "version": "2.6.0",
   "type": "module",
   "repository": {
     "type": "git",

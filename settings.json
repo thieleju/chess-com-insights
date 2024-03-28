@@ -2,6 +2,7 @@
   "FETCH_MAX_RETRIES": 5,
   "FETCH_RETRY_DELAY": 600,
   "LOAD_DELAY": 1700,
+  "OPEN_TOOLTIP_DELAY": 300,
   "query_selectors": {
     "top": "board-layout-top",
     "bottom": "board-layout-bottom",
