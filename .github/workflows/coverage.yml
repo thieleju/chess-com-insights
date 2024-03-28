@@ -51,11 +51,13 @@ jobs:
         with:
           node-version: 20
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Install pnpm and dependencies
+        run: |
+          npm install -g pnpm
+          pnpm i
 
       - name: Run c8 code coverage
-        run: npm run cover
+        run: pnpm run cover
 
       - name: Create coverage report directory
         run: mkdir docs

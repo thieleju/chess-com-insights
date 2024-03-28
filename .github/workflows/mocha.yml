@@ -35,8 +35,10 @@ jobs:
         with:
           node-version: 20
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Install pnpm and dependencies
+        run: |
+          npm install -g pnpm
+          pnpm i
 
       - name: Run Mocha tests with junit-reporter
         run: npm run test:junit
