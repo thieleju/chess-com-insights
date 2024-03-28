@@ -11,7 +11,7 @@
 ## 🚀 How it works
 
 This extension shows statistics for chess.com games.
-Use the icon in the top right corner to adjust the settings (In the Browser).
+Use the extensions icon in your browser in the top right corner to adjust the settings.
 
 - First three numbers are the wins/loses/draws of the player
 - Percentage in brackets is the average accuracy of the player
@@ -53,16 +53,16 @@ If you find any other bugs, please open an issue [here](https://github.com/thiel
 Prequisites:
 
 - Node.js version 17 or higher
-- Pnpm installed globally `npm install -g pnpm`
+- pnpm installed globally `npm install -g pnpm`
 
 Instructions:
 
 - Clone/fork/download the project
 - run `pnpm install` to install all dependencies
 - run `pnpm run build` to build the extension
-  - Files will be exported to the `dist` folder
+  - Files will be exported to the `dist` directory
   - You can also run `pnpm run dev` to start the vite dev server to view the options page, but some things f.e. reading the settings will not work
-- do the manual installation steps above and select the `dist` folder
+- do the manual installation steps above and select the `dist` directory
 
 ## 💯 Code Coverage Report
 
