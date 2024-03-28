@@ -26,11 +26,13 @@ jobs:
         with:
           node-version: "20"
 
-      - name: Install dependencies
-        run: npm install
+      - name: Install pnpm and dependencies
+        run: |
+          npm install -g pnpm
+          pnpm i
 
       - name: Build project
-        run: npm run build
+        run: pnpm run build
 
       - name: Create zip from dist folder
         run: |
