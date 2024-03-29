@@ -13,7 +13,7 @@ updates:
       interval: "daily"
 
   # Maintain dependencies for npm
-  - package-ecosystem: "pnpm"
+  - package-ecosystem: "npm"
     directory: "/"
     schedule:
       interval: "daily"
