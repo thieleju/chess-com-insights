@@ -29,8 +29,8 @@ devDependencies:
     specifier: ^2.0.0-beta.23
     version: 2.0.0-beta.23
   '@types/chai':
-    specifier: ^4.3.12
-    version: 4.3.14
+    specifier: ^4.3.16
+    version: 4.3.16
   '@types/chrome':
     specifier: ^0.0.268
     version: 0.0.268
@@ -502,8 +502,8 @@ packages:
     resolution: {integrity: sha512-vxhUy4J8lyeyinH7Azl1pdd43GJhZH/tP2weN8TntQblOY+A0XbT8DJk1/oCPuOOyg/Ja757rG0CgHcWC8OfMA==}
     dev: true
 
-  /@types/chai@4.3.14:
-    resolution: {integrity: sha512-Wj71sXE4Q4AkGdG9Tvq1u/fquNz9EdG4LIJMwVVII7ashjD/8cf8fyIfJAjRr6YcsXnSE8cOGQPq1gqeR8z+3w==}
+  /@types/chai@4.3.16:
+    resolution: {integrity: sha512-PatH4iOdyh3MyWtmHVFXLWCCIhUbopaltqddG9BzB+gMIzee2MJrvd+jouii9Z3wzQJruGWAm7WOMjgfG8hQlQ==}
     dev: true
 
   /@types/chrome@0.0.268:
