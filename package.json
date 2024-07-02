@@ -20,8 +20,8 @@
     "@mdi/font": "7.4.47",
     "luxon": "^3.4.4",
     "roboto-fontface": "*",
-    "vue": "^3.4.30",
-    "vuetify": "^3.6.10",
+    "vue": "^3.4.31",
+    "vuetify": "^3.6.11",
     "webfontloader": "^1.0.0"
   },
   "devDependencies": {
@@ -35,21 +35,21 @@
     "@types/node": "^20.14.9",
     "@types/sinon": "^17.0.3",
     "@types/webfontloader": "^1.6.37",
-    "@typescript-eslint/eslint-plugin": "^7.14.1",
+    "@typescript-eslint/eslint-plugin": "^7.15.0",
     "@vitejs/plugin-vue": "^4.6.2",
     "c8": "^10.1.2",
     "chai": "^5.1.1",
     "jsdom": "^24.1.0",
-    "mocha": "^10.5.2",
+    "mocha": "^10.6.0",
     "mocha-junit-reporter": "^2.2.1",
     "prettier": "^3.3.2",
     "sinon": "^18.0.0",
     "source-map-support": "^0.5.21",
     "ts-mocha": "^10.0.0",
     "ts-node": "^10.9.2",
-    "typescript": "^5.5.2",
+    "typescript": "^5.5.3",
     "vite": "^4.5.2",
     "vite-plugin-vuetify": "^1.0.0",
-    "vue-tsc": "^2.0.22"
+    "vue-tsc": "^2.0.24"
   }
 }
