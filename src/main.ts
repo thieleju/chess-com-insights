@@ -5,7 +5,7 @@ import App from "./App.vue"
 import { createApp } from "vue"
 
 // Plugins
-// @ts-ignore
+// @ts-expect-error Disable checking for types
 import { registerPlugins } from "@/plugins"
 
 const app = createApp(App)
