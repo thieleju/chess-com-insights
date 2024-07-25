@@ -45,8 +45,6 @@ jobs:
           else
             echo "No files to delete"
           fi
-            git commit -m "Delete all files in coverage branch"
-            git push origin coverage
 
       - name: Checkout main branch
         uses: actions/checkout@v4
