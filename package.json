@@ -50,6 +50,6 @@
     "typescript": "^5.5.4",
     "vite": "^4.5.2",
     "vite-plugin-vuetify": "^1.0.0",
-    "vue-tsc": "^2.0.28"
+    "vue-tsc": "^2.0.29"
   }
 }
