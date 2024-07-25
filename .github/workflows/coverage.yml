@@ -37,9 +37,16 @@ jobs:
           git config user.name github-actions
           git config user.email github-actions@github.com
           git checkout coverage
-          git rm -rf * 
-          git commit -m "Delete all files in coverage branch"
-          git push origin coverage
+          # Check if there are files to delete
+          if [ -n "$(git ls-files)" ]; then
+            git rm -rf *
+            git commit -m "Delete all files in coverage branch"
+            git push origin coverage
+          else
+            echo "No files to delete"
+          fi
+            git commit -m "Delete all files in coverage branch"
+            git push origin coverage
 
       - name: Checkout main branch
         uses: actions/checkout@v4
