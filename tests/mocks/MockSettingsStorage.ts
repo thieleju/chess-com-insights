@@ -1,19 +1,23 @@
-import { Settings } from "../../src/types/settings"
+import { Settings, SettingsJSON } from "../../src/types/settings"
 import { SettingsStorage } from "../../src/types/wrapper"
+
+import settingsData from "../../settings.json" assert { type: "json" }
+
+const { defaultSettings } = settingsData as SettingsJSON
 
 /**
  * A mock implementation of the SettingsStorage interface for testing purposes.
  */
 export class MockSettingsStorage implements SettingsStorage {
-  private settings: Settings | {}
+  private settings: Settings
 
   /**
    * Creates an instance of MockSettingsStorage.
    *
    * @param {any} [settings] - Optional initial settings data.
    */
-  constructor(settings?: any) {
-    this.settings = settings || {}
+  constructor(settings: Settings = defaultSettings) {
+    this.settings = settings
   }
 
   /**
@@ -21,7 +25,7 @@ export class MockSettingsStorage implements SettingsStorage {
    *
    * @returns {Promise<any>} A Promise that resolves with the stored settings.
    */
-  async getStoredSettings(): Promise<any> {
+  async getStoredSettings(): Promise<Settings> {
     return this.settings
   }
 
@@ -31,7 +35,7 @@ export class MockSettingsStorage implements SettingsStorage {
    * @param {any} settings - The settings data to be saved.
    * @returns {Promise<void>} A Promise that resolves once the settings are saved.
    */
-  async saveSettings(settings: any): Promise<void> {
+  async saveSettings(settings: Settings): Promise<void> {
     this.settings = settings
   }
 }

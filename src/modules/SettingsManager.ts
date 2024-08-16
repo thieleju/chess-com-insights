@@ -78,7 +78,7 @@ export class SettingsManager {
       !isBoolean(settings.show_accuracy),
       !isBoolean(settings.hide_own_stats),
       !Array.isArray(settings.game_modes) ||
-        !settings.game_modes.every(isValidGameMode),
+      !settings.game_modes.every(isValidGameMode),
       !isValidTimeInterval(settings.time_interval),
       !isBoolean(settings.color_highlighting)
     ]

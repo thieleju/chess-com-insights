@@ -20,7 +20,7 @@ import { Stats } from "../src/types/stats"
 import settingsData from "../settings.json" assert { type: "json" }
 import { MockUiWindow } from "./mocks/MockUiWindow"
 
-const { defaultSettings } = settingsData
+const { defaultSettings } = settingsData as SettingsJSON
 
 const testData = [
   {
@@ -59,7 +59,7 @@ describe("StatsUpdater", () => {
     await mockUiWindow.initialize()
 
     statsUpdater = StatsUpdaterFactory.createStatsUpdaterForTest(
-      new MockSettingsStorage(defaultSettings),
+      new MockSettingsStorage(),
       mockUiWindow
     )
     uiUpdater = statsUpdater.getUiUpdater()
