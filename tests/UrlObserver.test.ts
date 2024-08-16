@@ -1,7 +1,5 @@
 import { expect } from "chai"
 
-import { UiWindow } from "../src/types/wrapper"
-
 import { UrlObserver } from "../src/modules/UrlObserver"
 
 import { MockUiWindow } from "./mocks/MockUiWindow"
