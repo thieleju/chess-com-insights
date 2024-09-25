@@ -27,7 +27,7 @@
     "show_accuracy": true,
     "show_stats": true,
     "popup_darkmode": true,
-    "color_highlighting": false
+    "color_highlighting": true
   },
   "validGameModes": ["blitz", "rapid", "bullet", "daily"],
   "validTimeIntervals": [

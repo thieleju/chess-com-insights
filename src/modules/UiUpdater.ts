@@ -71,7 +71,12 @@ export class UiUpdater {
         `<span style="color: ${this.color_loses}">${stats.wld.loses}</span>/` +
         `<span style="color: ${this.color_draws}">${stats.wld.draws}</span>` +
         `</strong>`
-    } else str = `${stats.wld.wins}/${stats.wld.loses}/${stats.wld.draws}`
+    } else {
+      str =
+        `<strong>` +
+        `${stats.wld.wins}/${stats.wld.loses}/${stats.wld.draws}` +
+        `</strong>`
+    }
 
     if (stats.accuracy.avg !== 0 && showAccuracy)
       str += ` (${stats.accuracy.avg}%)`
@@ -208,6 +213,7 @@ export class UiUpdater {
   createInfoElement(className: string, id: string): HTMLElement {
     const infoEl = this.uiWindow.getDocument().createElement("div")
     infoEl.classList.add("user-tagline-rating", className)
+    infoEl.style.color = "var(--color-gray-600)"
     infoEl.id = id
     infoEl.style.marginLeft = "10px"
     return infoEl
