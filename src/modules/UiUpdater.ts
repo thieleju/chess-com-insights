@@ -97,6 +97,14 @@ export class UiUpdater {
     htmlEl.dataset.tooltipTarget = "15"
     htmlEl.innerHTML = specialTitle
 
+    // remove chess.com diamond badge if present
+    // class mvp-badge-component
+    const diamondBadge: HTMLElement | null | undefined = this.getPlayerElement(
+      side
+    )?.parentElement?.querySelector(".mvp-badge-component")
+
+    if (diamondBadge) diamondBadge.style.display = "none"
+
     this.getPlayerElement(side)?.parentElement?.prepend(htmlEl)
   }
 
@@ -151,7 +159,9 @@ export class UiUpdater {
    */
   private createTooltip(stats: Stats, timeInterval: string): HTMLElement {
     const tooltip: HTMLElement = document.createElement("div")
+    // History of chess.com's class names for tooltips
     tooltip.classList.add(
+      "user-popover-content",
       "user-popover-legacy-component",
       "user-popover-legacy-popover",
       "user-username-component",
@@ -164,11 +174,13 @@ export class UiUpdater {
       stats.accuracy.avg === 0
         ? `<span style="padding-bottom:5px"> \
              No accuracy data available (${timeInterval}) \
-             <br>\
+             <br> \
+             <br> \
              Accuracy is only available on analyzed games \
            </span>`
         : `<span style="padding-bottom:5px"> \
              <strong>Average accuracy of ${stats.accuracy.avg}%</strong> (${timeInterval}) \
+             <br> \
            </span> \
            <span> \
              Accuracy based on ${games} out of ${stats.wld.games} games  \
@@ -180,6 +192,8 @@ export class UiUpdater {
     tooltip.style.padding = "10px"
     tooltip.style.width = `auto`
     tooltip.style.maxWidth = `fit-content`
+    tooltip.style.backgroundColor = "var(--color-bg-opaque)"
+    tooltip.style.color = "var(--color-text-subtle)"
 
     return tooltip
   }
