@@ -19,20 +19,20 @@
   "dependencies": {
     "@mdi/font": "7.4.47",
     "luxon": "^3.5.0",
-    "vue": "^3.5.8",
+    "vue": "^3.5.9",
     "vuetify": "^3.7.2"
   },
   "devDependencies": {
     "@crxjs/vite-plugin": "2.0.0-beta.25",
     "@eslint/js": "^9.11.1",
     "@types/chai": "^5.0.0",
-    "@types/chrome": "^0.0.271",
+    "@types/chrome": "^0.0.272",
     "@types/eslint__js": "^8.42.3",
     "@types/jsdom": "^21.1.7",
     "@types/jsdom-global": "^3.0.7",
     "@types/luxon": "^3.4.2",
     "@types/mocha": "^10.0.8",
-    "@types/node": "^22.6.1",
+    "@types/node": "^22.7.3",
     "@types/sinon": "^17.0.3",
     "@types/webfontloader": "^1.6.38",
     "@typescript-eslint/eslint-plugin": "^8.7.0",
