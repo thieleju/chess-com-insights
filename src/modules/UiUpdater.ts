@@ -213,7 +213,6 @@ export class UiUpdater {
   createInfoElement(className: string, id: string): HTMLElement {
     const infoEl = this.uiWindow.getDocument().createElement("div")
     infoEl.classList.add("user-tagline-rating", className)
-    infoEl.style.color = "var(--color-gray-600)"
     infoEl.id = id
     infoEl.style.marginLeft = "10px"
     return infoEl
