@@ -1,7 +1,7 @@
 {
   "name": "chess-com-insights",
   "private": true,
-  "version": "2.7.2",
+  "version": "2.7.3",
   "type": "module",
   "repository": {
     "type": "git",
@@ -36,7 +36,7 @@
     "@types/sinon": "^17.0.3",
     "@types/webfontloader": "^1.6.38",
     "@typescript-eslint/eslint-plugin": "^8.11.0",
-    "@vitejs/plugin-vue": "^5.1.2",
+    "@vitejs/plugin-vue": "^5.1.4",
     "c8": "^10.1.2",
     "chai": "^5.1.1",
     "eslint": "^9.13.0",

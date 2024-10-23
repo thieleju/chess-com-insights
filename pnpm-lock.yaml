@@ -61,8 +61,8 @@ importers:
         specifier: ^8.11.0
         version: 8.11.0(@typescript-eslint/parser@8.11.0(eslint@9.13.0)(typescript@5.6.3))(eslint@9.13.0)(typescript@5.6.3)
       '@vitejs/plugin-vue':
-        specifier: ^5.1.2
-        version: 5.1.2(vite@5.4.1(@types/node@22.7.8))(vue@3.5.12(typescript@5.6.3))
+        specifier: ^5.1.4
+        version: 5.1.4(vite@5.4.1(@types/node@22.7.8))(vue@3.5.12(typescript@5.6.3))
       c8:
         specifier: ^10.1.2
         version: 10.1.2
@@ -597,8 +597,8 @@ packages:
     resolution: {integrity: sha512-EaewX6lxSjRJnc+99+dqzTeoDZUfyrA52d2/HRrkI830kgovWsmIiTfmr0NZorzqic7ga+1bS60lRBUgR3n/Bw==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
-  '@vitejs/plugin-vue@5.1.2':
-    resolution: {integrity: sha512-nY9IwH12qeiJqumTCLJLE7IiNx7HZ39cbHaysEUd+Myvbz9KAqd2yq+U01Kab1R/H1BmiyM2ShTYlNH32Fzo3A==}
+  '@vitejs/plugin-vue@5.1.4':
+    resolution: {integrity: sha512-N2XSI2n3sQqp5w7Y/AN/L2XDjBIRGqXko+eDp42sydYSBeJuSm5a1sLf8zakmo8u7tA8NmBgoDLA1HeOESjp9A==}
     engines: {node: ^18.0.0 || >=20.0.0}
     peerDependencies:
       vite: ^5.0.0
@@ -2327,7 +2327,7 @@ snapshots:
       '@typescript-eslint/types': 8.11.0
       eslint-visitor-keys: 3.4.3
 
-  '@vitejs/plugin-vue@5.1.2(vite@5.4.1(@types/node@22.7.8))(vue@3.5.12(typescript@5.6.3))':
+  '@vitejs/plugin-vue@5.1.4(vite@5.4.1(@types/node@22.7.8))(vue@3.5.12(typescript@5.6.3))':
     dependencies:
       vite: 5.4.1(@types/node@22.7.8)
       vue: 3.5.12(typescript@5.6.3)
@@ -2416,7 +2416,7 @@ snapshots:
 
   '@vue/shared@3.5.12': {}
 
-  '@vuetify/loader-shared@2.0.3(vue@3.5.12(typescript@5.6.3))(vuetify@3.7.3(typescript@5.6.3)(vite-plugin-vuetify@2.0.4)(vue@3.5.12(typescript@5.6.3)))':
+  '@vuetify/loader-shared@2.0.3(vue@3.5.12(typescript@5.6.3))(vuetify@3.7.3)':
     dependencies:
       upath: 2.0.1
       vue: 3.5.12(typescript@5.6.3)
@@ -3539,7 +3539,7 @@ snapshots:
 
   vite-plugin-vuetify@2.0.4(vite@5.4.1(@types/node@22.7.8))(vue@3.5.12(typescript@5.6.3))(vuetify@3.7.3):
     dependencies:
-      '@vuetify/loader-shared': 2.0.3(vue@3.5.12(typescript@5.6.3))(vuetify@3.7.3(typescript@5.6.3)(vite-plugin-vuetify@2.0.4)(vue@3.5.12(typescript@5.6.3)))
+      '@vuetify/loader-shared': 2.0.3(vue@3.5.12(typescript@5.6.3))(vuetify@3.7.3)
       debug: 4.3.6(supports-color@8.1.1)
       upath: 2.0.1
       vite: 5.4.1(@types/node@22.7.8)
