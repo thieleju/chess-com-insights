@@ -5,7 +5,7 @@ import { SettingsManager } from "./SettingsManager"
 import { APIHandler } from "./APIHandler"
 import { UiUpdater } from "./UiUpdater"
 import { UrlObserver } from "./UrlObserver"
-import { ChromeSettingsStorage } from "./ChromeSettingsStorage"
+import { BrowserSettingsStorage } from "./BrowserSettingsStorage"
 import { StatsUpdater } from "./StatsUpdater"
 import { StatsCalculator } from "./StatsCalculator"
 import { BrowserUiWindow } from "./BrowserUiWindow"
@@ -28,7 +28,7 @@ export class StatsUpdaterFactory {
    * @returns {StatsUpdater} A new StatsUpdater instance.
    */
   static createStatsUpdater(
-    storageManager: SettingsStorage = new ChromeSettingsStorage(),
+    storageManager: SettingsStorage = new BrowserSettingsStorage(),
     uiWindow: UiWindow = new BrowserUiWindow()
   ): StatsUpdater {
     return new StatsUpdater({

@@ -1,3 +1,4 @@
+import browser from "webextension-polyfill"
 import {
   GameMode,
   Settings,
@@ -228,13 +229,13 @@ export class StatsUpdater {
    * Attach settings update listener.
    */
   private attachSettingsUpdateListener(): void {
-    chrome.runtime.onMessage.addListener(
-      async (request: { action: string }) => {
-        if (request.action !== "updated-settings") return
-        this.updateStatsForBothPlayers(true)
-        this.updateTitleForBothPlayers()
-      }
-    )
+    browser.runtime.onMessage.addListener(async (message) => {
+      const request = message as { action: string }
+
+      if (request.action !== "updated-settings") return
+      this.updateStatsForBothPlayers(true)
+      this.updateTitleForBothPlayers()
+    })
   }
 
   getUiUpdater(): UiUpdater {

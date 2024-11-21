@@ -1,30 +1,30 @@
-/// <reference types="chrome" />
+import browser from "webextension-polyfill"
 
 import { Settings } from "../types/settings"
 import { SettingsStorage } from "../types/wrapper"
 
 /**
- * A SettingsStorage implementation that uses Chrome's local storage.
+ * A SettingsStorage implementation that uses Browser's local storage.
  */
-export class ChromeSettingsStorage implements SettingsStorage {
+export class BrowserSettingsStorage implements SettingsStorage {
   /**
-   * Retrieves the stored settings from Chrome's local storage.
+   * Retrieves the stored settings from Browser's local storage.
    *
    * @returns {Promise<Settings>} A Promise that resolves to the stored settings.
    */
   async getStoredSettings(): Promise<Settings> {
-    return chrome.storage.local
+    return browser.storage.local
       .get(["settings"])
-      .then((result) => result.settings)
+      .then((result) => result.settings) as Promise<Settings>
   }
 
   /**
-   * Saves the given settings to Chrome's local storage.
+   * Saves the given settings to Browser's local storage.
    *
    * @param settings - The settings to save.
    * @returns {Promise<void>} A Promise that resolves once the settings are saved.
    */
   async saveSettings(settings: Settings): Promise<void> {
-    return chrome.storage.local.set({ settings })
+    return browser.storage.local.set({ settings })
   }
 }

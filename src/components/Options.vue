@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import browser from "webextension-polyfill"
 import { ref, onMounted, watch } from "vue"
 import { useTheme } from "vuetify"
 
@@ -10,7 +11,7 @@ import {
 } from "../types/settings"
 
 import { SettingsManager } from "../modules/SettingsManager"
-import { ChromeSettingsStorage } from "../modules/ChromeSettingsStorage"
+import { BrowserSettingsStorage } from "../modules/BrowserSettingsStorage"
 
 import package_json from "../../package.json"
 import settings_json from "../../settings.json"
@@ -30,7 +31,7 @@ const {
 } = settings_json
 
 const settingsManager: SettingsManager = new SettingsManager(
-  new ChromeSettingsStorage(),
+  new BrowserSettingsStorage(),
   settings_json as SettingsJSON
 )
 
@@ -74,14 +75,14 @@ async function saveSettings(): Promise<void> {
   await settingsManager.saveSettingsToStorage(settings)
 
   // send update message to content script
-  const [activeTab] = await chrome.tabs.query({
+  const [activeTab] = await browser.tabs.query({
     active: true,
     lastFocusedWindow: true
   })
 
   if (!activeTab) return console.log("Could not find active Tab")
 
-  chrome.tabs.sendMessage(activeTab.id!, {
+  browser.tabs.sendMessage(activeTab.id!, {
     action: "updated-settings"
   })
 
@@ -92,10 +93,10 @@ async function saveSettings(): Promise<void> {
 }
 
 function updateUI() {
-  chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+  browser.tabs.query({ active: true, currentWindow: true }).then((tabs) => {
     const activeTab = tabs[0]
     if (activeTab) {
-      chrome.tabs.sendMessage(activeTab.id!, {
+      browser.tabs.sendMessage(activeTab.id!, {
         action: "updateStats"
       })
     }
@@ -114,7 +115,7 @@ function savePressed() {
 // }
 
 function openGihtub() {
-  chrome.tabs.create({
+  browser.tabs.create({
     url: package_json.repository.url
   })
 }

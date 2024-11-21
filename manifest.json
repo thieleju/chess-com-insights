@@ -17,6 +17,7 @@
   },
   "background": {
     "service_worker": "src/scripts/sw.ts",
+    "scripts": ["src/scripts/sw.ts"],
     "type": "module"
   },
   "content_scripts": [

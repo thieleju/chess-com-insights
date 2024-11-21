@@ -6,7 +6,7 @@
   "report-dir": "tests/coverage",
   "include": ["src/modules/*.ts"],
   "exclude": [
-    "src/modules/ChromeSettingsStorage.ts",
+    "src/modules/BrowserSettingsStorage.ts",
     "src/modules/BrowserUiWindow.ts"
   ],
   "branches": 80,
