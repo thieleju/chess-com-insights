@@ -6,7 +6,7 @@ import { defineConfig } from "vite"
 import { fileURLToPath, URL } from "node:url"
 
 // Node >=17
-import manifest from "./manifest.json" assert { type: "json" }
+import manifest from "./manifest.json" with { type: "json" }
 
 export default defineConfig({
   plugins: [
