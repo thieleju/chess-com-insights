@@ -12,7 +12,7 @@ import { BrowserUiWindow } from "./BrowserUiWindow"
 
 import { MockSettingsStorage } from "../../tests/mocks/MockSettingsStorage"
 
-import settingsData from "../../settings.json" assert { type: "json" }
+import settingsData from "../../settings.json" with { type: "json" }
 
 const settingsJSON: SettingsJSON = settingsData as SettingsJSON
 
