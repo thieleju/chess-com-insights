@@ -7,12 +7,12 @@
     "top": "board-layout-top",
     "bottom": "board-layout-bottom",
     "normal": {
-      "username": "user-tagline-username",
-      "elementToAppend": "user-tagline-username"
+      "username": "cc-user-username-component",
+      "elementToAppend": "cc-user-username-component"
     },
     "compact": {
       "username": "user-tagline-compact-username",
-      "elementToAppend": "user-tagline-compact-theatre"
+      "elementToAppend": "user-tagline-compact-row"
     }
   },
   "colors": {
