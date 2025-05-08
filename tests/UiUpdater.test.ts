@@ -6,7 +6,7 @@ import { MockUiWindow } from "./mocks/MockUiWindow"
 import { SettingsJSON } from "../src/types/settings"
 import { Stats } from "../src/types/stats"
 
-import settingsData from "../settings.json" assert { type: "json" }
+import settingsData from "../settings.json" with { type: "json" }
 
 const settingsJSON: SettingsJSON = settingsData as SettingsJSON
 

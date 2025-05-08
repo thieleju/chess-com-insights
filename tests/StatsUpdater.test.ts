@@ -17,7 +17,7 @@ import {
 } from "../src/types/settings"
 import { Stats } from "../src/types/stats"
 
-import settingsData from "../settings.json" assert { type: "json" }
+import settingsData from "../settings.json" with { type: "json" }
 import { MockUiWindow } from "./mocks/MockUiWindow"
 
 const { defaultSettings } = settingsData as SettingsJSON

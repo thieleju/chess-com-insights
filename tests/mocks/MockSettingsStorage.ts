@@ -1,7 +1,7 @@
 import { Settings, SettingsJSON } from "../../src/types/settings"
 import { SettingsStorage } from "../../src/types/wrapper"
 
-import settingsData from "../../settings.json" assert { type: "json" }
+import settingsData from "../../settings.json" with { type: "json" }
 
 const { defaultSettings } = settingsData as SettingsJSON
 
