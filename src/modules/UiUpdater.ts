@@ -10,18 +10,7 @@ export class UiUpdater {
   private color_loses: string
   private color_draws: string
 
-  private query_selectors: {
-    top: string
-    bottom: string
-    normal: {
-      username: string
-      elementToAppend: string
-    }
-    compact: {
-      username: string
-      elementToAppend: string
-    }
-  }
+  private query_selectors: SettingsJSON["query_selectors"]
 
   private uiWindow: UiWindow
   private open_tooltip_delay: number
@@ -102,13 +91,12 @@ export class UiUpdater {
     htmlEl.dataset.tooltipTarget = "15"
     htmlEl.innerHTML = specialTitle
 
-    // remove chess.com diamond badge if present
-    // class mvp-badge-component
-    const diamondBadge: HTMLElement | null | undefined = this.getPlayerElement(
+    // remove chess.com badge if present
+    const userBadge: HTMLElement | null | undefined = this.getPlayerElement(
       side
-    )?.parentElement?.querySelector(".mvp-badge-component")
+    )?.parentElement?.querySelector(`.${this.query_selectors.badgeComponent}`)
 
-    if (diamondBadge) diamondBadge.style.display = "none"
+    if (userBadge) userBadge.style.display = "none"
 
     this.getPlayerElement(side)?.parentElement?.prepend(htmlEl)
   }

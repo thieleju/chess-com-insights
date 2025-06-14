@@ -32,6 +32,7 @@ export class APIHandler {
       try {
         const url = this.buildUrl(username)
         return await this.fetchChessData(url)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
         if (error?.code === 301) break
 

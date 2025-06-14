@@ -13,7 +13,8 @@
     "compact": {
       "username": "user-tagline-compact-username",
       "elementToAppend": "user-tagline-compact-row"
-    }
+    },
+    "badgeComponent": "cc-user-badge-component"
   },
   "colors": {
     "wins": "#6b9438",
