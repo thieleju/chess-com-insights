@@ -35,6 +35,7 @@ export interface SettingsJSON {
       username: string
       elementToAppend: string
     }
+    badgeComponent: string
   }
   colors: {
     wins: string
