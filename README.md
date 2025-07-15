@@ -67,3 +67,7 @@ Instructions:
 ## 💯 Code Coverage Report
 
 [Code Coverage Report](https://thieleju.github.io/chess-com-insights/) served with github pages
+
+## License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This extension is an independent project and is not affiliated with, endorsed by, or associated with Chess.com in any way.
