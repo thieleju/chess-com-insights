@@ -142,7 +142,7 @@ onMounted(async () => {
           <v-img src="@/assets/icon48.png" width="24"></v-img>
         </v-col>
         <v-col cols="auto" style="padding-left: 2px">
-          <span class="title">Chess.com Insights</span>
+          <span class="title">Chess Stats</span>
         </v-col>
         <v-spacer></v-spacer>
         <v-col cols="auto">
@@ -153,7 +153,7 @@ onMounted(async () => {
       </v-row>
     </v-card-title>
     <!-- Subtitle -->
-    <v-card-subtitle>Modify your chess.com insights</v-card-subtitle>
+    <v-card-subtitle>Modify your Chess Stats</v-card-subtitle>
     <!-- Content -->
     <v-card-text>
       <!-- Settings -->

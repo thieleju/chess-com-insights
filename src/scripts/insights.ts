@@ -6,7 +6,7 @@
 import { version, repository } from "../../package.json"
 import { StatsUpdaterFactory } from "../modules/StatsUpdaterFactory"
 
-console.log(`⚡ Chess.com Insights v${version} injected`)
+console.log(`⚡ Chess Stats v${version} injected`)
 console.log(`🚀 View source code at ${repository.url}`)
 
 /**
