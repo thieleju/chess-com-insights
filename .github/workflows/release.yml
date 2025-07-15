@@ -55,7 +55,7 @@ jobs:
           name: v${{ steps.get_version.outputs.version }}
           tag_name: v${{ steps.get_version.outputs.version }}
           body: |
-            Chess.com Insights Release v${{ steps.get_version.outputs.version }}
+            Chess Stats Release v${{ steps.get_version.outputs.version }}
             <br>
             ${{ github.event.inputs.text }}
           files: |
