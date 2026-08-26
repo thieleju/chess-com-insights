@@ -12,10 +12,9 @@ export class ChromeSettingsStorage implements SettingsStorage {
    *
    * @returns {Promise<Settings>} A Promise that resolves to the stored settings.
    */
-  async getStoredSettings(): Promise<Settings> {
-    return chrome.storage.local
-      .get(["settings"])
-      .then((result) => result.settings)
+  async getStoredSettings(): Promise<Settings | undefined> {
+    const result = await chrome.storage.local.get(["settings"])
+    return result.settings as Settings | undefined
   }
 
   /**

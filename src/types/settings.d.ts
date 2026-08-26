@@ -1,13 +1,6 @@
-export type GameMode = "blitz" | "rapid" | "bullet" | "daily"
+export type GameMode = "blitz" | "rapid" | "bullet"
 
-export type TimeInterval =
-  | "last hour"
-  | "last 6 hours"
-  | "last 12 hours"
-  | "last day"
-  | "last 3 days"
-  | "last week"
-  | "this month"
+export type TimeInterval = "today" | "last 3 days" | "last week" | "last month"
 
 export interface Settings {
   popup_darkmode: boolean
@@ -24,6 +17,11 @@ export interface SettingsJSON {
   FETCH_RETRY_DELAY: number
   LOAD_DELAY: number
   OPEN_TOOLTIP_DELAY: number
+  api: {
+    callbackBase: string
+    locale: string
+    defaultPage: number
+  }
   query_selectors: {
     top: string
     bottom: string
@@ -45,9 +43,6 @@ export interface SettingsJSON {
   defaultSettings: Settings
   validGameModes: GameMode[]
   validTimeIntervals: TimeInterval[]
-  timeIntervalsMS: {
-    [key: string]: number
-  }
   specialTitles: {
     [username: string]: string
   }

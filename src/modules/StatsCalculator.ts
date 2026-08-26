@@ -1,20 +1,19 @@
 import { ApiGame } from "../types/apidata"
-import { GameMode, SettingsJSON, TimeInterval } from "../types/settings"
+import { GameMode, TimeInterval } from "../types/settings"
 import { Stats, Wld } from "../types/stats"
+
+import { isWithinTimeInterval, parseGameEndTime } from "./TimeIntervalUtils"
 
 /**
  * A utility class for calculating chess statistics based on filtered games.
  */
 export class StatsCalculator {
-  private validTimeIntervals: { [key: string]: number }
-
-  /**
-   * Constructs a new instance of the StatsCalculator class.
-   *
-   * @param {SettingsJSON} settingsJSON - The settings JSON object.
-   */
-  constructor(settingsJSON: SettingsJSON) {
-    this.validTimeIntervals = settingsJSON.timeIntervalsMS
+  private readonly gameModeMap: Record<string, GameMode> = {
+    lightning: "bullet",
+    bullet: "bullet",
+    blitz: "blitz",
+    standard: "rapid",
+    rapid: "rapid"
   }
 
   /**
@@ -48,20 +47,20 @@ export class StatsCalculator {
     }
 
     games.forEach((game) => {
-      const color =
-        game.white.username.toLowerCase() === username.toLowerCase()
-          ? "white"
-          : "black"
+      const playerKey = this.getPlayerKey(game, username)
 
-      const result = this.transformResult(game[color].result)
-      if (!result) {
-        console.error("Unknown result", result)
+      if (!playerKey) {
+        console.error("Could not determine player for game", game)
         return
       }
+
+      const result = this.transformResult(this.getPlayerResult(game, playerKey))
+      if (!result) return
       stats.wld[result]++
 
-      if (game.accuracies) {
-        stats.accuracy.avg += game.accuracies[color] || 0
+      const accuracy = this.getPlayerAccuracy(game, playerKey)
+      if (accuracy !== undefined) {
+        stats.accuracy.avg += accuracy || 0
         stats.accuracy.wld[result]++
       } else stats.accuracy.wld.games--
     })
@@ -87,33 +86,102 @@ export class StatsCalculator {
     gameModes: GameMode[],
     timeInterval: TimeInterval
   ): ApiGame[] {
-    return games
-      .filter((game) =>
-        Array.isArray(gameModes)
-          ? gameModes.includes(game.time_class as GameMode)
-          : game.time_class === gameModes
+    return games.filter((game) => {
+      const normalizedGameMode = this.gameModeMap[this.getGameTimeClass(game)]
+
+      return (
+        !!normalizedGameMode &&
+        gameModes.includes(normalizedGameMode) &&
+        this.checkTimeInterval(this.getGameEndTime(game), timeInterval)
       )
-      .filter((game) => this.checkTimeInterval(game.end_time, timeInterval))
+    })
   }
 
   /**
    * Checks if a game end time falls within the specified time interval.
    *
    * @param {number} end_time - End time of the chess game in seconds since epoch.
-   * @param {TimeInterval} time_interval - Time interval as a string (e.g., "last 6 hours", "last week").
+   * @param {TimeInterval} time_interval - Time interval as a string (e.g., "today", "last week").
    * @returns {boolean} True if the game end time falls within the specified time interval, otherwise false.
    */
   checkTimeInterval(end_time: number, time_interval: TimeInterval): boolean {
-    const current_date = Math.floor(Date.now() / 1000)
+    return isWithinTimeInterval(end_time, time_interval)
+  }
 
-    if (time_interval === "this month") return true
+  private getGameTimeClass(game: ApiGame): string {
+    return (
+      game.time_class ||
+      (game as unknown as { gameTimeClass?: string }).gameTimeClass ||
+      ""
+    )
+  }
 
-    if (end_time > current_date) return false
+  private getGameEndTime(game: ApiGame): number {
+    const legacyGame = game as unknown as { gameEndTime?: string }
+    return parseGameEndTime(game.end_time ?? legacyGame.gameEndTime)
+  }
 
-    if (time_interval in this.validTimeIntervals)
-      return end_time > current_date - this.validTimeIntervals[time_interval]
+  private getPlayerKey(
+    game: ApiGame,
+    username: string
+  ): "white" | "black" | "user1" | "user2" | undefined {
+    const normalizedUsername = username.toLowerCase()
+    const white = game.white?.username?.toLowerCase()
+    const black = game.black?.username?.toLowerCase()
 
-    return false
+    if (white === normalizedUsername) return "white"
+    if (black === normalizedUsername) return "black"
+
+    const legacyGame = game as unknown as {
+      user1?: { username?: string }
+      user2?: { username?: string }
+    }
+
+    if (legacyGame.user1?.username?.toLowerCase() === normalizedUsername)
+      return "user1"
+    if (legacyGame.user2?.username?.toLowerCase() === normalizedUsername)
+      return "user2"
+
+    return undefined
+  }
+
+  private getPlayerResult(
+    game: ApiGame,
+    playerKey: "white" | "black" | "user1" | "user2"
+  ): string {
+    if (playerKey === "white" || playerKey === "black") {
+      return game[playerKey].result
+    }
+
+    const legacyGame = game as unknown as {
+      user1Result?: number
+      user2Result?: number
+    }
+
+    const legacyResult =
+      playerKey === "user1" ? legacyGame.user1Result : legacyGame.user2Result
+
+    if (legacyResult === 1) return "win"
+    if (legacyResult === 0.5) return "agreed"
+    return "lose"
+  }
+
+  private getPlayerAccuracy(
+    game: ApiGame,
+    playerKey: "white" | "black" | "user1" | "user2"
+  ): number | undefined {
+    if (playerKey === "white" || playerKey === "black") {
+      return game.accuracies?.[playerKey]
+    }
+
+    const legacyGame = game as unknown as {
+      user1Accuracy?: number | null
+      user2Accuracy?: number | null
+    }
+
+    return playerKey === "user1"
+      ? (legacyGame.user1Accuracy ?? undefined)
+      : (legacyGame.user2Accuracy ?? undefined)
   }
 
   /**
@@ -122,7 +190,7 @@ export class StatsCalculator {
    * @param {string} result - Game result string.
    * @returns {keyof Wld | undefined} A key of the Wld object (e.g., "wins", "loses", "draws") or undefined if the result is unknown.
    */
-  transformResult(result: string): keyof Wld | undefined {
+  transformResult(result: string): keyof Wld {
     switch (result) {
       case "win":
         return "wins"
@@ -141,7 +209,7 @@ export class StatsCalculator {
       case "50move":
         return "draws"
       default:
-        throw `Cannot transform unknown result: ${result}`
+        throw new Error(`Cannot transform unknown result: ${result}`)
     }
   }
 }

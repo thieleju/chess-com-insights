@@ -1,4 +1,5 @@
 import { expect } from "chai"
+import sinon from "sinon"
 
 import { StatsUpdater } from "../src/modules/StatsUpdater"
 import { StatsUpdaterFactory } from "../src/modules/StatsUpdaterFactory"
@@ -22,16 +23,44 @@ import { MockUiWindow } from "./mocks/MockUiWindow"
 
 const { defaultSettings } = settingsData as SettingsJSON
 
+const now = Math.floor(Date.now() / 1000)
+
+const lightningGame = {
+  end_time: now - 60,
+  time_class: "lightning",
+  white: {
+    username: "Kugelbuch",
+    result: "win"
+  },
+  black: {
+    username: "Opponent",
+    result: "lose"
+  }
+} as const
+
+const standardGame = {
+  end_time: now - 60,
+  time_class: "standard",
+  white: {
+    username: "Kugelbuch",
+    result: "win"
+  },
+  black: {
+    username: "Opponent",
+    result: "lose"
+  }
+} as const
+
 const testData = [
   {
     un: "Kugelbuch",
     gameModes: ["bullet", "blitz", "rapid", "daily"],
-    timeInterval: "this month"
+    timeInterval: "today"
   },
   {
     un: "Kugelbuch",
     gameModes: ["rapid"],
-    timeInterval: "this month"
+    timeInterval: "last month"
   },
   {
     un: "Kugelbuch",
@@ -41,7 +70,7 @@ const testData = [
   {
     un: "DanielNaroditsky",
     gameModes: ["bullet", "blitz", "rapid", "daily"],
-    timeInterval: "this month"
+    timeInterval: "today"
   }
 ]
 
@@ -149,6 +178,22 @@ describe("StatsUpdater", () => {
     }
   })
 
+  it("should map chess.com time classes to addon game modes", () => {
+    const stats = statsCalculator.calculateStats(
+      [lightningGame as never, standardGame as never],
+      ["bullet", "rapid"],
+      "today",
+      "Kugelbuch"
+    )
+
+    expect(stats.wld).to.deep.equal({
+      wins: 2,
+      loses: 0,
+      draws: 0,
+      games: 2
+    })
+  })
+
   it("should throw username not found error with empty mock dom", async () => {
     statsUpdater.initialize(false, false, false)
 
@@ -162,6 +207,67 @@ describe("StatsUpdater", () => {
       await statsUpdater.updateStatsForPlayer("bottom", false)
     } catch (error) {
       expect(error).to.equal("No username found for side bottom")
+    }
+  })
+
+  it("should defer refresh after flip button clicks", async () => {
+    const clock = sinon.useFakeTimers()
+
+    try {
+      mockUiWindow.getDocument().body.innerHTML =
+        '<button id="board-controls-flip"></button>'
+
+      ;(
+        statsUpdater as never as {
+          attachButtonClickEvent: (buttonId: string) => void
+        }
+      ).attachButtonClickEvent("board-controls-flip")
+
+      let flipped = false
+      const getUsernameStub = sinon
+        .stub(uiUpdater, "getUsername")
+        .callsFake((player: "top" | "bottom") =>
+          flipped
+            ? player === "top"
+              ? "BottomPlayer"
+              : "TopPlayer"
+            : player === "top"
+              ? "TopPlayer"
+              : "BottomPlayer"
+        )
+      const updateStatsStub = sinon.stub(
+        statsUpdater,
+        "updateStatsForBothPlayers"
+      )
+      const updateTitleStub = sinon.stub(
+        statsUpdater,
+        "updateTitleForBothPlayers"
+      )
+
+      setTimeout(() => {
+        flipped = true
+      }, 50)
+
+      mockUiWindow.getDocument().getElementById("board-controls-flip")?.click()
+
+      expect(updateStatsStub.called).to.equal(false)
+      expect(updateTitleStub.called).to.equal(false)
+
+      await clock.tickAsync(49)
+
+      expect(updateStatsStub.called).to.equal(false)
+      expect(updateTitleStub.called).to.equal(false)
+
+      await clock.tickAsync(1)
+
+      expect(updateStatsStub.calledOnce).to.equal(true)
+      expect(updateTitleStub.calledOnce).to.equal(true)
+
+      getUsernameStub.restore()
+      updateStatsStub.restore()
+      updateTitleStub.restore()
+    } finally {
+      clock.restore()
     }
   })
 })
