@@ -36,7 +36,7 @@ export class StatsUpdaterFactory {
       settingsManager: new SettingsManager(storageManager, settingsJSON),
       apiHandler: new APIHandler(settingsJSON),
       uiUpdater: new UiUpdater(settingsJSON, uiWindow),
-      statsCalculator: new StatsCalculator(settingsJSON),
+      statsCalculator: new StatsCalculator(),
       urlObserver: new UrlObserver(uiWindow),
       uiWindow
     })
@@ -58,7 +58,7 @@ export class StatsUpdaterFactory {
       settingsManager: new SettingsManager(storageManager, settingsJSON),
       apiHandler: new APIHandler(settingsJSON),
       uiUpdater: new UiUpdater(settingsJSON, uiWindow),
-      statsCalculator: new StatsCalculator(settingsJSON),
+      statsCalculator: new StatsCalculator(),
       urlObserver: new UrlObserver(uiWindow),
       uiWindow
     })

@@ -3,6 +3,11 @@
   "FETCH_RETRY_DELAY": 600,
   "LOAD_DELAY": 1700,
   "OPEN_TOOLTIP_DELAY": 300,
+  "api": {
+    "callbackBase": "https://www.chess.com/callback",
+    "locale": "en_US",
+    "defaultPage": 1
+  },
   "query_selectors": {
     "top": "board-layout-top",
     "bottom": "board-layout-bottom",
@@ -23,31 +28,15 @@
   },
   "defaultSettings": {
     "game_modes": ["bullet", "blitz", "rapid"],
-    "time_interval": "last 12 hours",
+    "time_interval": "today",
     "hide_own_stats": false,
     "show_accuracy": true,
     "show_stats": true,
     "popup_darkmode": true,
     "color_highlighting": true
   },
-  "validGameModes": ["blitz", "rapid", "bullet", "daily"],
-  "validTimeIntervals": [
-    "last hour",
-    "last 6 hours",
-    "last 12 hours",
-    "last day",
-    "last 3 days",
-    "last week",
-    "this month"
-  ],
-  "timeIntervalsMS": {
-    "last hour": 3600,
-    "last 6 hours": 21600,
-    "last 12 hours": 43200,
-    "last day": 86400,
-    "last 3 days": 259200,
-    "last week": 604800
-  },
+  "validGameModes": ["blitz", "rapid", "bullet"],
+  "validTimeIntervals": ["today", "last 3 days", "last week", "last month"],
   "specialTitles": {
     "RobertBrot": "AFM"
   }

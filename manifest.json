@@ -3,12 +3,8 @@
   "description": "Shows Win/Lose/Draw and average accuracy for players on chess.com",
   "author": "thieleju",
   "manifest_version": 3,
-  "version": "2.7.5",
-  "permissions": [
-    "activeTab",
-    "scripting",
-    "storage"
-  ],
+  "version": "2.8.0",
+  "permissions": ["activeTab", "scripting", "storage"],
   "action": {
     "default_locale": "en",
     "default_title": "Chess Stats",
@@ -35,14 +31,10 @@
         "https://*.chess.com/live/game/*",
         "https://*.chess.com/analysis/game/live/*"
       ],
-      "js": [
-        "src/scripts/insights.ts"
-      ]
+      "js": ["src/scripts/insights.ts"]
     }
   ],
-  "host_permissions": [
-    "https://*.chess.com/*"
-  ],
+  "host_permissions": ["https://*.chess.com/*"],
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self';"
   }

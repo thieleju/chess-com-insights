@@ -29,3 +29,13 @@ export interface ApiPlayer {
 export interface ApiChessData {
   games: ApiGame[]
 }
+
+export interface ChessGamesResponse {
+  data: ApiGame[]
+  meta: {
+    totalCount: number
+    countPerPage: number
+    totalPages: number
+    currentPage: number
+  }
+}

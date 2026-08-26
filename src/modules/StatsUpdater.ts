@@ -197,7 +197,10 @@ export class StatsUpdater {
     timeInterval: TimeInterval
   ): Promise<Stats> {
     try {
-      const data: ApiChessData = await this.apiHandler.getChessData(username)
+      const data: ApiChessData = await this.apiHandler.getChessData(
+        username,
+        timeInterval
+      )
 
       return this.statsCalculator.calculateStats(
         data.games,
@@ -219,9 +222,52 @@ export class StatsUpdater {
     if (!button) return
 
     button.addEventListener("click", () => {
+      if (buttonId === "board-controls-flip") {
+        const previousTopUsername = this.uiUpdater.getUsername("top")
+        const previousBottomUsername = this.uiUpdater.getUsername("bottom")
+        this.updateStatsAfterBoardFlip(
+          previousTopUsername,
+          previousBottomUsername
+        )
+        return
+      }
+
       this.updateStatsForBothPlayers()
       this.updateTitleForBothPlayers()
     })
+  }
+
+  /**
+   * Waits until chess.com has swapped the visible player positions after a board flip,
+   * then refreshes the stats for both sides.
+   */
+  private updateStatsAfterBoardFlip(
+    previousTopUsername: string,
+    previousBottomUsername: string,
+    attempt = 0
+  ): void {
+    const currentTopUsername = this.uiUpdater.getUsername("top")
+    const currentBottomUsername = this.uiUpdater.getUsername("bottom")
+
+    const boardSwapped =
+      currentTopUsername !== "" &&
+      currentBottomUsername !== "" &&
+      (currentTopUsername !== previousTopUsername ||
+        currentBottomUsername !== previousBottomUsername)
+
+    if (boardSwapped || attempt >= 30) {
+      this.updateStatsForBothPlayers()
+      this.updateTitleForBothPlayers()
+      return
+    }
+
+    setTimeout(() => {
+      this.updateStatsAfterBoardFlip(
+        previousTopUsername,
+        previousBottomUsername,
+        attempt + 1
+      )
+    }, 50)
   }
 
   /**

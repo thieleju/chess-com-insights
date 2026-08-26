@@ -1,7 +1,7 @@
-import { DateTime } from "luxon"
+import { SettingsJSON, TimeInterval } from "../types/settings"
+import { ApiChessData, ApiGame, ChessGamesResponse } from "../types/apidata"
 
-import { SettingsJSON } from "../types/settings"
-import { ApiChessData } from "../types/apidata"
+import { isWithinTimeInterval } from "./TimeIntervalUtils"
 
 /**
  * Utility class to handle API requests for chess data.
@@ -9,6 +9,7 @@ import { ApiChessData } from "../types/apidata"
 export class APIHandler {
   private FETCH_MAX_RETRIES: number
   private FETCH_RETRY_DELAY: number
+  private api: SettingsJSON["api"]
 
   /**
    * Creates an instance of APIHandler.
@@ -17,6 +18,7 @@ export class APIHandler {
   constructor(settingsJSON: SettingsJSON) {
     this.FETCH_MAX_RETRIES = settingsJSON.FETCH_MAX_RETRIES
     this.FETCH_RETRY_DELAY = settingsJSON.FETCH_RETRY_DELAY
+    this.api = settingsJSON.api
   }
 
   /**
@@ -25,13 +27,15 @@ export class APIHandler {
    * @returns {Promise<ApiChessData>} A Promise that resolves to the fetched chess data.
    * @throws {string} Throws an error if the maximum number of retries is exceeded.
    */
-  async getChessData(username: string): Promise<ApiChessData> {
+  async getChessData(
+    username: string,
+    timeInterval: TimeInterval
+  ): Promise<ApiChessData> {
     let retryCount = 0
 
     while (retryCount < this.FETCH_MAX_RETRIES) {
       try {
-        const url = this.buildUrl(username)
-        return await this.fetchChessData(url)
+        return await this.fetchChessData(username, timeInterval)
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
         if (error?.code === 301) break
@@ -54,9 +58,34 @@ export class APIHandler {
    * @param {string} url - The URL from which to fetch chess data.
    * @returns {Promise<ApiChessData>} A Promise that resolves to the fetched chess data.
    */
-  async fetchChessData(url: string): Promise<ApiChessData> {
-    const response = await fetch(url, { cache: "no-store" })
-    return response.json()
+  async fetchChessData(
+    username: string,
+    timeInterval: TimeInterval
+  ): Promise<ApiChessData> {
+    const games: ApiGame[] = []
+    let page = this.api.defaultPage
+    let totalPages = 1
+
+    while (page <= totalPages) {
+      const response = await fetch(this.buildUrl(username, page), {
+        cache: "no-store"
+      })
+      const data: ChessGamesResponse = await response.json()
+
+      const pageGames = data?.data || []
+      games.push(...pageGames)
+
+      totalPages = data?.meta?.totalPages || totalPages
+      if (
+        pageGames.length === 0 ||
+        this.shouldStopFetching(pageGames, timeInterval)
+      )
+        break
+
+      page++
+    }
+
+    return { games }
   }
 
   /**
@@ -64,10 +93,31 @@ export class APIHandler {
    * @param {string} username - The username for which to build the URL.
    * @returns {string} The built URL for fetching chess data.
    */
-  buildUrl(username: string): string {
-    const date = DateTime.local().setZone("America/Los_Angeles")
-    const year = date.year
-    const month = date.month.toString().padStart(2, "0")
-    return `https://api.chess.com/pub/player/${username}/games/${year}/${month}`
+  buildUrl(username: string, page?: number): string {
+    const effectivePage = page ?? this.api.defaultPage
+    const params = new URLSearchParams({
+      locale: this.api.locale,
+      username: username.toLowerCase(),
+      page: effectivePage.toString()
+    })
+
+    return `${this.api.callbackBase}/games/extended-archive?${params.toString()}`
+  }
+
+  private shouldStopFetching(
+    games: ApiGame[],
+    timeInterval: TimeInterval
+  ): boolean {
+    const oldestGame = games[games.length - 1]
+    if (!oldestGame) return true
+
+    return !this.checkTimeInterval(oldestGame.end_time, timeInterval)
+  }
+
+  private checkTimeInterval(
+    endTime: number,
+    timeInterval: TimeInterval
+  ): boolean {
+    return isWithinTimeInterval(endTime, timeInterval)
   }
 }

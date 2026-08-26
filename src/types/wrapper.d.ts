@@ -1,7 +1,7 @@
 import { Settings } from "./settings"
 
 export interface SettingsStorage {
-  getStoredSettings(): Promise<Settings>
+  getStoredSettings(): Promise<Settings | undefined>
   saveSettings(settings: Settings): Promise<void>
 }
 
