@@ -208,7 +208,8 @@ export class StatsUpdater {
         timeInterval,
         username
       )
-    } catch {
+    } catch (e) {
+      console.error(e)
       this.uiUpdater.removeInfoElement(side)
       throw `Could not retrieve chess data for ${username}`
     }

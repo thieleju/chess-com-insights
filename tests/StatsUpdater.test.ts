@@ -17,6 +17,7 @@ import {
   TimeInterval
 } from "../src/types/settings"
 import { Stats } from "../src/types/stats"
+import { ApiGame } from "../src/types/apidata"
 
 import settingsData from "../settings.json" with { type: "json" }
 import { MockUiWindow } from "./mocks/MockUiWindow"
@@ -55,7 +56,7 @@ const testData = [
   {
     un: "Kugelbuch",
     gameModes: ["bullet", "blitz", "rapid", "daily"],
-    timeInterval: "today"
+    timeInterval: "last 6 hours"
   },
   {
     un: "Kugelbuch",
@@ -65,12 +66,12 @@ const testData = [
   {
     un: "Kugelbuch",
     gameModes: ["bullet", "blitz", "rapid", "daily"],
-    timeInterval: "last week"
+    timeInterval: "last 12 hours"
   },
   {
     un: "DanielNaroditsky",
     gameModes: ["bullet", "blitz", "rapid", "daily"],
-    timeInterval: "today"
+    timeInterval: "last 3 days"
   }
 ]
 
@@ -120,6 +121,60 @@ describe("StatsUpdater", () => {
     statsUpdater.initialize(false, false, false)
 
     const settings: Settings = await settingsManager.getSettings()
+    const getChessDataStub = sinon
+      .stub(apiHandler, "getChessData")
+      .callsFake(async (username: string) => ({
+        games: [
+          {
+            end_time: now - 60,
+            time_class: "rapid",
+            white: {
+              username,
+              result: "win",
+              "@id": "1",
+              uuid: "1",
+              rating: 1200,
+              client: "Chesscom-iOS/4.10.24.24677 (iPhone; iOS 26.6)"
+            },
+            black: {
+              username: "Opponent",
+              result: "lose",
+              "@id": "2",
+              uuid: "2",
+              rating: 1200,
+              client: "LC6;chrome/151.0.0/browser;Windows 10"
+            },
+            accuracies: {
+              white: 80,
+              black: null
+            }
+          } as unknown as ApiGame,
+          {
+            end_time: now - 120,
+            time_class: "blitz",
+            white: {
+              username: "Opponent",
+              result: "lose",
+              "@id": "3",
+              uuid: "3",
+              rating: 1200,
+              client: "LC6;chrome/151.0.0/browser;Windows 10"
+            },
+            black: {
+              username,
+              result: "win",
+              "@id": "4",
+              uuid: "4",
+              rating: 1200,
+              client: "Chesscom-iOS/4.10.24.24677 (iPhone; iOS 26.6)"
+            },
+            accuracies: {
+              white: null,
+              black: 80
+            }
+          } as unknown as ApiGame
+        ]
+      }))
 
     const validateStats = async (
       un: string,
@@ -176,13 +231,15 @@ describe("StatsUpdater", () => {
       )
       await new Promise((resolve) => setTimeout(resolve, 800))
     }
+
+    getChessDataStub.restore()
   })
 
   it("should map chess.com time classes to addon game modes", () => {
     const stats = statsCalculator.calculateStats(
       [lightningGame as never, standardGame as never],
       ["bullet", "rapid"],
-      "today",
+      "last 6 hours",
       "Kugelbuch"
     )
 
