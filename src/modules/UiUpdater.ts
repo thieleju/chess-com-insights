@@ -1,5 +1,5 @@
 import { SettingsJSON } from "../types/settings"
-import { Stats } from "../types/stats"
+import { DeviceInfo, Stats } from "../types/stats"
 import { UiWindow } from "../types/wrapper"
 
 /**
@@ -51,6 +51,7 @@ export class UiUpdater {
   ): HTMLElement {
     const el = this.getInfoElement(side)
 
+    // eslint-disable-next-line no-useless-assignment
     let str: string = ``
 
     if (colorHighlighting) {
@@ -70,9 +71,11 @@ export class UiUpdater {
     if (stats.accuracy.avg !== 0 && showAccuracy)
       str += ` (${stats.accuracy.avg}%)`
 
+    if (stats.device) str += this.renderDeviceInfo(stats.device)
+
     el.innerHTML = str
 
-    this.addTooltipToStatsElement(el, side, stats, timeInterval)
+    this.addTooltipToStatsElement(el, side, stats, timeInterval, stats.device)
 
     return el
   }
@@ -113,7 +116,8 @@ export class UiUpdater {
     el: HTMLElement,
     side: "top" | "bottom",
     stats: Stats,
-    timeInterval: string
+    timeInterval: string,
+    deviceInfo?: DeviceInfo
   ): void {
     let tooltip: HTMLElement
     let tooltipTimeout: NodeJS.Timeout
@@ -121,7 +125,7 @@ export class UiUpdater {
     el.addEventListener("mouseenter", () => {
       // Show the tooltip after a delay
       tooltipTimeout = setTimeout(() => {
-        tooltip = this.createTooltip(stats, timeInterval)
+        tooltip = this.createTooltip(stats, timeInterval, deviceInfo)
 
         // Add Tooltip first to the body to get the correct dimensions for positioning
         this.uiWindow.getDocument().body.appendChild(tooltip)
@@ -150,7 +154,11 @@ export class UiUpdater {
    * @param {string} timeInterval - The time interval for which the accuracy is displayed.
    * @returns {HTMLElement} The created tooltip element.
    */
-  private createTooltip(stats: Stats, timeInterval: string): HTMLElement {
+  private createTooltip(
+    stats: Stats,
+    timeInterval: string,
+    deviceInfo?: DeviceInfo
+  ): HTMLElement {
     const tooltip: HTMLElement = document.createElement("div")
     // History of chess.com's class names for tooltips
     tooltip.classList.add(
@@ -181,6 +189,12 @@ export class UiUpdater {
              W/L/D of analyzed games: ${wins}/${loses}/${draws} \
            </span>`
 
+    if (deviceInfo) {
+      tooltip.innerHTML += `<br><br><span><strong>${this.escapeHtml(
+        deviceInfo.summary
+      )}</strong><br>${this.escapeHtml(deviceInfo.details)}</span>`
+    }
+
     tooltip.style.position = "absolute"
     tooltip.style.padding = "10px"
     tooltip.style.width = `auto`
@@ -189,6 +203,24 @@ export class UiUpdater {
     tooltip.style.color = "var(--color-text-subtle)"
 
     return tooltip
+  }
+  private renderDeviceInfo(deviceInfo: DeviceInfo): string {
+    const emoji =
+      deviceInfo.platform === "phone"
+        ? " 📱"
+        : deviceInfo.platform === "pc"
+          ? " 🖥️"
+          : ""
+    return emoji
+  }
+
+  private escapeHtml(value: string): string {
+    return value
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#39;")
   }
 
   /**

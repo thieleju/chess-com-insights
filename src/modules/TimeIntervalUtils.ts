@@ -4,13 +4,12 @@ import { TimeInterval } from "../types/settings"
 
 const TIME_ZONE = "America/Los_Angeles"
 
-const dayBasedIntervalOffsets: Record<
-  Exclude<TimeInterval, "last month">,
-  number
-> = {
-  today: 0,
-  "last 3 days": 2,
-  "last week": 6
+const intervalDurations: Record<TimeInterval, { hours: number }> = {
+  "last 6 hours": { hours: 6 },
+  "last 12 hours": { hours: 12 },
+  "last 3 days": { hours: 72 },
+  "last week": { hours: 168 },
+  "last month": { hours: 720 }
 }
 
 export function parseGameEndTime(
@@ -35,27 +34,20 @@ export function isWithinTimeInterval(
   endTime: number,
   timeInterval: TimeInterval
 ): boolean {
+  const { start, end } = getTimeIntervalBounds(timeInterval)
+
+  return endTime >= start && endTime <= end
+}
+
+export function getTimeIntervalBounds(timeInterval: TimeInterval): {
+  start: number
+  end: number
+} {
   const now = DateTime.now().setZone(TIME_ZONE)
-  const currentTime = Math.floor(Date.now() / 1000)
-
-  if (endTime > currentTime) return false
-
-  if (timeInterval === "last month") {
-    const startOfLastMonth = Math.floor(
-      now.startOf("month").minus({ months: 1 }).toSeconds()
-    )
-    const startOfThisMonth = Math.floor(now.startOf("month").toSeconds())
-
-    return endTime >= startOfLastMonth && endTime < startOfThisMonth
-  }
-
-  const daysBack = dayBasedIntervalOffsets[timeInterval]
-  const startOfInterval = Math.floor(
-    now.startOf("day").minus({ days: daysBack }).toSeconds()
-  )
-  const startOfTomorrow = Math.floor(
-    now.startOf("day").plus({ days: 1 }).toSeconds()
+  const end = Math.floor(Date.now() / 1000)
+  const start = Math.floor(
+    now.minus(intervalDurations[timeInterval]).toSeconds()
   )
 
-  return endTime >= startOfInterval && endTime < startOfTomorrow
+  return { start, end }
 }

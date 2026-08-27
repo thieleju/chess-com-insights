@@ -1,6 +1,7 @@
 export type GameMode = "blitz" | "rapid" | "bullet"
 
-export type TimeInterval = "today" | "last 3 days" | "last week" | "last month"
+export type TimeInterval =
+  "last 6 hours" | "last 12 hours" | "last 3 days" | "last week" | "last month"
 
 export interface Settings {
   popup_darkmode: boolean
@@ -18,7 +19,7 @@ export interface SettingsJSON {
   LOAD_DELAY: number
   OPEN_TOOLTIP_DELAY: number
   api: {
-    callbackBase: string
+    archiveEndpoint: string
     locale: string
     defaultPage: number
   }

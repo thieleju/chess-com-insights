@@ -1,6 +1,6 @@
 import { ApiGame } from "../types/apidata"
 import { GameMode, TimeInterval } from "../types/settings"
-import { Stats, Wld } from "../types/stats"
+import { DeviceInfo, Stats, Wld } from "../types/stats"
 
 import { isWithinTimeInterval, parseGameEndTime } from "./TimeIntervalUtils"
 
@@ -9,11 +9,13 @@ import { isWithinTimeInterval, parseGameEndTime } from "./TimeIntervalUtils"
  */
 export class StatsCalculator {
   private readonly gameModeMap: Record<string, GameMode> = {
+    hyperbullet: "bullet",
     lightning: "bullet",
     bullet: "bullet",
     blitz: "blitz",
     standard: "rapid",
-    rapid: "rapid"
+    rapid: "rapid",
+    classical: "rapid"
   }
 
   /**
@@ -31,6 +33,7 @@ export class StatsCalculator {
     timeInterval: TimeInterval,
     username: string
   ): Stats {
+    const device = this.getLatestDeviceInfo(games, username)
     games = this.filterGames(games, gameModes, timeInterval)
 
     const stats: Stats = {
@@ -43,7 +46,8 @@ export class StatsCalculator {
           draws: 0,
           games: games.length
         }
-      }
+      },
+      device
     }
 
     games.forEach((game) => {
@@ -171,7 +175,7 @@ export class StatsCalculator {
     playerKey: "white" | "black" | "user1" | "user2"
   ): number | undefined {
     if (playerKey === "white" || playerKey === "black") {
-      return game.accuracies?.[playerKey]
+      return game.accuracies?.[playerKey] ?? undefined
     }
 
     const legacyGame = game as unknown as {
@@ -182,6 +186,87 @@ export class StatsCalculator {
     return playerKey === "user1"
       ? (legacyGame.user1Accuracy ?? undefined)
       : (legacyGame.user2Accuracy ?? undefined)
+  }
+
+  private getLatestDeviceInfo(
+    games: ApiGame[],
+    username: string
+  ): DeviceInfo | undefined {
+    for (const game of games) {
+      const player = this.getPlayer(game, username)
+      const client = player?.client?.trim()
+      if (!client) continue
+
+      return this.parseClientInfo(client)
+    }
+
+    return undefined
+  }
+
+  private getPlayer(
+    game: ApiGame,
+    username: string
+  ): (ApiGame["white"] | ApiGame["black"]) | undefined {
+    const normalizedUsername = username.toLowerCase()
+
+    if (game.white.username.toLowerCase() === normalizedUsername)
+      return game.white
+    if (game.black.username.toLowerCase() === normalizedUsername)
+      return game.black
+
+    return undefined
+  }
+
+  private parseClientInfo(client: string): DeviceInfo {
+    const normalizedClient = client.trim()
+    const lower = normalizedClient.toLowerCase()
+    const isPhone = /iphone|ipad|ipod|android|mobile|ios|mobi/.test(lower)
+    const platform: DeviceInfo["platform"] = isPhone ? "phone" : "pc"
+    const icon: DeviceInfo["icon"] = isPhone ? "mdi-cellphone" : "mdi-monitor"
+
+    return {
+      platform,
+      icon,
+      summary: `Player last played on ${platform}`,
+      details: this.describeClient(normalizedClient, platform),
+      rawClient: normalizedClient
+    }
+  }
+
+  private describeClient(
+    client: string,
+    platform: DeviceInfo["platform"]
+  ): string {
+    const tokens = client
+      .replace(/[()]/g, ";")
+      .split(";")
+      .map((token) => token.trim())
+      .filter(Boolean)
+
+    const browserToken = tokens.find((token) =>
+      /chrome|firefox|safari|edge|opera|browser/i.test(token)
+    )
+    const osToken = tokens.find((token) =>
+      /windows|mac|macos|linux|chrome os|ios|android|iphone|ipad|ipod/i.test(
+        token
+      )
+    )
+    const modelToken = tokens.find((token) =>
+      /iphone|ipad|ipod|pixel|galaxy|samsung|xiaomi|oneplus|huawei|android/i.test(
+        token
+      )
+    )
+
+    const parts =
+      platform === "phone"
+        ? [modelToken, osToken, browserToken]
+        : [osToken, browserToken, modelToken]
+
+    const filteredParts = parts.filter(
+      (part, index, list) => !!part && list.indexOf(part) === index
+    ) as string[]
+
+    return filteredParts.length > 0 ? filteredParts.join(" · ") : client
   }
 
   /**

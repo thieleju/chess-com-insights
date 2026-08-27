@@ -31,6 +31,13 @@ describe("UiUpdater", () => {
           draws: 2,
           games: 11
         }
+      },
+      device: {
+        platform: "phone",
+        icon: "mdi-cellphone",
+        summary: "Player last played on phone",
+        details: "iPhone · iOS 26.6",
+        rawClient: "Chesscom-iOS/4.10.24.24677 (iPhone; iOS 26.6)"
       }
     }
 
@@ -53,7 +60,8 @@ describe("UiUpdater", () => {
       `<span style="color: ${settingsJSON.colors.wins}">${stats.wld.wins}</span>/` +
       `<span style="color: ${settingsJSON.colors.loses}">${stats.wld.loses}</span>/` +
       `<span style="color: ${settingsJSON.colors.draws}">${stats.wld.draws}</span>` +
-      `</strong> (${stats.accuracy.avg}%)`
+      `</strong> (${stats.accuracy.avg}%)` +
+      ` 📱`
 
     expect(el.innerHTML).to.equal(expectedStr)
   })
