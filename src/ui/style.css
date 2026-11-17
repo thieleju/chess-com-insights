@@ -1,0 +1,727 @@
+/*
+ * Chess Stats – injected into chess.com and shared with the extension popup.
+ * Everything is prefixed with `ccs-`. On chess.com the colors follow the
+ * site's own theme variables, the popup defines its own (see popup/style.css).
+ */
+
+.ccs-stats,
+.ccs-panel {
+  --ccs-win: #81b64c;
+  --ccs-loss: #e05a4f;
+  --ccs-draw: #d8a43a;
+  --ccs-warning: #e2a03f;
+  --ccs-critical: #e05a4f;
+  /* switches and selected buttons; used "soft" (tinted background + green text) */
+  --ccs-accent: #4ade80;
+  --ccs-accent-soft: #4ade801f;
+  --ccs-bg: var(--color-bg-opaque, #2a2826);
+  --ccs-fg: var(--color-text-default, #e8e6e3);
+  --ccs-muted: var(--color-text-subtle, #a7a6a2);
+  --ccs-line: color-mix(in srgb, var(--ccs-fg) 10%, transparent);
+  --ccs-control: color-mix(in srgb, var(--ccs-fg) 8%, transparent);
+  --ccs-control-hover: color-mix(in srgb, var(--ccs-fg) 14%, transparent);
+}
+
+/* Stats next to the username ------------------------------------------------ */
+
+.ccs-stats {
+  /* "medium", see data-size below */
+  --ccs-pill-height: 19px;
+  --ccs-pill-font: 1.2rem;
+  --ccs-pill-padding: 8px;
+  --ccs-icon-size: 13px;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 8px;
+  vertical-align: middle;
+  font-size: var(--ccs-pill-font);
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  border-radius: 999px;
+  /*
+   * onto whole pixels, see pixelSnap in pill.ts; a relative offset and not a
+   * transform, browsers round text inside transformed elements differently
+   */
+  position: relative;
+  top: var(--ccs-snap, 0px);
+}
+
+.ccs-stats[data-size="small"] {
+  --ccs-pill-height: 16px;
+  --ccs-pill-font: 1.05rem;
+  --ccs-pill-padding: 6px;
+  --ccs-icon-size: 10px;
+}
+
+.ccs-stats[data-size="large"] {
+  --ccs-pill-height: 22px;
+  --ccs-pill-font: 1.35rem;
+  --ccs-pill-padding: 9px;
+  --ccs-icon-size: 14px;
+}
+
+/*
+ * Vertical centering: flex centering only centers the line box (which also
+ * holds room for descenders) and the glyphs are then snapped to whole pixels.
+ * --ccs-text-shift is measured in the page, see textShift in pill.ts.
+ */
+.ccs-text {
+  position: relative;
+  top: var(--ccs-text-shift, 0px);
+  display: block;
+  line-height: 1;
+}
+
+/* sits on the baseline of the first number, so the baseline can be measured */
+.ccs-probe {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  vertical-align: baseline;
+}
+
+.ccs-stats:focus-visible {
+  outline: 2px solid var(--ccs-accent);
+  outline-offset: 2px;
+}
+
+/* theatre/focus mode: the stats sit on their own line below the name */
+.ccs-stats--stacked {
+  margin: 4px 0 0;
+  align-self: center;
+}
+
+.ccs-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45em;
+  height: var(--ccs-pill-height);
+  padding: 0 var(--ccs-pill-padding);
+  box-sizing: border-box;
+  border-radius: 999px;
+  background: color-mix(in srgb, currentColor 10%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, currentColor 14%, transparent);
+  color: var(--ccs-fg);
+  transition: background-color 0.15s ease;
+}
+
+.ccs-stats:hover .ccs-pill {
+  background: color-mix(in srgb, currentColor 16%, transparent);
+}
+
+.ccs-score {
+  display: inline-flex;
+  align-items: center;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.ccs-sep {
+  margin: 0 2px;
+  opacity: 0.4;
+  font-weight: 400;
+}
+
+.ccs-colored .ccs-w {
+  color: var(--ccs-win);
+}
+.ccs-colored .ccs-l {
+  color: var(--ccs-loss);
+}
+.ccs-colored .ccs-d {
+  color: var(--ccs-draw);
+}
+
+.ccs-divider {
+  width: 1px;
+  height: 55%;
+  background: color-mix(in srgb, currentColor 25%, transparent);
+}
+
+.ccs-acc {
+  font-variant-numeric: tabular-nums;
+  opacity: 0.85;
+}
+
+/*
+ * Icon box with the same odd/even height as the pill, so it lands on whole
+ * pixels in the middle of it
+ */
+.ccs-pill .ccs-device {
+  flex: none;
+  width: var(--ccs-icon-size);
+  height: var(--ccs-icon-size);
+  stroke-width: 2.2;
+  opacity: 0.85;
+}
+
+/* Styles (data-style) ---------------------------------------------------------
+ * "pill" is the default above. All of them keep the same height, so the
+ * account age badge and the centering work the same way everywhere.
+ */
+
+/* box: rectangle with barely rounded corners and a filled background */
+.ccs-stats[data-style="box"] .ccs-pill {
+  border-radius: 3px;
+  background: color-mix(in srgb, currentColor 13%, transparent);
+  box-shadow: none;
+}
+
+.ccs-stats[data-style="box"]:hover .ccs-pill {
+  background: color-mix(in srgb, currentColor 19%, transparent);
+}
+
+.ccs-stats[data-style="box"] .ccs-age {
+  border-radius: 3px;
+}
+
+/* outline: clear outline around a softly filled background */
+.ccs-stats[data-style="outline"] .ccs-pill {
+  border-radius: 6px;
+  background: color-mix(in srgb, currentColor 6%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, currentColor 32%, transparent);
+}
+
+.ccs-stats[data-style="outline"]:hover .ccs-pill {
+  background: color-mix(in srgb, currentColor 11%, transparent);
+}
+
+/* text: just the numbers, like chess.com's own rating next to the name */
+.ccs-stats[data-style="text"] .ccs-pill {
+  gap: 0.35em;
+  padding: 0;
+  background: none;
+  box-shadow: none;
+}
+
+.ccs-stats[data-style="text"]:hover .ccs-pill {
+  background: none;
+  opacity: 0.8;
+}
+
+/* account age: same height and font size as the pill */
+.ccs-age {
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  height: var(--ccs-pill-height);
+  padding: 0 calc(var(--ccs-pill-padding) * 0.8);
+  border-radius: 6px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* same soft outline look as the buttons in the settings */
+.ccs-age--warning,
+.ccs-callout--warning {
+  --ccs-tone: var(--ccs-warning);
+}
+
+.ccs-age--critical,
+.ccs-callout--critical {
+  --ccs-tone: var(--ccs-critical);
+}
+
+.ccs-age,
+.ccs-callout {
+  background: color-mix(in srgb, var(--ccs-tone) 14%, transparent);
+  box-shadow: inset 0 0 0 1px
+    color-mix(in srgb, var(--ccs-tone) 40%, transparent);
+  color: var(--ccs-tone);
+}
+
+.ccs-delta {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  animation: ccs-delta 6s ease forwards;
+}
+
+.ccs-delta--win {
+  color: var(--ccs-win);
+}
+.ccs-delta--loss {
+  color: var(--ccs-loss);
+}
+.ccs-delta--draw {
+  color: var(--ccs-draw);
+}
+
+@keyframes ccs-delta {
+  0% {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  8%,
+  80% {
+    opacity: 1;
+    transform: none;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Panel (tooltip on chess.com + extension popup) ---------------------------- */
+
+.ccs-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-sizing: border-box;
+  padding: 12px 14px;
+  background: var(--ccs-bg);
+  color: var(--ccs-fg);
+  font-family: inherit;
+  font-size: 1.3rem;
+  line-height: 1.4;
+  text-align: left;
+}
+
+.ccs-panel *,
+.ccs-panel *::before,
+.ccs-panel *::after {
+  box-sizing: border-box;
+}
+
+.ccs-tooltip {
+  position: fixed;
+  z-index: 10000;
+  width: 290px;
+  border-radius: 10px;
+  box-shadow:
+    0 10px 30px rgb(0 0 0 / 0.4),
+    0 0 0 1px var(--ccs-line);
+  animation: ccs-fade-in 0.12s ease;
+}
+
+@keyframes ccs-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+}
+
+.ccs-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 28px;
+}
+
+.ccs-title-text {
+  flex: 1;
+  overflow: hidden;
+  font-size: 1.5rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ccs-icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--ccs-muted);
+  cursor: pointer;
+}
+
+.ccs-icon-button:hover,
+.ccs-icon-button:focus-visible {
+  background: var(--ccs-control-hover);
+  color: var(--ccs-fg);
+  outline: none;
+}
+
+.ccs-icon {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.ccs-section {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding-top: 10px;
+  border-top: 1px solid var(--ccs-line);
+}
+
+.ccs-section-title {
+  display: flex;
+  justify-content: space-between;
+  color: var(--ccs-muted);
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.ccs-section-title > span + span {
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.ccs-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+}
+
+.ccs-value {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+/* time mode in the all-time rows: icon, name and rating */
+.ccs-mode {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+
+/* mode with its rating in a small line below, the icon next to both */
+.ccs-mode-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ccs-mode-name {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.ccs-mode-name > .ccs-rating {
+  white-space: nowrap;
+}
+
+.ccs-row:has(.ccs-mode-label) {
+  align-items: center;
+}
+
+.ccs-row:has(.ccs-mode-label) > .ccs-value {
+  white-space: nowrap;
+}
+
+.ccs-mode-icon {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  fill: currentColor;
+}
+
+.ccs-mode-icon--bullet {
+  color: #e3aa24;
+}
+.ccs-mode-icon--blitz {
+  color: #f7c631;
+}
+.ccs-mode-icon--rapid {
+  color: #81b64c;
+}
+
+.ccs-rating {
+  color: var(--ccs-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.ccs-muted {
+  color: var(--ccs-muted);
+}
+
+.ccs-small {
+  font-size: 1.15rem;
+}
+
+.ccs-bar {
+  display: flex;
+  height: 6px;
+  gap: 2px;
+  margin: 2px 0;
+  overflow: hidden;
+  border-radius: 3px;
+}
+
+.ccs-bar > span {
+  min-width: 4px;
+}
+.ccs-bar-w {
+  background: var(--ccs-win);
+}
+.ccs-bar-d {
+  background: var(--ccs-draw);
+}
+.ccs-bar-l {
+  background: var(--ccs-loss);
+}
+
+.ccs-lifetime {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.ccs-skeleton {
+  height: 14px;
+  border-radius: 4px;
+  background: linear-gradient(
+    90deg,
+    var(--ccs-control) 0%,
+    var(--ccs-control-hover) 50%,
+    var(--ccs-control) 100%
+  );
+  background-size: 200% 100%;
+  animation: ccs-shimmer 1.1s linear infinite;
+}
+
+.ccs-skeleton:nth-child(2) {
+  width: 70%;
+}
+
+@keyframes ccs-shimmer {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: -100% 0;
+  }
+}
+
+.ccs-callout {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 7px 9px;
+  border-radius: 6px;
+}
+
+/* Settings form -------------------------------------------------------------- */
+
+.ccs-form {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ccs-switch {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 30px;
+  cursor: pointer;
+}
+
+.ccs-switch.is-disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.ccs-switch-input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* switches use the same soft look as the button groups */
+.ccs-switch-track {
+  position: relative;
+  flex: none;
+  width: 38px;
+  height: 22px;
+  border-radius: 7px;
+  background: var(--ccs-control);
+  box-shadow: inset 0 0 0 1px var(--ccs-line);
+  transition:
+    background-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.ccs-switch-track::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 16px;
+  height: 16px;
+  border-radius: 5px;
+  background: var(--ccs-muted);
+  transition:
+    transform 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.ccs-switch:hover:not(.is-disabled) .ccs-switch-track {
+  background: var(--ccs-control-hover);
+}
+
+.ccs-switch-input:checked + .ccs-switch-track {
+  background: var(--ccs-accent-soft);
+  box-shadow: inset 0 0 0 1px
+    color-mix(in srgb, var(--ccs-accent) 35%, transparent);
+}
+
+.ccs-switch-input:checked + .ccs-switch-track::after {
+  transform: translateX(16px);
+  background: var(--ccs-accent);
+}
+
+.ccs-switch-input:focus-visible + .ccs-switch-track {
+  outline: 2px solid var(--ccs-accent);
+  outline-offset: 2px;
+}
+
+.ccs-field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 34px;
+}
+
+/* button group: every group (single or multi select) looks the same */
+.ccs-segmented {
+  display: inline-flex;
+  gap: 2px;
+  padding: 2px;
+  border-radius: 7px;
+  background: var(--ccs-control);
+}
+
+.ccs-segmented button {
+  min-width: 40px;
+  height: 26px;
+  padding: 0 9px;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--ccs-muted);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ccs-segmented button:hover:not(:disabled) {
+  color: var(--ccs-fg);
+}
+
+.ccs-segmented button.is-active {
+  background: var(--ccs-accent-soft);
+  box-shadow: inset 0 0 0 1px
+    color-mix(in srgb, var(--ccs-accent) 35%, transparent);
+  color: var(--ccs-accent);
+}
+
+.ccs-segmented button:disabled,
+.ccs-select:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.ccs-select {
+  height: 30px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 7px;
+  background: var(--ccs-control);
+  color: var(--ccs-fg);
+  font: inherit;
+  cursor: pointer;
+}
+
+.ccs-select option {
+  background: var(--ccs-bg);
+  color: var(--ccs-fg);
+}
+
+/* All-time accuracy: load button and progress -------------------------------- */
+
+.ccs-button {
+  height: 20px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--ccs-line);
+  color: var(--ccs-muted);
+  font: inherit;
+  font-size: 1.15rem;
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.ccs-button:hover {
+  box-shadow: inset 0 0 0 1px
+    color-mix(in srgb, var(--ccs-accent) 40%, transparent);
+  color: var(--ccs-accent);
+}
+
+.ccs-button:focus-visible {
+  outline: 2px solid var(--ccs-accent);
+  outline-offset: 2px;
+}
+
+.ccs-progress {
+  position: relative;
+  height: 6px;
+  overflow: hidden;
+  border-radius: 3px;
+  background: var(--ccs-control);
+}
+
+.ccs-progress-fill {
+  display: block;
+  height: 100%;
+  border-radius: 3px;
+  background: var(--ccs-accent);
+  transition: width 0.3s ease;
+}
+
+.ccs-progress.is-indeterminate .ccs-progress-fill {
+  width: 30%;
+  animation: ccs-indeterminate 1.2s ease-in-out infinite;
+}
+
+@keyframes ccs-indeterminate {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(340%);
+  }
+}
+
+.ccs-tooltip .ccs-device {
+  width: 14px;
+  height: 14px;
+  opacity: 0.85;
+}
+
+.ccs-actions {
+  display: flex;
+  flex: none;
+  gap: 6px;
+}
+
+.ccs-device-details {
+  text-align: right;
+}
