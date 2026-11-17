@@ -1,0 +1,52 @@
+/* The popup has no chess.com theme variables, so it brings its own. */
+
+html {
+  font-size: 62.5%;
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  background: #2a2826;
+  font-family:
+    "Segoe UI",
+    system-ui,
+    -apple-system,
+    Roboto,
+    sans-serif;
+}
+
+.ccs-popup {
+  width: 320px;
+  padding: 14px 16px 12px;
+  --ccs-bg: #2a2826;
+  --ccs-fg: #e8e6e3;
+  --ccs-muted: #a7a6a2;
+}
+
+html.is-light {
+  color-scheme: light;
+}
+
+html.is-light body,
+html.is-light .ccs-popup {
+  --ccs-bg: #ffffff;
+  --ccs-fg: #312e2b;
+  --ccs-muted: #6f6c69;
+  /* #4ade80 is unreadable on white */
+  --ccs-accent: #16a34a;
+  --ccs-accent-soft: #16a34a1a;
+  background: #ffffff;
+}
+
+.ccs-logo {
+  width: 22px;
+  height: 22px;
+}
+
+.ccs-footer {
+  display: flex;
+  justify-content: flex-end;
+  color: var(--ccs-muted);
+  font-size: 1.15rem;
+}

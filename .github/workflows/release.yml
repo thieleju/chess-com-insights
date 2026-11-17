@@ -10,8 +10,8 @@ on:
         description: "What changed?"
         required: false
 
-env:
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
+permissions:
+  contents: write
 
 jobs:
   create_release:
@@ -19,44 +19,50 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v6
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: 26
+          cache: pnpm
 
-      - name: Install pnpm and dependencies
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck, lint and test
         run: |
-          npm install -g pnpm
-          pnpm i
+          pnpm typecheck
+          pnpm lint
+          pnpm test
 
-      - name: Build project
-        run: pnpm run build
-
-      - name: Create zip from dist folder
+      - name: Build Chrome and Firefox zips
+        # creates .output/chess-com-insights-<version>-{chrome,firefox,sources}.zip
         run: |
-          cd dist
-          zip -r ../chess-com-insights.zip .
+          pnpm zip
+          pnpm zip:firefox
 
       - name: Get version from package.json
-        id: get_version
-        run: echo "::set-output name=version::$(node -p "require('./package.json').version")"
-
-      - name: Create Git tag
-        run: git tag v${{ steps.get_version.outputs.version }}
-
-      - name: Push Git tag
-        run: git push origin v${{ steps.get_version.outputs.version }}
+        id: version
+        run: echo "version=$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
 
       - name: Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
-          name: v${{ steps.get_version.outputs.version }}
-          tag_name: v${{ steps.get_version.outputs.version }}
+          name: v${{ steps.version.outputs.version }}
+          tag_name: v${{ steps.version.outputs.version }}
           body: |
-            Chess Stats Release v${{ steps.get_version.outputs.version }}
-            <br>
+            Chess Stats Release v${{ steps.version.outputs.version }}
+
+            - `chess-com-insights-${{ steps.version.outputs.version }}-chrome.zip`: Chrome, Edge, Brave, Opera
+            - `chess-com-insights-${{ steps.version.outputs.version }}-firefox.zip`: Firefox
+            - `chess-com-insights-${{ steps.version.outputs.version }}-sources.zip`: source code for the Firefox Add-ons review
+
             ${{ github.event.inputs.text }}
           files: |
-            chess-com-insights.zip
+            .output/*-chrome.zip
+            .output/*-firefox.zip
+            .output/*-sources.zip
