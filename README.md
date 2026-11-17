@@ -13,7 +13,7 @@ Use the extensions icon in your browser in the top right corner to adjust the se
 - First three numbers are the wins/loses/draws of the player
 - Percentage in brackets is the average accuracy of the player
   - Accuracy is only available on reviewed games
-  - Hover over the stats to see information how many games the average is based on
+  - Hover over the stats to see additional information
 
 ### Preview
 
