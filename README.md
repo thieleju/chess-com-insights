@@ -1,12 +1,9 @@
 # chess-com-insights
 
 [![Release](https://github.com/thieleju/chess-com-insights/actions/workflows/release.yml/badge.svg)](https://github.com/thieleju/chess-com-insights/actions/workflows/release.yml)
-[![Tests](https://github.com/thieleju/chess-com-insights/actions/workflows/mocha.yml/badge.svg)](https://github.com/thieleju/chess-com-insights/actions/workflows/mocha.yml)
+[![Tests](https://github.com/thieleju/chess-com-insights/actions/workflows/tests.yml/badge.svg)](https://github.com/thieleju/chess-com-insights/actions/workflows/tests.yml)
 ![Chrome Web Store](https://img.shields.io/chrome-web-store/users/mobpnhbkmljienoleojnhbfhkhodpffe?label=Active%20Users)
 ![Chrome Web Store](https://img.shields.io/chrome-web-store/stars/mobpnhbkmljienoleojnhbfhkhodpffe?label=Rating)
-
-> [!WARNING]  
-> This addon is still in development and bugs might occur. If that happens, try to reload the site. <br>
 
 ## 🚀 How it works
 
@@ -20,13 +17,12 @@ Use the extensions icon in your browser in the top right corner to adjust the se
 
 ### Preview
 
-![preview](images/preview.png)
-![preview](images/preview2.png)
-![preview](images/preview3.png)
+![preview](images/store-1.png)
+![preview](images/store-2.png)
 
 ### Options
 
-![options](images/options-small2.png)
+![options](images/store-3.png)
 
 ## ⚙️ Installation
 
@@ -40,34 +36,33 @@ Manual installation:
 - Enable developer mode in the corner
 - Drag and drop the zip file into the browser window
 
-## 🪲 Bugs
-
-- Hiding your own stats only hides the bottom stats, currently not depending on the username
-- Sometimes the stats flash up when visiting a chess.com game link
-- Chess data is fetched for the current month. At the start of a month, the stats don't show accurate game data
-
-If you find any other bugs, please open an issue [here](https://github.com/thieleju/chess-com-insights/issues)
-
 ## 💻 Run locally
 
-Prequisites:
+Prerequisites: Node.js 22 or higher and [pnpm](https://pnpm.io)
 
-- Node.js version 17 or higher
-- pnpm installed globally `npm install -g pnpm`
+```bash
+pnpm install
+pnpm dev              # Chrome with hot reload
+pnpm dev:firefox      # Firefox with hot reload
+pnpm build            # .output/chrome-mv3
+pnpm build:firefox    # .output/firefox-mv3
+pnpm zip && pnpm zip:firefox   # release zips in .output
+```
 
-Instructions:
+Checks:
 
-- Clone/fork/download the project
-- run `pnpm install` to install all dependencies
-- run `pnpm run build` to build the extension
-  - Files will be exported to the `dist` directory
-  - You can also run `pnpm run dev` to start the vite dev server to view the options page, but some things f.e. reading the settings will not work
-- do the manual installation steps above and select the `dist` directory
+```bash
+pnpm typecheck
+pnpm lint
+pnpm test             # vitest
+pnpm cover            # coverage report in tests/coverage
+```
 
 ## 💯 Code Coverage Report
 
 [Code Coverage Report](https://thieleju.github.io/chess-com-insights/) served with github pages
 
 ## License
+
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 This extension is an independent project and is not affiliated with, endorsed by, or associated with Chess.com in any way.

@@ -5,20 +5,13 @@ import { defineConfig } from "eslint/config"
 import tseslint from "typescript-eslint"
 
 export default defineConfig(
+  { ignores: [".output", ".wxt", "dist", "tests/coverage"] },
   eslint.configs.recommended,
   tseslint.configs.recommended,
-
   {
-    rules: {
-      "@typescript-eslint/no-explicit-any": "warn"
-    }
-  },
-
-  {
-    files: ["tests/**/*.ts"],
-    rules: {
-      "@typescript-eslint/no-unused-expressions": "off",
-      "no-unused-expressions": "off"
+    files: ["scripts/**/*.mjs"],
+    languageOptions: {
+      globals: { process: "readonly", console: "readonly", URL: "readonly" }
     }
   }
 )
