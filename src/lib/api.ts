@@ -119,9 +119,13 @@ async function readPlayerCache(): Promise<Record<string, PlayerInfo>> {
 
 let cacheWrites: Promise<void> = Promise.resolve()
 
-function writePlayerCache(username: string, info: PlayerInfo): Promise<void> {
-  cacheWrites = cacheWrites.then(() => mergePlayerCache(username, info))
+function queueCacheWrite(write: () => Promise<void>): Promise<void> {
+  cacheWrites = cacheWrites.then(write, write)
   return cacheWrites
+}
+
+function writePlayerCache(username: string, info: PlayerInfo): Promise<void> {
+  return queueCacheWrite(() => mergePlayerCache(username, info))
 }
 
 async function mergePlayerCache(username: string, info: PlayerInfo) {
@@ -373,7 +377,15 @@ async function readCache<T>(storageKey: string): Promise<Record<string, T>> {
   }
 }
 
-async function writeCache<T>(
+function writeCache<T>(
+  storageKey: string,
+  key: string,
+  value: T
+): Promise<void> {
+  return queueCacheWrite(() => mergeCache(storageKey, key, value))
+}
+
+async function mergeCache<T>(
   storageKey: string,
   key: string,
   value: T
@@ -406,6 +418,7 @@ export class AllTimeAccuracyLoader {
   retrying = false
   result: AllTimeAccuracy = { modes: {}, fetchedAt: 0 }
   private page = 1
+  private counted = new Set<string>()
   private previous?: number
   private generation = 0
   private listeners = new Set<() => void>()
@@ -442,6 +455,7 @@ export class AllTimeAccuracyLoader {
     this.loaded = 0
     this.total = this.previous
     this.page = 1
+    this.counted.clear()
     this.status = "idle"
     this.start()
   }
@@ -547,6 +561,8 @@ export class AllTimeAccuracyLoader {
   private add(games: Game[]): void {
     const name = this.username.toLowerCase()
     for (const game of games) {
+      if (this.counted.has(game.id)) continue
+      this.counted.add(game.id)
       const player =
         game.white.username.toLowerCase() === name
           ? game.white

@@ -56,6 +56,7 @@ export class Overlay {
   private observer?: MutationObserver
   private scanTimer?: ReturnType<typeof setTimeout>
   private timers = new Set<ReturnType<typeof setTimeout>>()
+  private stopped = false
   readonly tooltip: Tooltip
 
   constructor(
@@ -99,12 +100,14 @@ export class Overlay {
   private relayout = () => this.scheduleScan()
 
   stop(): void {
+    this.stopped = true
     this.observer?.disconnect()
     this.doc.fonts?.removeEventListener("loadingdone", this.relayout)
     this.doc.defaultView?.removeEventListener("resize", this.relayout)
     clearTimeout(this.scanTimer)
     for (const timer of this.timers) clearTimeout(timer)
     this.timers.clear()
+    for (const loader of this.accuracy.values()) loader.stop()
     this.tooltip.close()
     for (const side of SIDES) removeStatsElement(side, this.doc)
   }
@@ -115,6 +118,7 @@ export class Overlay {
   }
 
   scheduleScan(): void {
+    if (this.stopped) return
     this.scanTimer ??= setTimeout(() => {
       this.scanTimer = undefined
       this.scan()
@@ -122,6 +126,7 @@ export class Overlay {
   }
 
   scan(): void {
+    if (this.stopped) return
     for (const side of SIDES) this.renderSide(side)
     this.detectGameEnd()
   }
@@ -403,6 +408,7 @@ export class Overlay {
   }
 
   private later(fn: () => void, ms: number): void {
+    if (this.stopped) return
     const timer = setTimeout(() => {
       this.timers.delete(timer)
       fn()

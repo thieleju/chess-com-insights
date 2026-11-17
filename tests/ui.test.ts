@@ -754,6 +754,36 @@ describe("createSettingsForm", () => {
     )
   })
 
+  it("keeps the focus on the changed control", () => {
+    const form = createSettingsForm({ ...DEFAULT_SETTINGS }, vi.fn())
+    document.body.append(form)
+
+    form.querySelector("select")!.focus()
+    form.querySelector("select")!.value = "last week"
+    form.querySelector("select")!.dispatchEvent(new Event("change"))
+    expect(document.activeElement).toBe(form.querySelector("select"))
+
+    const wdl = () =>
+      [...form.querySelectorAll("button")].find(
+        (b) => b.textContent === "W/D/L"
+      )!
+    wdl().focus()
+    wdl().click()
+    expect(document.activeElement).toBe(wdl())
+    form.remove()
+  })
+
+  it("names the period select and the button groups", () => {
+    const form = createSettingsForm({ ...DEFAULT_SETTINGS }, vi.fn())
+    expect(form.querySelector("select")!.getAttribute("aria-label")).toMatch(
+      /period$/
+    )
+    const groups = [...form.querySelectorAll("[role=group]")].map((g) =>
+      g.getAttribute("aria-label")
+    )
+    expect(groups).toEqual(["Modes", "Score", "Style", "Size"])
+  })
+
   it("keeps at least one game mode selected", () => {
     const onChange = vi.fn()
     const form = createSettingsForm(

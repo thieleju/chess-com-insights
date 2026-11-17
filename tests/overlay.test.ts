@@ -475,6 +475,21 @@ describe("Overlay", () => {
     expect(handle.state().total).toBeUndefined()
   })
 
+  it("stays removed when requests answer after stop()", async () => {
+    let answer!: (games: Game[]) => void
+    fetchGamesMock.mockImplementation(
+      () => new Promise<Game[]>((resolve) => (answer = resolve))
+    )
+    overlay = new Overlay(settings())
+    overlay.start()
+    overlay.stop()
+
+    answer(archive)
+    await vi.advanceTimersByTimeAsync(1_000)
+    expect(stats("top")).toBeNull()
+    expect(stats("bottom")).toBeNull()
+  })
+
   it("saves settings changed in the tooltip", async () => {
     await start()
     overlay.tooltip.open("top", "settings")

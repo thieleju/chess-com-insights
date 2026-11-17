@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
+import { browser } from "wxt/browser"
 import { fakeBrowser } from "wxt/testing/fake-browser"
 
 import {
@@ -259,6 +260,70 @@ describe("api", () => {
       })
       const body = JSON.parse(fetchMock.mock.calls[2]![1].body)
       expect(body.criteria).toMatchObject({ page: 2, pageSize: 2 })
+    })
+
+    it("counts a game only once when a new game moves it onto the next page", async () => {
+      fetchMock
+        .mockResolvedValueOnce(textResponse(PROFILE))
+        .mockResolvedValueOnce(page1())
+        // a game ended in between: "b" is now the first game of page 2
+        .mockResolvedValueOnce(
+          page([
+            hydratedGame({
+              key: "b",
+              endedAt: NOW - DAY_MS,
+              timeClass: "TIME_CLASS_BLITZ"
+            }),
+            hydratedGame({
+              key: "c",
+              endedAt: NOW - 400 * DAY_MS,
+              whiteAccuracy: 90
+            })
+          ])
+        )
+        .mockResolvedValueOnce(page([]))
+
+      const loader = new AllTimeAccuracyLoader("Me")
+      loader.start()
+      await vi.waitFor(() => expect(loader.status).toBe("done"))
+      expect(loader.result.modes).toEqual({
+        rapid: { sum: 170, analyzed: 2, games: 2 },
+        blitz: { sum: 0, analyzed: 0, games: 1 }
+      })
+    })
+
+    it("keeps the results of loaders that finish at the same time", async () => {
+      fetchMock.mockImplementation(async (url: string, init?: RequestInit) => {
+        if (!url.startsWith(ARCHIVE_ENDPOINT)) return textResponse(PROFILE)
+        const { username } = JSON.parse(String(init!.body)).criteria
+        return page([
+          hydratedGame({ key: username, endedAt: NOW, white: username })
+        ])
+      })
+
+      const me = new AllTimeAccuracyLoader("Me")
+      const you = new AllTimeAccuracyLoader("You")
+      await Promise.all([me.whenReady(), you.whenReady()])
+      // slow reads: both saves would read the cache before either writes it
+      const get = browser.storage.local.get.bind(browser.storage.local)
+      vi.spyOn(browser.storage.local, "get").mockImplementation(
+        async (...args: Parameters<typeof get>) => {
+          const snapshot = structuredClone(await get(...args))
+          if (args[0] === "accuracy")
+            await new Promise((r) => setTimeout(r, 10))
+          return snapshot
+        }
+      )
+      me.start()
+      you.start()
+      await vi.waitFor(() => {
+        expect(me.status).toBe("done")
+        expect(you.status).toBe("done")
+      })
+      await vi.waitFor(async () => {
+        const { accuracy } = await fakeBrowser.storage.local.get("accuracy")
+        expect(Object.keys(accuracy as object).sort()).toEqual(["me", "you"])
+      })
     })
 
     it("drops a total that turns out to be smaller than the archive", async () => {

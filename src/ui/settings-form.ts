@@ -113,8 +113,14 @@ export function createSettingsForm(
   }
 
   const update = (patch: Partial<Settings>) => {
+    const controls = () =>
+      form.querySelectorAll<HTMLElement>("input, button, select")
+    const focused = [...controls()].indexOf(
+      form.ownerDocument.activeElement as HTMLElement
+    )
     settings = { ...settings, ...patch }
     render()
+    if (focused >= 0) controls()[focused]?.focus()
     onChange(settings)
   }
 
@@ -144,6 +150,7 @@ function toggle(
 }
 
 function field(label: string, control: HTMLElement) {
+  control.setAttribute("aria-label", label)
   return el("div", "ccs-field", el("span", "ccs-field-label", label), control)
 }
 
