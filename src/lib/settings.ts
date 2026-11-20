@@ -6,6 +6,7 @@ export type GameMode = (typeof GAME_MODES)[number]
 export const TIME_INTERVALS = {
   "last 6 hours": 6,
   "last 12 hours": 12,
+  "last 24 hours": 24,
   "last 3 days": 72,
   "last week": 168,
   "last month": 720
@@ -15,7 +16,7 @@ export type TimeInterval = keyof typeof TIME_INTERVALS
 export const SCORE_ORDERS = ["wld", "wdl"] as const
 export type ScoreOrder = (typeof SCORE_ORDERS)[number]
 
-export const PILL_SIZES = ["small", "medium", "large"] as const
+export const PILL_SIZES = ["small", "medium", "large", "xlarge"] as const
 export type PillSize = (typeof PILL_SIZES)[number]
 
 export const STATS_STYLES = ["pill", "box", "outline", "text"] as const
@@ -51,7 +52,7 @@ export const DEFAULT_SETTINGS: Readonly<Settings> = Object.freeze({
   show_account_age: true,
   score_order: "wld",
   pill_size: "medium",
-  stats_style: "pill"
+  stats_style: "text"
 })
 
 const STORAGE_KEY = "settings"

@@ -34,7 +34,7 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  margin-left: 8px;
+  margin: 1px 0 1px 8px;
   vertical-align: middle;
   font-size: var(--ccs-pill-font);
   line-height: 1;
@@ -61,6 +61,13 @@
   --ccs-pill-font: 1.35rem;
   --ccs-pill-padding: 9px;
   --ccs-icon-size: 14px;
+}
+
+.ccs-stats[data-size="xlarge"] {
+  --ccs-pill-height: 25px;
+  --ccs-pill-font: 1.5rem;
+  --ccs-pill-padding: 10px;
+  --ccs-icon-size: 15px;
 }
 
 /*
@@ -90,7 +97,7 @@
 
 /* theatre/focus mode: the stats sit on their own line below the name */
 .ccs-stats--stacked {
-  margin: 4px 0 0;
+  margin: 4px 0 1px;
   align-self: center;
 }
 
@@ -135,13 +142,8 @@
   color: var(--ccs-draw);
 }
 
-.ccs-divider {
-  width: 1px;
-  height: 55%;
-  background: color-mix(in srgb, currentColor 25%, transparent);
-}
-
 .ccs-acc {
+  margin-left: 0.3em;
   font-variant-numeric: tabular-nums;
   opacity: 0.85;
 }
@@ -176,6 +178,8 @@
 
 .ccs-stats[data-style="box"] .ccs-age {
   border-radius: 3px;
+  background: color-mix(in srgb, var(--ccs-tone) 20%, transparent);
+  box-shadow: none;
 }
 
 /* outline: clear outline around a softly filled background */
@@ -187,6 +191,13 @@
 
 .ccs-stats[data-style="outline"]:hover .ccs-pill {
   background: color-mix(in srgb, currentColor 11%, transparent);
+}
+
+.ccs-stats[data-style="outline"] .ccs-age {
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--ccs-tone) 6%, transparent);
+  box-shadow: inset 0 0 0 1px
+    color-mix(in srgb, var(--ccs-tone) 60%, transparent);
 }
 
 /* text: just the numbers, like chess.com's own rating next to the name */
@@ -202,6 +213,12 @@
   opacity: 0.8;
 }
 
+.ccs-stats[data-style="text"] .ccs-age {
+  padding: 0;
+  background: none;
+  box-shadow: none;
+}
+
 /* account age: same height and font size as the pill */
 .ccs-age {
   display: inline-flex;
@@ -209,13 +226,12 @@
   box-sizing: border-box;
   height: var(--ccs-pill-height);
   padding: 0 calc(var(--ccs-pill-padding) * 0.8);
-  border-radius: 6px;
+  border-radius: 999px;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
 
 /* same soft outline look as the buttons in the settings */
-.ccs-age--warning,
 .ccs-callout--warning {
   --ccs-tone: var(--ccs-warning);
 }
@@ -289,7 +305,7 @@
 .ccs-tooltip {
   position: fixed;
   z-index: 10000;
-  width: 290px;
+  width: 300px;
   border-radius: 10px;
   box-shadow:
     0 10px 30px rgb(0 0 0 / 0.4),
@@ -330,6 +346,7 @@
   border-radius: 6px;
   background: transparent;
   color: var(--ccs-muted);
+  text-decoration: none;
   cursor: pointer;
 }
 
@@ -348,6 +365,26 @@
   stroke-width: 2;
   stroke-linecap: round;
   stroke-linejoin: round;
+}
+
+.ccs-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ccs-info {
+  display: inline-flex;
+  flex: none;
+}
+
+.ccs-info .ccs-icon {
+  width: 12px;
+  height: 12px;
+}
+
+.ccs-info:hover {
+  color: var(--ccs-fg);
 }
 
 .ccs-section {
@@ -379,6 +416,16 @@
   justify-content: space-between;
   align-items: baseline;
   gap: 16px;
+}
+
+.ccs-row--footer {
+  align-items: center;
+  gap: 8px;
+}
+
+.ccs-row--footer > .ccs-button,
+.ccs-row--footer > .ccs-actions {
+  flex: none;
 }
 
 .ccs-value {

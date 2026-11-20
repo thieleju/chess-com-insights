@@ -4,10 +4,18 @@ import {
   SCORE_ORDERS,
   STATS_STYLES,
   TIME_INTERVALS,
+  type PillSize,
   type Settings,
   type TimeInterval
 } from "../lib/settings"
 import { capitalize, el, scoreLabel } from "./el"
+
+const PILL_SIZE_LABELS: Record<PillSize, string> = {
+  small: "S",
+  medium: "M",
+  large: "L",
+  xlarge: "XL"
+}
 
 type BooleanKey = {
   [K in keyof Settings]: Settings[K] extends boolean ? K : never
@@ -102,7 +110,7 @@ export function createSettingsForm(
         segmented(
           PILL_SIZES.map((size) => ({
             value: size,
-            label: size.charAt(0).toUpperCase()
+            label: PILL_SIZE_LABELS[size]
           })),
           (size) => settings.pill_size === size,
           (size) => update({ pill_size: size }),

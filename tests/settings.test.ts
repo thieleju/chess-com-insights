@@ -31,7 +31,7 @@ describe("settings", () => {
       show_device: true,
       score_order: "wld",
       pill_size: "medium",
-      stats_style: "pill"
+      stats_style: "text"
     })
   })
 
@@ -46,7 +46,7 @@ describe("settings", () => {
       pill_size: "huge"
     })
     expect(settings.score_order).toBe("wld")
-    expect(settings.stats_style).toBe("pill")
+    expect(settings.stats_style).toBe("text")
     expect(settings.pill_size).toBe("medium")
     expect(settings.time_interval).toBe(DEFAULT_SETTINGS.time_interval)
     expect(settings.game_modes).toEqual(DEFAULT_SETTINGS.game_modes)

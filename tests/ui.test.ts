@@ -160,6 +160,13 @@ describe("renderStats", () => {
     renderStats(
       "top",
       parent,
+      view({ age: { days: 45, level: "warning", joined } })
+    )
+    expect(root.querySelector(".ccs-age")).toBeNull()
+
+    renderStats(
+      "top",
+      parent,
       view({
         age: { days: 45, level: "warning", joined },
         settings: { ...DEFAULT_SETTINGS, show_account_age: false }
@@ -278,7 +285,13 @@ describe("textShift", () => {
 
 describe("Tooltip", () => {
   const lifetime: LifetimeStats = {
-    blitz: { rating: 1688, wins: 230, losses: 201, draws: 19 },
+    blitz: {
+      rating: 1688,
+      peak: { rating: 1688, date: Date.UTC(2026, 10, 2, 12) },
+      wins: 230,
+      losses: 201,
+      draws: 19
+    },
     rapid: {
       rating: 1745,
       peak: { rating: 1812, date: Date.UTC(2025, 2, 4, 12) },
@@ -331,8 +344,42 @@ describe("Tooltip", () => {
     expect(text).toContain("Last 12 hours10 games")
     expect(text).toContain("W/L/D7 / 2 / 1")
     expect(text).toContain("Avg. accuracy91%")
-    expect(text).toContain("Based on 6 analyzed games out of 10")
+    expect(text).toContain("Based on 6 out of 10 games")
     expect(text).toContain("Windows 10 · chrome")
+  })
+
+  it("links to the profile in a new tab", () => {
+    const link = open().querySelector<HTMLAnchorElement>(
+      "a[aria-label='Open the profile of Opponent in a new tab']"
+    )!
+    expect(link.href).toBe("https://www.chess.com/member/opponent")
+    expect(link.target).toBe("_blank")
+    expect(link.rel).toBe("noopener noreferrer")
+    expect(link.nextElementSibling!.getAttribute("aria-label")).toBe(
+      "Open settings"
+    )
+  })
+
+  it("explains next to the accuracy label why only some games count", async () => {
+    const element = open()
+    await vi.waitFor(() =>
+      expect(element.textContent).toContain("Based on 912 out of 1,338 games")
+    )
+    const hint = "Accuracy is only available for analyzed games"
+    const infos = [...element.querySelectorAll<HTMLElement>(".ccs-info")]
+    expect(
+      infos.map((info) => info.closest(".ccs-label")!.textContent)
+    ).toEqual(["Avg. accuracy", "Avg. accuracy"])
+    expect(
+      infos.map((info) => [info.title, info.getAttribute("aria-label")])
+    ).toEqual([
+      [hint, hint],
+      [hint, hint]
+    ])
+    const notes = [...element.querySelectorAll(".ccs-small")].filter((n) =>
+      n.textContent!.startsWith("Based on")
+    )
+    expect(notes.every((n) => !n.querySelector(".ccs-info"))).toBe(true)
   })
 
   it("loads all-time stats lazily and shows a loading state meanwhile", async () => {
@@ -349,19 +396,19 @@ describe("Tooltip", () => {
       expect(element.querySelector(".ccs-lifetime.is-loading")).toBeNull()
     )
     const text = element.textContent
-    expect(text).toContain("Blitz1688230 / 201 / 19")
+    // also when the player is at the peak right now
+    expect(text).toContain("Blitz1688 · peak 1688230 / 201 / 19")
     expect(element.querySelector(".ccs-mode-icon--blitz path")).not.toBeNull()
-    // the peak only when it's higher than the current rating
     expect(text).toContain("Rapid1745 · peak 181261 / 40 / 7")
     expect(
-      [...element.querySelectorAll<HTMLElement>(".ccs-rating")].find((r) =>
-        r.textContent!.includes("peak")
-      )!.title
-    ).toBe("Peak on Mar 4, 2025")
+      [...element.querySelectorAll<HTMLElement>(".ccs-rating")].map(
+        (r) => r.title
+      )
+    ).toEqual(["Peak on Nov 2, 2026", "Peak on Mar 4, 2025"])
     expect(text).toContain("Total291 / 241 / 26")
     expect(text).not.toContain("Bullet")
     expect(text).toContain("Avg. accuracy88%")
-    expect(text).toContain("Based on 912 analyzed games out of 1,338")
+    expect(text).toContain("Based on 912 out of 1,338 games")
   })
 
   it("explains when no game was analyzed", () => {
@@ -417,7 +464,7 @@ describe("Tooltip", () => {
       return button!
     })
     expect(element.textContent).toContain(
-      "Based on 10,211 analyzed games out of 12,951Update"
+      "Based on 10,211 out of 12,951 gamesUpdate"
     )
     const buttons = () => [
       ...element.querySelectorAll<HTMLButtonElement>(".ccs-accuracy button")
@@ -432,7 +479,7 @@ describe("Tooltip", () => {
     buttons()
       .find((b) => b.textContent === "Cancel")!
       .click()
-    expect(element.textContent).toContain("out of 12,951Update")
+    expect(element.textContent).toContain("out of 12,951 gamesUpdate")
     expect(accuracy.handle.reload).not.toHaveBeenCalled()
 
     buttons()
@@ -471,7 +518,9 @@ describe("Tooltip", () => {
     deps.lifetime.mockImplementation(async () => records)
     const element = open()
     await vi.waitFor(() =>
-      expect(element.textContent).toContain("Blitz1688230 / 201 / 19")
+      expect(element.textContent).toContain(
+        "Blitz1688 · peak 1688230 / 201 / 19"
+      )
     )
     const section = element.querySelector(".ccs-accuracy")!.parentElement
     expect(accuracy.listeners.size).toBe(1)
@@ -669,8 +718,11 @@ describe("Tooltip", () => {
   it("shows the join date with the account age", () => {
     const joined = new Date("2026-11-05T12:00:00Z").getTime()
     const critical = open({ age: { days: 12, level: "critical", joined } })
-    expect(critical.querySelector(".ccs-callout--critical")!.textContent).toBe(
-      "New accountJoined Nov 5, 2026 · 12 days ago"
+    const callout = critical.querySelector(".ccs-callout--critical")!
+    expect(callout.textContent).toBe("New accountJoined 12 days ago")
+    expect(callout.previousElementSibling!.matches(".ccs-header")).toBe(true)
+    expect(critical.lastElementChild!.textContent).toContain(
+      "JoinedNov 5, 2026 · 12 days ago"
     )
 
     const old = open({ age: { days: 4400, joined: joined - 4400 * DAY } })
@@ -782,6 +834,19 @@ describe("createSettingsForm", () => {
       g.getAttribute("aria-label")
     )
     expect(groups).toEqual(["Modes", "Score", "Style", "Size"])
+  })
+
+  it("offers the sizes S to XL", () => {
+    const onChange = vi.fn()
+    const form = createSettingsForm({ ...DEFAULT_SETTINGS }, onChange)
+    const sizes = form.querySelector("[aria-label=Size]")!
+    expect(
+      [...sizes.querySelectorAll("button")].map((b) => b.textContent)
+    ).toEqual(["S", "M", "L", "XL"])
+    sizes.querySelector<HTMLButtonElement>("button:last-child")!.click()
+    expect(onChange).toHaveBeenLastCalledWith(
+      expect.objectContaining({ pill_size: "xlarge" })
+    )
   })
 
   it("keeps at least one game mode selected", () => {

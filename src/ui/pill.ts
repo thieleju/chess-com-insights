@@ -96,15 +96,12 @@ export function renderStats(
 
   const pill = el("span", "ccs-pill", score)
   if (settings.show_accuracy && stats.accuracy !== undefined)
-    pill.append(
-      el("span", "ccs-divider"),
-      text("ccs-acc", `${stats.accuracy}%`)
-    )
+    pill.append(text("ccs-acc", `${stats.accuracy}%`))
   if (settings.show_device && stats.device)
     pill.append(deviceIcon(stats.device.platform))
 
   const children: HTMLElement[] = [pill]
-  if (settings.show_account_age && view.age?.level)
+  if (settings.show_account_age && view.age?.level === "critical")
     children.push(
       el(
         "span",

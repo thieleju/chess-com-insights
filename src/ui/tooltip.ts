@@ -1,5 +1,6 @@
 import type { LifetimeStats, ModeRecord } from "../lib/api"
 import {
+  MEMBER_URL,
   RELOAD_CONFIRM_GAMES,
   TOOLTIP_CLOSE_DELAY_MS,
   TOOLTIP_DELAY_MS
@@ -237,6 +238,17 @@ export class Tooltip {
       this.render(view)
     })
 
+    const profileLink = el("a", "ccs-icon-button", icon(ICONS.external))
+    profileLink.href =
+      MEMBER_URL + encodeURIComponent(view.username.toLowerCase())
+    profileLink.target = "_blank"
+    profileLink.rel = "noopener noreferrer"
+    profileLink.title = "Open profile in new tab"
+    profileLink.setAttribute(
+      "aria-label",
+      `Open the profile of ${view.username} in a new tab`
+    )
+
     const recent = el(
       "section",
       "ccs-section",
@@ -251,14 +263,14 @@ export class Tooltip {
     recent.append(row(scoreLabel(order), scoreText(stats, order)))
     recent.append(
       row(
-        "Avg. accuracy",
+        accuracyLabel(),
         stats.accuracy !== undefined ? `${stats.accuracy}%` : "–"
       ),
       el(
         "div",
         "ccs-muted ccs-small",
         stats.games === 0
-          ? "Only analyzed games have an accuracy"
+          ? "Only analyzed games have accuracy data"
           : stats.analyzedGames === 0
             ? `None of the ${plural(stats.games, "game")} were analyzed`
             : analyzedNote(stats.analyzedGames, stats.games)
@@ -270,6 +282,7 @@ export class Tooltip {
         "header",
         "ccs-header",
         el("strong", "ccs-title-text", view.username),
+        profileLink,
         settingsButton
       ),
       recent,
@@ -301,17 +314,19 @@ export class Tooltip {
         dateStyle: "medium"
       })
       const age = formatAge(view.age.days)
-      const since = `${joined} · ${view.age.days < 1 ? age : `${age} ago`}`
-      extra.append(
-        view.age.level
-          ? el(
-              "div",
-              `ccs-callout ccs-callout--${view.age.level}`,
-              el("strong", undefined, "New account"),
-              el("span", undefined, `Joined ${since}`)
-            )
-          : row("Joined", since)
-      )
+      const relative = view.age.days < 1 ? age : `${age} ago`
+      extra.append(row("Joined", `${joined} · ${relative}`))
+      if (view.age.level)
+        content.splice(
+          1,
+          0,
+          el(
+            "div",
+            `ccs-callout ccs-callout--${view.age.level}`,
+            el("strong", undefined, "New account"),
+            el("span", undefined, `Joined ${relative}`)
+          )
+        )
     }
     if (extra.childElementCount) content.push(extra)
     return content
@@ -488,24 +503,32 @@ function loaded(body: HTMLElement, children: HTMLElement[]): void {
   body.replaceChildren(...children)
 }
 
-/** "1688" or, below the peak, "1688 · peak 1802" with its date on hover. */
+/** "1688 · peak 1802" with the date of the peak on hover, or just "1688". */
 function ratingText({ rating, peak }: ModeRecord): HTMLElement {
-  const showPeak = peak && peak.rating > rating!
   const text = el(
     "span",
     "ccs-rating ccs-small",
-    showPeak ? `${rating} · peak ${peak.rating}` : String(rating)
+    peak ? `${rating} · peak ${peak.rating}` : String(rating)
   )
-  if (showPeak && peak.date)
+  if (peak?.date)
     text.title = `Peak on ${new Date(peak.date).toLocaleDateString("en-US", {
       dateStyle: "medium"
     })}`
   return text
 }
 
+function accuracyLabel(): HTMLElement {
+  const hint = "Accuracy is only available for analyzed games"
+  const info = el("span", "ccs-info", icon(ICONS.info))
+  info.title = hint
+  info.setAttribute("role", "img")
+  info.setAttribute("aria-label", hint)
+  return el("span", "ccs-label", "Avg. accuracy", info)
+}
+
 function analyzedNote(analyzed: number, games: number): string {
   const count = analyzed.toLocaleString("en-US")
-  return `Based on ${count} analyzed ${analyzed === 1 ? "game" : "games"} out of ${games.toLocaleString("en-US")}`
+  return `Based on ${count} out of ${games.toLocaleString("en-US")} ${games === 1 ? "game" : "games"}`
 }
 
 /**
@@ -538,7 +561,7 @@ function accuracyContent(
       : state.analyzed
         ? analyzedNote(state.analyzed, state.games)
         : `None of the ${plural(state.games, "game")} were analyzed`
-    const footer = el("div", "ccs-row")
+    const footer = el("div", "ccs-row ccs-row--footer")
     const showSummary = () =>
       footer.replaceChildren(
         el("div", "ccs-muted ccs-small", summary),
@@ -561,13 +584,13 @@ function accuracyContent(
         )
       )
     showSummary()
-    return [row("Avg. accuracy", state.games ? value : "–"), footer]
+    return [row(accuracyLabel(), state.games ? value : "–"), footer]
   }
 
   if (state.status === "idle")
     return [
       row(
-        "Avg. accuracy",
+        accuracyLabel(),
         button("Load", "Load the all-time accuracy", () => handle.start())
       )
     ]
@@ -575,7 +598,7 @@ function accuracyContent(
   if (state.status === "failed")
     return [
       row(
-        "Avg. accuracy",
+        accuracyLabel(),
         button("Retry", "Try again", () => handle.start())
       ),
       note(
@@ -588,7 +611,7 @@ function accuracyContent(
   progress.setAttribute("aria-valuemin", "0")
   progress.setAttribute("aria-valuemax", "100")
   return [
-    row("Avg. accuracy", el("span", "ccs-acc-value")),
+    row(accuracyLabel(), el("span", "ccs-acc-value")),
     progress,
     el(
       "div",

@@ -431,9 +431,7 @@ describe("Overlay", () => {
     load.click()
 
     await vi.waitFor(() =>
-      expect(tooltip().textContent).toContain(
-        "Based on 3 analyzed games out of 8"
-      )
+      expect(tooltip().textContent).toContain("Based on 3 out of 8 games")
     )
     // average of all analyzed games in the selected modes: (160 + 90) / 3
     expect(tooltip().textContent).toContain("Avg. accuracy83%")
