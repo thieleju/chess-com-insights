@@ -1,0 +1,68 @@
+{
+  "branches": ["main"],
+  "tagFormat": "v${version}",
+  "plugins": [
+    [
+      "@semantic-release/commit-analyzer",
+      {
+        "preset": "conventionalcommits"
+      }
+    ],
+    [
+      "@semantic-release/release-notes-generator",
+      {
+        "preset": "conventionalcommits",
+        "presetConfig": {
+          "types": [
+            {
+              "type": "feat",
+              "section": "Features"
+            },
+            {
+              "type": "fix",
+              "section": "Bug Fixes"
+            }
+          ]
+        }
+      }
+    ],
+    [
+      "@semantic-release/changelog",
+      {
+        "changelogFile": "CHANGELOG.md"
+      }
+    ],
+    [
+      "@semantic-release/exec",
+      {
+        "prepareCmd": "npm pkg set version=${nextRelease.version} && pnpm zip && pnpm zip:firefox"
+      }
+    ],
+    [
+      "@semantic-release/git",
+      {
+        "assets": ["package.json", "CHANGELOG.md"],
+        "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
+      }
+    ],
+    [
+      "@semantic-release/github",
+      {
+        "assets": [
+          {
+            "path": ".output/*-chrome.zip",
+            "label": "Chrome, Edge, Brave, Opera (${nextRelease.gitTag})"
+          },
+          {
+            "path": ".output/*-firefox.zip",
+            "label": "Firefox (${nextRelease.gitTag})"
+          },
+          {
+            "path": ".output/*-sources.zip",
+            "label": "Source code for the Firefox Add-ons review (${nextRelease.gitTag})"
+          }
+        ]
+      }
+    ]
+  ]
+}

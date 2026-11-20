@@ -1,17 +1,12 @@
 name: Release
 
 on:
-  push:
-    branches:
-      - release
   workflow_dispatch:
-    inputs:
-      text:
-        description: "What changed?"
-        required: false
 
 permissions:
   contents: write
+  issues: write
+  pull-requests: write
 
 jobs:
   create_release:
@@ -20,6 +15,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
 
       - name: Set up pnpm
         uses: pnpm/action-setup@v6
@@ -39,30 +36,7 @@ jobs:
           pnpm lint
           pnpm test
 
-      - name: Build Chrome and Firefox zips
-        # creates .output/chess-com-insights-<version>-{chrome,firefox,sources}.zip
-        run: |
-          pnpm zip
-          pnpm zip:firefox
-
-      - name: Get version from package.json
-        id: version
-        run: echo "version=$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
-
       - name: Release
-        uses: softprops/action-gh-release@v3
-        with:
-          name: v${{ steps.version.outputs.version }}
-          tag_name: v${{ steps.version.outputs.version }}
-          body: |
-            Chess Stats Release v${{ steps.version.outputs.version }}
-
-            - `chess-com-insights-${{ steps.version.outputs.version }}-chrome.zip`: Chrome, Edge, Brave, Opera
-            - `chess-com-insights-${{ steps.version.outputs.version }}-firefox.zip`: Firefox
-            - `chess-com-insights-${{ steps.version.outputs.version }}-sources.zip`: source code for the Firefox Add-ons review
-
-            ${{ github.event.inputs.text }}
-          files: |
-            .output/*-chrome.zip
-            .output/*-firefox.zip
-            .output/*-sources.zip
+        run: pnpm exec semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
